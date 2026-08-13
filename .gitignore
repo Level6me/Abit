@@ -9,3 +9,5 @@ venv/
 node_modules/
 .DS_Store
 dashboard.log
+logs/
+

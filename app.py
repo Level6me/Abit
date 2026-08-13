@@ -7,13 +7,20 @@ import subprocess
 import urllib.request
 import urllib.parse
 import urllib.error
+from functools import wraps
 import psutil
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Response
 
 app = Flask(__name__)
 
 # Real qBittorrent WebUI Connection Settings
 QBT_HOST = os.environ.get("QBT_HOST", "http://127.0.0.1:8080")
+
+# Optional Dashboard Password Security
+DASHBOARD_PASSWORD = os.environ.get("DASHBOARD_PASSWORD", "").strip()
+
+# Global Thread Synchronizer
+cache_lock = threading.Lock()
 
 last_net = psutil.net_io_counters()
 last_time = time.time()
@@ -29,12 +36,34 @@ GLOBAL_CACHE = {
     "categories": {},
     "tags": [],
     "transfer_info": {},
-    "search_results": [],
-    "search_status": "idle",
     "rss_feeds": {},
     "rss_rules": {},
     "preferences": {}
 }
+
+def check_auth(username, password):
+    """Allows any username, but password must match the configured DASHBOARD_PASSWORD."""
+    return password == DASHBOARD_PASSWORD
+
+def authenticate():
+    """Sends a 401 response that triggers basic access credential requests."""
+    return Response(
+        "Could not verify your access level for this URL.\n"
+        "You have to login with proper credentials", 401,
+        {"WWW-Authenticate": 'Basic realm="Login Required"'}
+    )
+
+def requires_auth(f):
+    """Decorator to require Basic Authentication if DASHBOARD_PASSWORD is set."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not DASHBOARD_PASSWORD:
+            return f(*args, **kwargs)
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 class QbtRealClient:
     def __init__(self, base_url):
@@ -48,7 +77,7 @@ class QbtRealClient:
         if self.active_password:
             passwords_to_try.append(self.active_password)
 
-        # Read from qBittorrent stdout log (most reliable source)
+        # Read from local qBittorrent stdout log (most reliable local source)
         for log_path in ["/tmp/qbt.log"]:
             try:
                 with open(log_path, "r", errors="ignore") as f:
@@ -60,28 +89,42 @@ class QbtRealClient:
             except Exception:
                 pass
 
+        # Smart Log Scan: Sort files by modification time descending, only inspect the latest 5 files.
+        # This completely avoids os.walk I/O bottlenecks when there are thousands of old logs.
         try:
             tasks_dir = "/home/ubuntu/.gemini/antigravity-cli/brain"
-            matches = []
-            for root, dirs, files in os.walk(tasks_dir):
-                for file in files:
-                    if file.endswith(".log"):
-                        log_path = os.path.join(root, file)
-                        mtime = os.path.getmtime(log_path)
+            if os.path.exists(tasks_dir):
+                log_files = []
+                for root, dirs, files in os.walk(tasks_dir):
+                    for file in files:
+                        if file.endswith(".log"):
+                            log_path = os.path.join(root, file)
+                            try:
+                                log_files.append((os.path.getmtime(log_path), log_path))
+                            except Exception:
+                                pass
+                
+                # Sort descending (newest first)
+                log_files.sort(key=lambda x: x[0], reverse=True)
+                for _, log_path in log_files[:5]:
+                    try:
                         with open(log_path, "r", errors="ignore") as f:
                             content = f.read()
                             if "A temporary password is provided for this session:" in content:
                                 pwd = content.split("A temporary password is provided for this session:")[1].split()[0].strip()
-                                if pwd:
-                                    matches.append((mtime, pwd))
-            # Sort by file modification time descending (latest log first)
-            matches.sort(key=lambda x: x[0], reverse=True)
-            for mtime, pwd in matches[:2]:
-                if pwd not in passwords_to_try:
-                    passwords_to_try.append(pwd)
+                                if pwd and pwd not in passwords_to_try:
+                                    passwords_to_try.append(pwd)
+                    except Exception:
+                        pass
         except Exception:
             pass
 
+        # Fallback Standard Default Passwords
+        for fallback in ["adminadmin", "admin"]:
+            if fallback not in passwords_to_try:
+                passwords_to_try.append(fallback)
+
+        # Try logging in
         for pwd in passwords_to_try:
             try:
                 url = f"{self.base_url}/api/v2/auth/login"
@@ -201,21 +244,24 @@ def background_worker():
             last_time = now
 
             mem = psutil.virtual_memory()
-            mem_history.append(mem.percent)
-            if len(mem_history) > 20: mem_history.pop(0)
+            with cache_lock:
+                mem_history.append(mem.percent)
+                if len(mem_history) > 20: mem_history.pop(0)
 
-            net_history.append({"down": round(down_speed / 1024, 1), "up": round(up_speed / 1024, 1)})
-            if len(net_history) > 20: net_history.pop(0)
+                net_history.append({"down": round(down_speed / 1024, 1), "up": round(up_speed / 1024, 1)})
+                if len(net_history) > 20: net_history.pop(0)
 
             # Sync Transfer Info
             transfer_info = qbt.request("/api/v2/transfer/info")
             if transfer_info is not None and isinstance(transfer_info, dict):
-                GLOBAL_CACHE["qbt_status"] = "online"
-                GLOBAL_CACHE["download_speed"] = transfer_info.get("dl_info_speed", 0)
-                GLOBAL_CACHE["upload_speed"] = transfer_info.get("up_info_speed", 0)
-                GLOBAL_CACHE["transfer_info"] = transfer_info
+                with cache_lock:
+                    GLOBAL_CACHE["qbt_status"] = "online"
+                    GLOBAL_CACHE["download_speed"] = transfer_info.get("dl_info_speed", 0)
+                    GLOBAL_CACHE["upload_speed"] = transfer_info.get("up_info_speed", 0)
+                    GLOBAL_CACHE["transfer_info"] = transfer_info
             else:
-                GLOBAL_CACHE["qbt_status"] = "offline"
+                with cache_lock:
+                    GLOBAL_CACHE["qbt_status"] = "offline"
 
             # Sync Real Torrents List
             torrents = qbt.request("/api/v2/torrents/info")
@@ -260,38 +306,44 @@ def background_worker():
                         "save_path": t.get("save_path", "")
                     })
 
-                GLOBAL_CACHE["torrents"] = formatted
-                GLOBAL_CACHE["stats"] = {
-                    "total": len(torrents),
-                    "downloading": active_dl,
-                    "uploading": active_up,
-                    "completed": completed,
-                    "paused": paused,
-                    "errored": errored
-                }
+                with cache_lock:
+                    GLOBAL_CACHE["torrents"] = formatted
+                    GLOBAL_CACHE["stats"] = {
+                        "total": len(torrents),
+                        "downloading": active_dl,
+                        "uploading": active_up,
+                        "completed": completed,
+                        "paused": paused,
+                        "errored": errored
+                    }
 
             # Sync Categories & Tags
             cats = qbt.request("/api/v2/torrents/categories")
             if cats and isinstance(cats, dict):
-                GLOBAL_CACHE["categories"] = cats
+                with cache_lock:
+                    GLOBAL_CACHE["categories"] = cats
 
             tags = qbt.request("/api/v2/torrents/tags")
             if tags and isinstance(tags, list):
-                GLOBAL_CACHE["tags"] = tags
+                with cache_lock:
+                    GLOBAL_CACHE["tags"] = tags
 
             # Sync RSS Feeds & Rules
             rss_items = qbt.request("/api/v2/rss/items?withData=true")
             if rss_items and isinstance(rss_items, dict):
-                GLOBAL_CACHE["rss_feeds"] = rss_items
+                with cache_lock:
+                    GLOBAL_CACHE["rss_feeds"] = rss_items
 
             rss_rules = qbt.request("/api/v2/rss/rules")
             if rss_rules and isinstance(rss_rules, dict):
-                GLOBAL_CACHE["rss_rules"] = rss_rules
+                with cache_lock:
+                    GLOBAL_CACHE["rss_rules"] = rss_rules
 
             # Sync Preferences
             prefs = qbt.request("/api/v2/app/preferences")
             if prefs and isinstance(prefs, dict):
-                GLOBAL_CACHE["preferences"] = prefs
+                with cache_lock:
+                    GLOBAL_CACHE["preferences"] = prefs
 
         except Exception:
             pass
@@ -301,46 +353,50 @@ threading.Thread(target=background_worker, daemon=True).start()
 
 # Flask Routes
 @app.route("/")
+@requires_auth
 def index():
     return render_template("index.html")
 
 @app.route("/api/dashboard")
+@requires_auth
 def api_dashboard():
     mem = psutil.virtual_memory()
     disk = psutil.disk_usage("/")
     
-    data = {
-        "hostname": socket.gethostname(),
-        "uptime": get_uptime_desc(),
-        "cpu_temp": get_cpu_temp(),
-        "cpu_percent": psutil.cpu_percent(),
-        "cpu_count": psutil.cpu_count(),
-        "mem_percent": mem.percent,
-        "mem_used": format_bytes(mem.used),
-        "mem_total": format_bytes(mem.total),
-        "mem_history": mem_history,
-        "disk_percent": disk.percent,
-        "disk_free": format_bytes(disk.free),
-        "disk_total": format_bytes(disk.total),
-        "net_history": net_history,
-        "qbt_status": GLOBAL_CACHE["qbt_status"],
-        "dl_speed": format_bytes(GLOBAL_CACHE["download_speed"]) + "/s",
-        "up_speed": format_bytes(GLOBAL_CACHE["upload_speed"]) + "/s",
-        "dl_speed_raw": GLOBAL_CACHE["download_speed"],
-        "up_speed_raw": GLOBAL_CACHE["upload_speed"],
-        "stats": GLOBAL_CACHE["stats"],
-        "torrents": GLOBAL_CACHE["torrents"],
-        "categories": GLOBAL_CACHE["categories"],
-        "tags": GLOBAL_CACHE["tags"],
-        "transfer_info": GLOBAL_CACHE["transfer_info"],
-        "rss_feeds": GLOBAL_CACHE["rss_feeds"],
-        "rss_rules": GLOBAL_CACHE["rss_rules"],
-        "preferences": GLOBAL_CACHE["preferences"]
-    }
+    with cache_lock:
+        data = {
+            "hostname": socket.gethostname(),
+            "uptime": get_uptime_desc(),
+            "cpu_temp": get_cpu_temp(),
+            "cpu_percent": psutil.cpu_percent(),
+            "cpu_count": psutil.cpu_count(),
+            "mem_percent": mem.percent,
+            "mem_used": format_bytes(mem.used),
+            "mem_total": format_bytes(mem.total),
+            "mem_history": list(mem_history),
+            "disk_percent": disk.percent,
+            "disk_free": format_bytes(disk.free),
+            "disk_total": format_bytes(disk.total),
+            "net_history": list(net_history),
+            "qbt_status": GLOBAL_CACHE["qbt_status"],
+            "dl_speed": format_bytes(GLOBAL_CACHE["download_speed"]) + "/s",
+            "up_speed": format_bytes(GLOBAL_CACHE["upload_speed"]) + "/s",
+            "dl_speed_raw": GLOBAL_CACHE["download_speed"],
+            "up_speed_raw": GLOBAL_CACHE["upload_speed"],
+            "stats": dict(GLOBAL_CACHE["stats"]),
+            "torrents": list(GLOBAL_CACHE["torrents"]),
+            "categories": dict(GLOBAL_CACHE["categories"]),
+            "tags": list(GLOBAL_CACHE["tags"]),
+            "transfer_info": dict(GLOBAL_CACHE["transfer_info"]),
+            "rss_feeds": dict(GLOBAL_CACHE["rss_feeds"]),
+            "rss_rules": dict(GLOBAL_CACHE["rss_rules"]),
+            "preferences": dict(GLOBAL_CACHE["preferences"])
+        }
     return jsonify(data)
 
 # Torrent Controls
 @app.route("/api/torrent/action", methods=["POST"])
+@requires_auth
 def api_torrent_action():
     data = request.json or {}
     action = data.get("action")
@@ -351,6 +407,7 @@ def api_torrent_action():
 
     endpoint_map = {
         "resume": "/api/v2/torrents/resume",
+        "paused": "/api/v2/torrents/pause",  # Support both pause/paused
         "pause": "/api/v2/torrents/pause",
         "delete": "/api/v2/torrents/delete",
         "recheck": "/api/v2/torrents/recheck",
@@ -368,6 +425,7 @@ def api_torrent_action():
     return jsonify({"success": True})
 
 @app.route("/api/torrent/add", methods=["POST"])
+@requires_auth
 def api_torrent_add():
     urls = request.form.get("urls", "").strip()
     category = request.form.get("category", "")
@@ -417,6 +475,7 @@ def api_torrent_add():
 
 # Torrent Files, Trackers, Peers Tree Details API
 @app.route("/api/torrent/files")
+@requires_auth
 def api_torrent_files():
     hash_val = request.args.get("hash", "")
     if not hash_val: return jsonify([])
@@ -428,6 +487,7 @@ def api_torrent_files():
     return jsonify(files if isinstance(files, list) else [])
 
 @app.route("/api/torrent/trackers")
+@requires_auth
 def api_torrent_trackers():
     hash_val = request.args.get("hash", "")
     if not hash_val: return jsonify([])
@@ -435,6 +495,7 @@ def api_torrent_trackers():
     return jsonify(trackers if isinstance(trackers, list) else [])
 
 @app.route("/api/torrent/peers")
+@requires_auth
 def api_torrent_peers():
     hash_val = request.args.get("hash", "")
     if not hash_val: return jsonify({})
@@ -445,6 +506,7 @@ def api_torrent_peers():
 
 # File Priority Setting
 @app.route("/api/torrent/file_priority", methods=["POST"])
+@requires_auth
 def api_file_priority():
     hash_val = request.form.get("hash")
     id_val = request.form.get("id")
@@ -456,6 +518,7 @@ def api_file_priority():
 
 # Category & Tag Operations API
 @app.route("/api/category/add", methods=["POST"])
+@requires_auth
 def api_category_add():
     category = request.form.get("category", "").strip()
     savepath = request.form.get("savepath", "").strip()
@@ -464,6 +527,7 @@ def api_category_add():
     return jsonify({"success": True})
 
 @app.route("/api/category/delete", methods=["POST"])
+@requires_auth
 def api_category_delete():
     categories = request.form.get("categories", "").strip()
     if not categories: return jsonify({"success": False, "msg": "分类不能为空"}), 400
@@ -472,6 +536,7 @@ def api_category_delete():
 
 # RSS Rules Management API
 @app.route("/api/rss/set_rule", methods=["POST"])
+@requires_auth
 def api_rss_set_rule():
     rule_name = request.form.get("rule_name", "").strip()
     must_contain = request.form.get("must_contain", "").strip()
@@ -492,6 +557,7 @@ def api_rss_set_rule():
 
 # Speed Limits & Preferences API
 @app.route("/api/transfer/speed_limits", methods=["POST"])
+@requires_auth
 def api_speed_limits():
     data = request.json or {}
     dl_limit = data.get("dl_limit")
@@ -509,6 +575,7 @@ def api_speed_limits():
 
 # Search Engine API
 @app.route("/api/search/start", methods=["POST"])
+@requires_auth
 def api_search_start():
     pattern = request.form.get("pattern", "").strip()
     category = request.form.get("category", "all")
@@ -518,6 +585,7 @@ def api_search_start():
     return jsonify(res if isinstance(res, dict) else {"success": True, "search_id": 1})
 
 @app.route("/api/search/results")
+@requires_auth
 def api_search_results():
     id_val = request.args.get("id", "1")
     res = qbt.request("/api/v2/search/results", params={"id": id_val, "limit": 100})
@@ -525,6 +593,7 @@ def api_search_results():
 
 # Trackers Add (Single Torrent or Global All Torrents)
 @app.route("/api/torrent/add_trackers", methods=["POST"])
+@requires_auth
 def api_add_trackers():
     hash_val = request.form.get("hash", "").strip()
     urls = request.form.get("urls", "").strip()
@@ -535,7 +604,8 @@ def api_add_trackers():
 
     if is_global == "true" or not hash_val:
         # Add to all active torrents
-        torrents = GLOBAL_CACHE.get("torrents", [])
+        with cache_lock:
+            torrents = list(GLOBAL_CACHE.get("torrents", []))
         for t in torrents:
             t_hash = t.get("hash")
             if t_hash:
@@ -547,6 +617,7 @@ def api_add_trackers():
 
 # Torrent Piece States (Download Blocks Detail)
 @app.route("/api/torrent/pieces")
+@requires_auth
 def api_torrent_pieces():
     hash_val = request.args.get("hash", "")
     if not hash_val:
@@ -556,6 +627,7 @@ def api_torrent_pieces():
 
 # Set Default Save Path Preference API
 @app.route("/api/preferences/set_save_path", methods=["POST"])
+@requires_auth
 def api_set_save_path():
     save_path = request.form.get("save_path", "").strip()
     if not save_path:

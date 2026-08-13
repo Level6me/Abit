@@ -719,7 +719,7 @@
             }
 
             html += `
-            <div class="torrent-card" onclick="openTorrentDetail('${t.hash}', '${t.name.replace(/'/g, "\\'")}')">
+            <div class="torrent-card" onclick="openTorrentDetail('${t.hash}')">
                 <div class="torrent-header">
                     <div class="torrent-name">${t.name}</div>
                     <span class="badge ${stateClass}">${stateName}</span>
@@ -876,8 +876,10 @@
         });
     }
 
-    function openTorrentDetail(hash, name) {
+    function openTorrentDetail(hash) {
         activeDetailHash = hash;
+        const torrent = allTorrents.find(t => t.hash === hash);
+        const name = torrent ? torrent.name : '种子详情';
         $('#detail-title').text(name);
         openModal('detail-modal');
 
@@ -979,7 +981,7 @@
         $.post('/api/torrent/add_trackers', { hash: hash, urls: urls, is_global: isGlobal ? 'true' : 'false' }, function() {
             alert(isGlobal ? '已给所有任务添加 Tracker！' : 'Tracker 添加成功！');
             if (isGlobal) { $('#global-tracker-urls').val(''); }
-            else { $('#single-tracker-url').val(''); openTorrentDetail(activeDetailHash, $('#detail-title').text()); }
+            else { $('#single-tracker-url').val(''); openTorrentDetail(activeDetailHash); }
         });
     }
 
