@@ -615,6 +615,7 @@
     let qbtVersion = '--';
     let webapiVersion = '--';
     let detailRefreshTimer = null;
+    let peerCurrentPage = 1;
     let searchId = null;
     let searchRefreshTimer = null;
 
@@ -941,11 +942,23 @@
             }
 
             const peerKeys = Object.keys(peersDict);
-            if (peerKeys.length === 0) {
+            const totalPeers = peerKeys.length;
+            if (totalPeers === 0) {
                 html = '<div style="color:var(--text-sec); font-size:13px;">当前无活跃连接节点 (Peers)</div>';
             } else {
-                html += `<div style="margin-bottom:8px; font-size:12px; color:var(--text-sec); font-weight:600;">共 ${peerKeys.length} 个节点</div>`;
-                peerKeys.forEach(ipKey => {
+                const pageSize = 25;
+                const totalPages = Math.ceil(totalPeers / pageSize);
+                if (peerCurrentPage > totalPages) peerCurrentPage = totalPages;
+                if (peerCurrentPage < 1) peerCurrentPage = 1;
+
+                const startIdx = (peerCurrentPage - 1) * pageSize;
+                const pageKeys = totalPeers > pageSize ? peerKeys.slice(startIdx, startIdx + pageSize) : peerKeys;
+
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="font-size:12px; color:var(--text-sec); font-weight:600;">共 ${totalPeers} 个节点${totalPages > 1 ? ` (第 ${peerCurrentPage}/${totalPages} 页)` : ''}</div>
+                </div>`;
+
+                pageKeys.forEach(ipKey => {
                     const p = peersDict[ipKey];
                     const clientName = p.client || p.peer_id_client || '未知客户端';
                     const ip = p.ip || ipKey.split(':')[0] || ipKey;
@@ -963,12 +976,29 @@
                         <div style="color:var(--text-sec); font-size:12px; text-align:right; white-space:nowrap;">${dlSpeed}${upSpeed}</div>
                     </div>`;
                 });
+
+                if (totalPages > 1) {
+                    html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:8px; border-top:1px solid var(--border);">
+                        <button class="btn" style="width:auto; padding:6px 14px; margin:0; font-size:12px; background:rgba(120,120,128,0.15); color:var(--text); ${peerCurrentPage <= 1 ? 'opacity:0.4; cursor:not-allowed;' : ''}" ${peerCurrentPage <= 1 ? 'disabled' : `onclick="changePeerPage(${peerCurrentPage - 1})"`}>上一页</button>
+                        <span style="font-size:12px; color:var(--text-sec); font-weight:600;">${peerCurrentPage} / ${totalPages}</span>
+                        <button class="btn" style="width:auto; padding:6px 14px; margin:0; font-size:12px; background:rgba(120,120,128,0.15); color:var(--text); ${peerCurrentPage >= totalPages ? 'opacity:0.4; cursor:not-allowed;' : ''}" ${peerCurrentPage >= totalPages ? 'disabled' : `onclick="changePeerPage(${peerCurrentPage + 1})"`}>下一页</button>
+                    </div>`;
+                }
             }
             $('#dt-peers').html(html);
         });
     }
 
+    function changePeerPage(page) {
+        peerCurrentPage = page;
+        refreshDetailTabs(activeDetailHash);
+    }
+
     function openTorrentDetail(hash) {
+        if (activeDetailHash !== hash) {
+            peerCurrentPage = 1;
+        }
         activeDetailHash = hash;
         const torrent = allTorrents.find(t => t.hash === hash);
         const name = torrent ? torrent.name : '种子详情';
