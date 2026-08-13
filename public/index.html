@@ -878,29 +878,34 @@
 
         // 获取下载区块
         $.getJSON(`/api/v2/torrents/pieceStates?hash=${hash}`, function(pieces) {
-            let html = '';
             if (!pieces || pieces.length === 0) {
-                html = '<div style="color:var(--text-sec); font-size:13px;">暂无区块数据</div>';
-            } else {
-                let downloaded = pieces.filter(p => p === 2).length;
-                let downloading = pieces.filter(p => p === 1).length;
-                let missing = pieces.filter(p => p === 0).length;
-                
-                html += `
-                <div style="margin-bottom:10px; font-size:13px; color:var(--text-sec);">
-                    总区块数: <b>${pieces.length}</b> (已完成: <span style="color:var(--success); font-weight:600;">${downloaded}</span> | 下载中: <span style="color:var(--accent); font-weight:600;">${downloading}</span> | 未下载: ${missing})
-                </div>
-                <div style="display:flex; flex-wrap:wrap; gap:2px; max-height:220px; overflow-y:auto; padding:6px; background:rgba(120,120,128,0.06); border-radius:10px;">`;
-                
-                pieces.forEach(p => {
-                    let color = 'rgba(120,120,128,0.2)';
-                    if (p === 2) color = 'var(--success)';
-                    else if (p === 1) color = 'var(--accent)';
-                    html += `<div style="width:7px; height:7px; background:${color}; border-radius:1px;"></div>`;
-                });
-                html += `</div>`;
+                $('#dt-pieces').html('<div style="color:var(--text-sec); font-size:13px;">暂无区块数据</div>');
+                return;
             }
+            let downloaded = pieces.filter(p => p === 2).length;
+            let downloading = pieces.filter(p => p === 1).length;
+            let missing = pieces.filter(p => p === 0).length;
+            
+            const box = document.getElementById('pieces-container');
+            const scrollTop = box ? box.scrollTop : 0;
+            
+            let html = `
+            <div style="margin-bottom:10px; font-size:13px; color:var(--text-sec);">
+                总区块数: <b>${pieces.length}</b> (已完成: <span style="color:var(--success); font-weight:600;">${downloaded}</span> | 下载中: <span style="color:var(--accent); font-weight:600;">${downloading}</span> | 未下载: ${missing})
+            </div>
+            <div id="pieces-container" style="display:flex; flex-wrap:wrap; gap:2px; max-height:220px; overflow-y:auto; padding:6px; background:rgba(120,120,128,0.06); border-radius:10px;">`;
+            
+            pieces.forEach(p => {
+                let color = 'rgba(120,120,128,0.2)';
+                if (p === 2) color = 'var(--success)';
+                else if (p === 1) color = 'var(--accent)';
+                html += `<div style="width:7px; height:7px; background:${color}; border-radius:1px;"></div>`;
+            });
+            html += `</div>`;
             $('#dt-pieces').html(html);
+
+            const newBox = document.getElementById('pieces-container');
+            if (newBox) newBox.scrollTop = scrollTop;
         });
 
         // 获取 Trackers
