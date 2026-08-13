@@ -15,7 +15,36 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-# 2. Setup virtual environment
+# 2. Check for qBittorrent WebUI dependency
+echo "🔍 Checking for qBittorrent WebUI dependency..."
+QBT_DETECTED=false
+
+# Check if qbittorrent-nox binary is available in PATH
+if command -v qbittorrent-nox &> /dev/null; then
+    QBT_DETECTED=true
+    echo "ℹ️  Found qbittorrent-nox binary in system PATH."
+fi
+
+# Check if default port 8080 is listening
+if command -v ss &> /dev/null && ss -tlnp 2>/dev/null | grep -q ":8080 "; then
+    QBT_DETECTED=true
+    echo "✅ Active service detected on port 8080 (qBittorrent default port)."
+elif command -v netstat &> /dev/null && netstat -tlnp 2>/dev/null | grep -q ":8080 "; then
+    QBT_DETECTED=true
+    echo "✅ Active service detected on port 8080 (qBittorrent default port)."
+fi
+
+if [ "$QBT_DETECTED" = false ]; then
+    echo "⚠️  Warning: qBittorrent WebUI (default port 8080) was not detected on this host."
+    echo "   The dashboard will deploy successfully, but will display 'offline' until qBittorrent is started."
+    echo "   To install and start it on Debian/Ubuntu, you can run:"
+    echo "     sudo apt update && sudo apt install -y qbittorrent-nox"
+    echo "     qbittorrent-nox -d"
+else
+    echo "✅ qBittorrent WebUI dependency check passed."
+fi
+
+# 3. Setup virtual environment
 echo "📦 Setting up Python virtual environment..."
 python3 -m venv "$PROJECT_DIR/venv"
 
