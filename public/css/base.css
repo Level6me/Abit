@@ -1,0 +1,52 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    min-height: 100%;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    margin: 0;
+    padding-bottom: calc(130px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.modal-open {
+    overflow: hidden !important;
+}
+
+/* Responsive Layout Container */
+.container {
+    padding: 16px 18px;
+    width: 96%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: max(16px, env(safe-area-inset-top));
+    box-sizing: border-box;
+}
+
+/* Apple Glass Slim Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(120,120,128,0.22);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(120,120,128,0.45);
+}

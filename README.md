@@ -39,12 +39,14 @@ apple_torrent_dashboard/
 │   ├── build.js            # 零依赖一键打包构建脚本 (Zero-dep Bundler)
 │   ├── dev.js              # 零依赖本地轻量开发服务器 (Local Dev Server)
 │   └── check.js            # 模块语法与工程完整性检查 (Integrity Checker)
-├── dist/                   # 编译产物目录 (Production Distribution)
+├── dist/                   # 单文件发布产物目录 (Production Standalone)
 │   ├── index.html          # 单文件独立完整版 (Standalone Single-File WebUI)
 │   ├── css/style.css       # 合并打包后的全量样式 (Bundled CSS)
 │   └── js/app.bundle.js    # 合并打包后的全量逻辑 (Bundled JS)
-├── public/                 # 静态部署同步目录 (Static Hosting)
-│   └── index.html          # 同步最新构建产物
+├── public/                 # 多文件三件套分离部署目录 (Modular Multi-File WebUI)
+│   ├── index.html          # 结构化多文件入口 (Modular HTML Entry)
+│   ├── css/                # 细分样式模块目录 (8 个独立 CSS 模块)
+│   └── js/                 # 细分逻辑模块目录 (11 个独立 JS 模块)
 ├── index.html              # 根目录运行入口 (qBittorrent 直接指定根目录即用)
 ├── package.json            # NPM 项目工程描述文件
 ├── .gitignore              # Git 忽略规则

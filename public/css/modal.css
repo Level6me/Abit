@@ -1,0 +1,71 @@
+/* Pages */
+.page {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+.page.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Modal System */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    padding: 16px;
+}
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+.modal-card {
+    background: var(--modal-bg);
+    width: 100%;
+    max-width: min(780px, calc(100vw - 32px));
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.94);
+    transition: transform 0.25s cubic-bezier(0.1, 0.8, 0.25, 1);
+    max-height: 86vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+}
+.modal-overlay.active .modal-card {
+    transform: scale(1);
+}
+
+/* Setting Item Row */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    gap: 16px;
+}
+.setting-row:last-child {
+    border-bottom: none;
+}
+.setting-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+.setting-desc {
+    font-size: 11px;
+    color: var(--text-sec);
+    margin-top: 2px;
+}

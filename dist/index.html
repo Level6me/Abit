@@ -3625,7 +3625,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 
     function copySystemLogs() {
         if (!rawLogs || rawLogs.length === 0) return showToast('暂无日志记录可复制', false);
-        const textLines = rawLogs.map(l => `[${formatTimestamp(l.timestamp)}] [${l.type}] ${l.message}`).join('\n');
+        const textLines = rawLogs.map(l => `[${formatTimestamp(l.timestamp)}] [${l.type}] ${l.message}`).join('
+');
         navigator.clipboard.writeText(textLines).then(() => {
             showToast('✅ 已复制全部日志到剪贴板！');
         }).catch(() => {

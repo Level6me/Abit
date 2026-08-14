@@ -110,15 +110,54 @@ function build() {
     fs.writeFileSync(distIndexPath, standaloneHtml);
     console.log(`   └─ dist/index.html (${formatKB(Buffer.byteLength(standaloneHtml))})`);
 
-    // 4. Synchronize Standalone Output to Root index.html and public/index.html
-    console.log('🔄 [4/4] Synchronizing build outputs for seamless qBittorrent Alternate WebUI loading...');
+    // 4. Generate & Synchronize Modular Multi-File Distribution into public/
+    console.log('📂 [4/4] Generating modular multi-file distribution in public/...');
+    const publicCssDir = path.join(PUBLIC_DIR, 'css');
+    const publicJsDir = path.join(PUBLIC_DIR, 'js');
+    if (!fs.existsSync(publicCssDir)) fs.mkdirSync(publicCssDir, { recursive: true });
+    if (!fs.existsSync(publicJsDir)) fs.mkdirSync(publicJsDir, { recursive: true });
+
+    // Copy all individual CSS modules to public/css/
+    let publicCssCount = 0;
+    const srcCssDir = path.join(SRC_DIR, 'css');
+    fs.readdirSync(srcCssDir).forEach(file => {
+        if (file.endsWith('.css')) {
+            fs.copyFileSync(path.join(srcCssDir, file), path.join(publicCssDir, file));
+            publicCssCount++;
+        }
+    });
+
+    // Copy all individual JS modules to public/js/
+    let publicJsCount = 0;
+    const srcJsDir = path.join(SRC_DIR, 'js');
+    fs.readdirSync(srcJsDir).forEach(file => {
+        if (file.endsWith('.js')) {
+            fs.copyFileSync(path.join(srcJsDir, file), path.join(publicJsDir, file));
+            publicJsCount++;
+        }
+    });
+
+    // Generate public/index.html with granular modular CSS link tags
+    const modularCssLinks = CSS_ORDER
+        .map(file => `    <link rel="stylesheet" href="css/${file}">`)
+        .join('\n');
+
+    let publicHtml = fs.readFileSync(srcIndexPath, 'utf8');
+    publicHtml = publicHtml.replace(
+        /<link\s+rel="stylesheet"\s+href="[^"]*css\/style\.css"[^>]*>/i,
+        `<!-- Modular Granular Stylesheets -->\n${modularCssLinks}`
+    );
+    const publicIndexPath = path.join(PUBLIC_DIR, 'index.html');
+    fs.writeFileSync(publicIndexPath, publicHtml);
+
+    // Sync Standalone Output to Root index.html
     const rootIndexPath = path.join(ROOT_DIR, 'index.html');
     fs.writeFileSync(rootIndexPath, standaloneHtml);
-    console.log(`   ├─ index.html (Root WebUI Entry) (${formatKB(Buffer.byteLength(standaloneHtml))})`);
 
-    const publicIndexPath = path.join(PUBLIC_DIR, 'index.html');
-    fs.writeFileSync(publicIndexPath, standaloneHtml);
-    console.log(`   └─ public/index.html (Static Host Entry) (${formatKB(Buffer.byteLength(standaloneHtml))})`);
+    console.log(`   ├─ public/index.html (Modular Structure Entry) (${formatKB(Buffer.byteLength(publicHtml))})`);
+    console.log(`   ├─ public/css/ (${publicCssCount} Granular CSS Files)`);
+    console.log(`   ├─ public/js/ (${publicJsCount} Granular JS Files)`);
+    console.log(`   └─ index.html (Root WebUI Standalone Entry) (${formatKB(Buffer.byteLength(standaloneHtml))})`);
 
     const elapsed = Date.now() - startTime;
     console.log(`\n🎉 Build successfully completed in ${elapsed}ms!\n`);
