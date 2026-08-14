@@ -27,12 +27,20 @@ body.modal-open {
 
 /* Responsive Layout Container */
 .container {
-    padding: 16px 18px;
+    padding: 12px 16px;
     width: 96%;
     max-width: 1400px;
     margin: 0 auto;
-    padding-top: max(16px, env(safe-area-inset-top));
+    padding-top: calc(18px + env(safe-area-inset-top, 0px));
     box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px 14px;
+        padding-top: calc(22px + env(safe-area-inset-top, 0px));
+        width: 100%;
+    }
 }
 
 /* Apple Glass Slim Scrollbar */
