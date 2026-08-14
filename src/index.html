@@ -42,11 +42,11 @@
                 <span id="theme-label">自动</span>
             </button>
 
-            <!-- Status Indicator -->
-            <div class="pill-btn" onclick="openLoginModal()" title="查看连接详情或重新登录">
-                <span class="status-dot" id="qbt-dot"></span>
-                <span id="qbt-status-text">连接中...</span>
-            </div>
+            <!-- Language Toggle Button -->
+            <button class="pill-btn" id="btn-lang-toggle" onclick="showToast('🌐 语言切换 (EN) 即将推出，当前默认简体中文')" title="语言切换 / Language">
+                <span>🌐</span>
+                <span id="lang-label">中 / EN</span>
+            </button>
         </div>
     </div>
 
@@ -387,11 +387,11 @@
 
                 <div class="grid-2" style="margin-bottom:14px;">
                     <div>
-                        <div class="val-sub" style="margin-bottom:4px;">备用模式下载限制 (🐢 乌龟模式)</div>
+                        <div class="val-sub" style="margin-bottom:4px;">备用下载速度限制</div>
                         <input class="input-box" id="limit-alt-dl" type="number" placeholder="备用下载限制 KB/s">
                     </div>
                     <div>
-                        <div class="val-sub" style="margin-bottom:4px;">备用模式上传限制 (🐢 乌龟模式)</div>
+                        <div class="val-sub" style="margin-bottom:4px;">备用上传速度限制</div>
                         <input class="input-box" id="limit-alt-up" type="number" placeholder="备用上传限制 KB/s">
                     </div>
                 </div>
@@ -399,7 +399,7 @@
                 <div class="setting-row">
                     <div>
                         <div class="setting-label">启用备用速率计划调度</div>
-                        <div class="setting-desc">在指定时间段内自动激活备用限速（乌龟模式）</div>
+                        <div class="setting-desc">在指定时间段内自动激活备用限速策略</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="pref-scheduler-enabled">
@@ -936,7 +936,7 @@
 
         <div style="display:flex; gap:10px;">
             <button class="btn secondary" style="flex:1;" onclick="closeModal('add-modal')">取消</button>
-            <button class="btn" style="flex:2;" onclick="submitAddTorrent()">发送至 qBittorrent</button>
+            <button class="btn" style="flex:2;" onclick="submitAddTorrent()">开始下载</button>
         </div>
     </div>
 </div>

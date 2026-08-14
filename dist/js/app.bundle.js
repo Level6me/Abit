@@ -1282,7 +1282,7 @@
 
     function addMagnetFromSearch(magnetUrl) {
         $.post('/api/v2/torrents/add', { urls: magnetUrl }, function() {
-            showToast('磁力链接已成功发送至 qBittorrent 开始下载！');
+            showToast('✅ 磁力链接已成功添加，开始下载！');
             pollFastData();
         });
     }
@@ -1787,7 +1787,7 @@
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? '已切换至备用限速 (乌龟模式)' : '已恢复常规全局全速模式');
+            showToast(isAltSpeedEnabled ? '已激活备用限速模式' : '已恢复常规全局全速模式');
         });
     }
 

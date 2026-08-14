@@ -27,7 +27,7 @@
     text-overflow: ellipsis;
 }
 .title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.15;
@@ -50,7 +50,7 @@
         min-height: 44px;
     }
     .title {
-        font-size: 22px;
+        font-size: 26px;
     }
     .header-actions {
         gap: 5px;

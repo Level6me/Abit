@@ -229,7 +229,7 @@
 
     function addMagnetFromSearch(magnetUrl) {
         $.post('/api/v2/torrents/add', { urls: magnetUrl }, function() {
-            showToast('磁力链接已成功发送至 qBittorrent 开始下载！');
+            showToast('✅ 磁力链接已成功添加，开始下载！');
             pollFastData();
         });
     }

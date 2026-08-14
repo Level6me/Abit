@@ -49,7 +49,7 @@
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? '已切换至备用限速 (乌龟模式)' : '已恢复常规全局全速模式');
+            showToast(isAltSpeedEnabled ? '已激活备用限速模式' : '已恢复常规全局全速模式');
         });
     }
 
