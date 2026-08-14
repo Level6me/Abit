@@ -1486,15 +1486,18 @@ input:checked + .slider:before { transform: translateX(20px); }
         <!-- Floating Sticky Header -->
         <div class="sticky-toolbar">
             <div class="tab-bar">
-                <div class="tab-item active" onclick="switchSysSubTab('sys-sub-config', this)">⚙️ 速率与全局配置</div>
-                <div class="tab-item" onclick="switchSysSubTab('sys-sub-logs', this)">📜 运行日志 (Logs)</div>
-                <div class="tab-item" onclick="switchSysSubTab('sys-sub-trackers', this)">🌐 全局 Tracker</div>
+                <div class="tab-item active" onclick="switchSysSubTab('sys-sub-speed', this)">⚡ 速率与计划</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-storage', this)">📁 存储与下载</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-network', this)">🌐 网络与连接</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-bittorrent', this)">🎯 做种与BT</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-security', this)">🛡️ 账户与安全</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-logs', this)">📜 运行日志</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-trackers', this)">🌍 全局Tracker</div>
             </div>
         </div>
 
-        <!-- System Config Sub-Tab (Expanded Rich Preferences) -->
-        <div id="sys-sub-config" class="sys-sub-content">
-            <!-- 1. Speed Limits & Scheduling Card -->
+        <!-- 1. Speed & Scheduling Sub-Tab -->
+        <div id="sys-sub-speed" class="sys-sub-content">
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;">⚡ 速率与计划限制 (KB/s)</div>
                 
@@ -1573,8 +1576,15 @@ input:checked + .slider:before { transform: translateX(20px); }
                     </label>
                 </div>
             </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()">
+                    💾 保存速率配置
+                </button>
+            </div>
+        </div>
 
-            <!-- 2. Downloads & Storage Card -->
+        <!-- 2. Downloads & Storage Sub-Tab -->
+        <div id="sys-sub-storage" class="sys-sub-content" style="display:none;">
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📁 存储路径与下载行为</div>
                 <div style="margin-bottom:12px;">
@@ -1628,8 +1638,15 @@ input:checked + .slider:before { transform: translateX(20px); }
                     </label>
                 </div>
             </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()">
+                    💾 保存存储配置
+                </button>
+            </div>
+        </div>
 
-            <!-- 3. Connection & Ports Card -->
+        <!-- 3. Connection & Ports Sub-Tab -->
+        <div id="sys-sub-network" class="sys-sub-content" style="display:none;">
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;">🌐 网络连接与端口配置</div>
                 <div class="grid-2" style="margin-bottom:12px;">
@@ -1670,8 +1687,15 @@ input:checked + .slider:before { transform: translateX(20px); }
                     </div>
                 </div>
             </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()">
+                    💾 保存网络连接配置
+                </button>
+            </div>
+        </div>
 
-            <!-- 4. BitTorrent, Seeding & Queueing Card -->
+        <!-- 4. BitTorrent & Queueing Sub-Tab -->
+        <div id="sys-sub-bittorrent" class="sys-sub-content" style="display:none;">
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;">🎯 BitTorrent、做种与排队规则</div>
                 
@@ -1768,8 +1792,15 @@ input:checked + .slider:before { transform: translateX(20px); }
                     </div>
                 </div>
             </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()">
+                    💾 保存做种与排队配置
+                </button>
+            </div>
+        </div>
 
-            <!-- 5. WebUI & Security Card -->
+        <!-- 5. Security & WebUI Sub-Tab -->
+        <div id="sys-sub-security" class="sys-sub-content" style="display:none;">
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;">🛡️ WebUI 账户密码与安全配置</div>
                 
@@ -1832,8 +1863,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 
             <!-- Master Save Button -->
             <div style="margin-bottom:20px;">
-                <button class="btn w-full" style="padding:14px; font-size:15px;" onclick="saveAllSystemPreferences()">
-                    💾 保存并应用全部系统配置
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()">
+                    💾 保存账户与安全配置
                 </button>
             </div>
 
@@ -3983,8 +4014,11 @@ input:checked + .slider:before { transform: translateX(20px); }
         $(`#${tabId}`).show();
         $('#p-system .tab-item').removeClass('active');
         $(btn).addClass('active');
-        if (tabId === 'sys-sub-logs') fetchSystemLogs();
-        if (tabId === 'sys-sub-config') loadAllSystemPreferences();
+        if (tabId === 'sys-sub-logs') {
+            fetchSystemLogs();
+        } else if (tabId !== 'sys-sub-trackers') {
+            loadAllSystemPreferences();
+        }
     }
 
 // --- Modal Helpers ---

@@ -1825,8 +1825,11 @@
         $(`#${tabId}`).show();
         $('#p-system .tab-item').removeClass('active');
         $(btn).addClass('active');
-        if (tabId === 'sys-sub-logs') fetchSystemLogs();
-        if (tabId === 'sys-sub-config') loadAllSystemPreferences();
+        if (tabId === 'sys-sub-logs') {
+            fetchSystemLogs();
+        } else if (tabId !== 'sys-sub-trackers') {
+            loadAllSystemPreferences();
+        }
     }
 
 // --- Modal Helpers ---
