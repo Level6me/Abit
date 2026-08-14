@@ -92,14 +92,14 @@
                     closeModal(activeModal.attr('id'));
                 }
             } else if (!$(e.target).is('input, textarea, select')) {
-                if (e.key === '1') switchTab('p-dash', '下载总览', $('.dock-btn:nth-child(1)'));
-                else if (e.key === '2') switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'));
-                else if (e.key === '3') switchTab('p-search', '资源搜索', $('.dock-btn:nth-child(3)'));
-                else if (e.key === '4') switchTab('p-rss', 'RSS订阅', $('.dock-btn:nth-child(4)'));
-                else if (e.key === '5') switchTab('p-system', '系统与日志', $('.dock-btn:nth-child(5)'));
+                if (e.key === '1') switchTab('p-dash', '总览', $('.dock-btn:nth-child(1)'));
+                else if (e.key === '2') switchTab('p-torrents', '任务', $('.dock-btn:nth-child(2)'));
+                else if (e.key === '3') switchTab('p-search', '搜索', $('.dock-btn:nth-child(3)'));
+                else if (e.key === '4') switchTab('p-rss', 'RSS', $('.dock-btn:nth-child(4)'));
+                else if (e.key === '5') switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
                 else if (e.key === '/' || e.key === 'f' || e.key === 'F') {
                     e.preventDefault();
-                    switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'));
+                    switchTab('p-torrents', '任务', $('.dock-btn:nth-child(2)'));
                     setTimeout(() => $('#torrent-search-input').focus().select(), 100);
                 } else if (e.key === 'n' || e.key === 'N') {
                     e.preventDefault();
@@ -113,11 +113,22 @@
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        // Initial Auth Verification & Version Loading
+        // Strict Auth Gate: In incognito or new session, require explicit login first
+        if (!isAuthPassed()) {
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('未登录');
+            openLoginModal(true);
+        } else {
+            startAuthenticatedApp();
+        }
+    });
+
+    function startAuthenticatedApp() {
         $.get('/api/v2/app/version', function(ver) {
             qbtVersion = ver;
             $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
             $('#login-modal').removeClass('forced-login');
+            closeModal('login-modal');
 
             $.get('/api/v2/app/webapiVersion', function(wver) {
                 webapiVersion = wver;
@@ -135,6 +146,7 @@
             slowPollTimer = setInterval(pollSlowData, 15000);
         }).fail(function(err) {
             if (err.status === 403 || err.status === 401) {
+                setAuthPassed(false, false);
                 $('#qbt-dot').addClass('offline');
                 $('#qbt-status-text').text('未登录/待验证');
                 openLoginModal(true);
@@ -145,4 +157,4 @@
                 slowPollTimer = setInterval(pollSlowData, 15000);
             }
         });
-    });
+    }

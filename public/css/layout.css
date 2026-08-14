@@ -1,38 +1,64 @@
 /* Header */
 .header {
-    margin: 8px 0 18px 0;
+    margin: 8px 0 16px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-wrap: nowrap;
+    gap: 8px;
     min-height: 52px;
+    width: 100%;
 }
 .header-left {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-width: 0;
+    flex-shrink: 1;
 }
 .date-badge {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-sec);
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .title {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.15;
     margin-top: 2px;
+    white-space: nowrap;
 }
 .header-actions {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     margin-left: auto;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .header {
+        margin: 6px 0 12px 0;
+        gap: 6px;
+        min-height: 44px;
+    }
+    .title {
+        font-size: 22px;
+    }
+    .header-actions {
+        gap: 5px;
+    }
+    .pill-btn {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
 }
 
 .subtitle {

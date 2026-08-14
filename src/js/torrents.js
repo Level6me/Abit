@@ -142,7 +142,7 @@
 
     // --- Dashboard Filter Navigation ---
     function jumpToTorrentFilter(filter) {
-        switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'));
+        switchTab('p-torrents', '任务', $('.dock-btn:nth-child(2)'));
         const filterMap = {
             'all': 0,
             'downloading': 1,

@@ -109,6 +109,22 @@
         }
     }
 
+    function isAuthPassed() {
+        return sessionStorage.getItem('omni_auth_passed') === 'true' || localStorage.getItem('omni_auth_remember') === 'true';
+    }
+
+    function setAuthPassed(passed, remember) {
+        if (passed) {
+            sessionStorage.setItem('omni_auth_passed', 'true');
+            if (remember) {
+                localStorage.setItem('omni_auth_remember', 'true');
+            }
+        } else {
+            sessionStorage.removeItem('omni_auth_passed');
+            localStorage.removeItem('omni_auth_remember');
+        }
+    }
+
     // --- Authentication & Login Dialog ---
     function openLoginModal(isForced) {
         if (isForced) {
@@ -126,15 +142,21 @@
     function submitLogin() {
         const username = $('#login-user').val().trim() || 'admin';
         const password = $('#login-pass').val();
+        const remember = $('#login-remember').is(':checked');
 
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
             if (res === 'Ok.' || res === 'Ok' || res === '') {
+                setAuthPassed(true, remember);
                 $('#login-modal').removeClass('forced-login');
                 closeModal('login-modal');
                 $('#login-pass').val('');
                 showToast('✅ 身份验证通过，已成功登录！');
-                pollFastData();
-                pollSlowData();
+                if (typeof startAuthenticatedApp === 'function') {
+                    startAuthenticatedApp();
+                } else {
+                    pollFastData();
+                    pollSlowData();
+                }
             } else {
                 showToast('❌ 用户名或密码错误，请重试！', false);
             }
@@ -148,14 +170,15 @@
     }
 
     function logout() {
+        setAuthPassed(false, false);
+        if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
+        if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
             showToast('已退出登录');
-            $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('已注销/未登录');
-            openLoginModal(true);
-        }).fail(function() {
-            openLoginModal(true);
         });
+        $('#qbt-dot').addClass('offline');
+        $('#qbt-status-text').text('已注销/未登录');
+        openLoginModal(true);
     }
 
 // --- Global Drag & Drop + Clipboard Listener ---

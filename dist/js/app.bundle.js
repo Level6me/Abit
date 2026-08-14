@@ -198,7 +198,8 @@
     $.ajaxSetup({
         error: function(xhr) {
             if (xhr.status === 403 || xhr.status === 401) {
-                openLoginModal();
+                if (typeof setAuthPassed === 'function') setAuthPassed(false);
+                if (typeof openLoginModal === 'function') openLoginModal(true);
             }
         }
     });
@@ -396,7 +397,7 @@
 
     // --- Dashboard Filter Navigation ---
     function jumpToTorrentFilter(filter) {
-        switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'));
+        switchTab('p-torrents', '任务', $('.dock-btn:nth-child(2)'));
         const filterMap = {
             'all': 0,
             'downloading': 1,
@@ -1841,6 +1842,22 @@
         }
     }
 
+    function isAuthPassed() {
+        return sessionStorage.getItem('omni_auth_passed') === 'true' || localStorage.getItem('omni_auth_remember') === 'true';
+    }
+
+    function setAuthPassed(passed, remember) {
+        if (passed) {
+            sessionStorage.setItem('omni_auth_passed', 'true');
+            if (remember) {
+                localStorage.setItem('omni_auth_remember', 'true');
+            }
+        } else {
+            sessionStorage.removeItem('omni_auth_passed');
+            localStorage.removeItem('omni_auth_remember');
+        }
+    }
+
     // --- Authentication & Login Dialog ---
     function openLoginModal(isForced) {
         if (isForced) {
@@ -1858,15 +1875,21 @@
     function submitLogin() {
         const username = $('#login-user').val().trim() || 'admin';
         const password = $('#login-pass').val();
+        const remember = $('#login-remember').is(':checked');
 
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
             if (res === 'Ok.' || res === 'Ok' || res === '') {
+                setAuthPassed(true, remember);
                 $('#login-modal').removeClass('forced-login');
                 closeModal('login-modal');
                 $('#login-pass').val('');
                 showToast('✅ 身份验证通过，已成功登录！');
-                pollFastData();
-                pollSlowData();
+                if (typeof startAuthenticatedApp === 'function') {
+                    startAuthenticatedApp();
+                } else {
+                    pollFastData();
+                    pollSlowData();
+                }
             } else {
                 showToast('❌ 用户名或密码错误，请重试！', false);
             }
@@ -1880,14 +1903,15 @@
     }
 
     function logout() {
+        setAuthPassed(false, false);
+        if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
+        if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
             showToast('已退出登录');
-            $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('已注销/未登录');
-            openLoginModal(true);
-        }).fail(function() {
-            openLoginModal(true);
         });
+        $('#qbt-dot').addClass('offline');
+        $('#qbt-status-text').text('已注销/未登录');
+        openLoginModal(true);
     }
 
 // --- Global Drag & Drop + Clipboard Listener ---
@@ -2033,14 +2057,14 @@
                     closeModal(activeModal.attr('id'));
                 }
             } else if (!$(e.target).is('input, textarea, select')) {
-                if (e.key === '1') switchTab('p-dash', '下载总览', $('.dock-btn:nth-child(1)'));
-                else if (e.key === '2') switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'));
-                else if (e.key === '3') switchTab('p-search', '资源搜索', $('.dock-btn:nth-child(3)'));
-                else if (e.key === '4') switchTab('p-rss', 'RSS订阅', $('.dock-btn:nth-child(4)'));
-                else if (e.key === '5') switchTab('p-system', '系统与日志', $('.dock-btn:nth-child(5)'));
+                if (e.key === '1') switchTab('p-dash', '总览', $('.dock-btn:nth-child(1)'));
+                else if (e.key === '2') switchTab('p-torrents', '任务', $('.dock-btn:nth-child(2)'));
+                else if (e.key === '3') switchTab('p-search', '搜索', $('.dock-btn:nth-child(3)'));
+                else if (e.key === '4') switchTab('p-rss', 'RSS', $('.dock-btn:nth-child(4)'));
+                else if (e.key === '5') switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
                 else if (e.key === '/' || e.key === 'f' || e.key === 'F') {
                     e.preventDefault();
-                    switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'));
+                    switchTab('p-torrents', '任务', $('.dock-btn:nth-child(2)'));
                     setTimeout(() => $('#torrent-search-input').focus().select(), 100);
                 } else if (e.key === 'n' || e.key === 'N') {
                     e.preventDefault();
@@ -2054,11 +2078,22 @@
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        // Initial Auth Verification & Version Loading
+        // Strict Auth Gate: In incognito or new session, require explicit login first
+        if (!isAuthPassed()) {
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('未登录');
+            openLoginModal(true);
+        } else {
+            startAuthenticatedApp();
+        }
+    });
+
+    function startAuthenticatedApp() {
         $.get('/api/v2/app/version', function(ver) {
             qbtVersion = ver;
             $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
             $('#login-modal').removeClass('forced-login');
+            closeModal('login-modal');
 
             $.get('/api/v2/app/webapiVersion', function(wver) {
                 webapiVersion = wver;
@@ -2076,6 +2111,7 @@
             slowPollTimer = setInterval(pollSlowData, 15000);
         }).fail(function(err) {
             if (err.status === 403 || err.status === 401) {
+                setAuthPassed(false, false);
                 $('#qbt-dot').addClass('offline');
                 $('#qbt-status-text').text('未登录/待验证');
                 openLoginModal(true);
@@ -2086,4 +2122,4 @@
                 slowPollTimer = setInterval(pollSlowData, 15000);
             }
         });
-    });
+    }
