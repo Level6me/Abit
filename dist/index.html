@@ -4065,12 +4065,19 @@ input:checked + .slider:before { transform: translateX(20px); }
     }
 
     function submitLogin() {
-        const username = $('#login-user').val().trim() || 'admin';
+        const username = $('#login-user').val().trim();
         const password = $('#login-pass').val();
         const remember = $('#login-remember').is(':checked');
 
+        if (!username) {
+            showToast('⚠️ 请输入 WebUI 登录用户名', false);
+            $('#login-user').focus();
+            return;
+        }
+
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
-            if (res === 'Ok.' || res === 'Ok' || res === '') {
+            const respStr = (typeof res === 'string') ? res.trim() : '';
+            if (respStr === 'Ok.' || respStr === 'Ok') {
                 setAuthPassed(true, remember);
                 $('#login-modal').removeClass('forced-login');
                 closeModal('login-modal');
@@ -4083,7 +4090,8 @@ input:checked + .slider:before { transform: translateX(20px); }
                     pollSlowData();
                 }
             } else {
-                showToast('❌ 用户名或密码错误，请重试！', false);
+                showToast('❌ 用户名或密码错误，请检查后重试！', false);
+                $('#login-pass').val('').focus();
             }
         }).fail(function(err) {
             if (err.status === 403 || err.status === 401) {
