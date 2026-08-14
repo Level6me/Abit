@@ -1,54 +1,116 @@
 # 🍏 Apple Torrent Dashboard (Torrent Omni) — WebUI 主题版
 
-这是一个精美的、完全运行在浏览器沙箱中的 **qBittorrent 自定义备用 WebUI 主题（Alternative Web UI）**。
+这是一个精美、轻量、高颜值的 **qBittorrent 自定义备用 WebUI 主题（Alternative Web UI）**，采用现代化 Apple iOS / macOS 磨砂毛玻璃视觉设计风格。
 
-通过与 qBittorrent 原生 WebAPI 直接通信，它完全剥离了 Python 后端服务。您不再需要部署 Flask、Gunicorn 或运行后台进程，只需将其下载并指定给 qBittorrent，即可替换原版过时的 WebUI。
+直接与 qBittorrent 原生 WebAPI 通信，完全运行在浏览器沙箱中。无需配置 Python/Node 后端服务，即开即用。
 
 ---
 
-## 📐 系统架构 (纯前端)
+## 📐 系统架构与目录结构
 
-```mermaid
-graph LR
-    Browser[用户浏览器] -->|加载静态网页| index.html[内置 JS & CSS 控制逻辑]
-    index.html -->|直接请求 WebAPI| qBt[qBittorrent 服务本身]
+本项目采用**模块化开发源码（`src/`）与单文件零依赖发布产物（`dist/`）分离**的标准工程架构：
+
+```
+apple_torrent_dashboard/
+├── src/                    # 源码开发目录 (Modular Source Code)
+│   ├── index.html          # 开发态模板入口 (Development Template)
+│   ├── css/                # 模块化样式表 (Modular CSS)
+│   │   ├── variables.css   # 主题色板与 CSS 变量 (Variables & Themes)
+│   │   ├── base.css        # 基础重置与排版 (Reset & Typography)
+│   │   ├── layout.css      # 栅格布局与容器 (Grid & Containers)
+│   │   ├── components.css  # 通用组件与徽标 (Buttons, Cards, Toasts)
+│   │   ├── torrents.css    # 种子卡片/列表与操作栏 (Torrents UI)
+│   │   ├── dock.css        # 底部毛玻璃导航 Dock 栏 (Bottom Dock UI)
+│   │   ├── modal.css       # 模态弹窗与详情抽屉 (Modals & Drawers)
+│   │   └── style.css       # CSS 模块统一引用入口
+│   └── js/                 # 模块化逻辑脚本 (Modular JavaScript)
+│       ├── constants.js    # 全局常量与预设插件库 (Constants & Presets)
+│       ├── state.js        # 全局状态管理 (State Management)
+│       ├── utils.js        # 格式化/防抖/XSS安全工具 (Helpers & Sanitizers)
+│       ├── api.js          # API 请求拦截与认证 (API Layer)
+│       ├── chart.js        # 实时网络速率折线图 (Speed Chart)
+│       ├── torrents.js     # 种子管理/过滤/详情/操作 (Torrent Logic)
+│       ├── search.js       # 资源全网检索与插件系统 (Search & Plugins)
+│       ├── rss.js          # RSS 订阅与自动下载规则 (RSS Engine)
+│       ├── system.js       # 系统偏好/分类/Tracker/日志 (System & Logs)
+│       ├── ui.js           # 页面导航/主题/快捷键/拖拽 (UI & Interactivity)
+│       └── app.js          # 主入口与自适应轮询调度 (App Entry & Polling)
+├── scripts/                # 构建与开发自动化工具 (Build & Dev Tooling)
+│   ├── build.js            # 零依赖一键打包构建脚本 (Zero-dep Bundler)
+│   ├── dev.js              # 零依赖本地轻量开发服务器 (Local Dev Server)
+│   └── check.js            # 模块语法与工程完整性检查 (Integrity Checker)
+├── dist/                   # 编译产物目录 (Production Distribution)
+│   ├── index.html          # 单文件独立完整版 (Standalone Single-File WebUI)
+│   ├── css/style.css       # 合并打包后的全量样式 (Bundled CSS)
+│   └── js/app.bundle.js    # 合并打包后的全量逻辑 (Bundled JS)
+├── public/                 # 静态部署同步目录 (Static Hosting)
+│   └── index.html          # 同步最新构建产物
+├── index.html              # 根目录运行入口 (qBittorrent 直接指定根目录即用)
+├── package.json            # NPM 项目工程描述文件
+├── .gitignore              # Git 忽略规则
+└── README.md               # 项目开发与部署指南
 ```
 
 ---
 
-## 🌟 主题模式的特性
+## 🌟 核心特性
 
-1. **零资源开销**：完全由浏览器解析运行，服务器不需要开启任何额外的 Python 后台程序或占用额外端口，极为省电和省资源。
+1. **零资源开销**：完全由浏览器解析运行，服务器不需要开启任何额外的 Python/Node 后台程序或占用额外端口。
 2. **纯原生 API 驱动**：所有操作（获取种子、添加磁力、限速设置、RSS 订阅规则编辑、全网检索）全部通过浏览器直接发请求给 qBittorrent 原生接口。
 3. **数据展现优化**：
-   - 将原有的主机负载卡片，重构为 qBittorrent 本身的 **网络连接状态**、**DHT 节点数** 监控。
-   - 流量曲线图自动对接 qBittorrent 自身的**实时上传/下载速率趋势**。
-   - 磁盘监控卡片自动转换为显示 qBittorrent 下载路径的**可用剩余空间**与**历史总传输量数据**。
-4. **彻底免转义安全机制**：在文件详情（Files Tree）、Tracker 及 Peers 的渲染上，全部基于 JSON 数据绑定，避免任何可能引发 JS 语法报错或 XSS 注入的字符串拼接。
+   - qBittorrent 网络连接状态、DHT 节点数实时监控。
+   - 实时上传/下载速率平滑曲线趋势图。
+   - 磁盘可用空间与历史总传输量统计。
+4. **现代化交互体验**：
+   - 🌓 自动/浅色/深色模式切换。
+   - 🗂️ 网格卡片（Card Grid）与紧凑表格（Table View）双视图无缝切换。
+   - ⚡ 批量管理操作、安全确认弹窗、右键与拖拽添加种子文件、剪贴板磁力识别。
+   - ⌨️ 快捷键支持（`1-5` 切换导航，`/` 或 `F` 搜索任务，`N` 新建任务，`Esc` 关闭弹窗）。
 
 ---
 
-## 🚀 极速安装与部署步骤
+## 🛠️ 本地开发与构建命令
 
-由于剥离了后端，部署极其简单：
+项目内置了纯 Node.js 驱动的零依赖开发与构建工具链：
+
+```bash
+# 1. 代码完整性与语法检查
+npm run check
+# 或
+node scripts/check.js
+
+# 2. 启动本地轻量开发服务器（支持 Mock 离线预览与代理至真实 qBt）
+npm run dev
+# 或代理到真实 qBittorrent 服务:
+node scripts/dev.js --qbt=http://127.0.0.1:8080
+
+# 3. 执行生产构建（自动打包 CSS/JS 并同步产物）
+npm run build
+# 或
+node scripts/build.js
+```
+
+---
+
+## 🚀 qBittorrent 部署配置
 
 1. **获取代码**：
-   将本项目克隆或下载解压到安装了 qBittorrent 的服务器（或任何您能访问到的本地目录）。确保该目录内包含 `index.html`。
+   将本项目克隆或下载到安装了 qBittorrent 的服务器（或任何您能访问到的本地目录）。
 2. **启用备用 Web UI**：
    - 登录您的 qBittorrent 网页控制台。
-   - 点击顶部菜单栏的 **“工具 (Tools)”** -> **“选项 (Options)”**。
+   - 点击顶部菜单栏 **“工具 (Tools)”** -> **“选项 (Options)”**。
    - 切换到 **“Web UI”** 标签页。
    - 勾选 **“使用备用 Web UI (Use alternative Web UI)”**。
-   - 在 **“文件路路径 (Files path)”** 输入框中，填写您存放本项目的**绝对路径**（即包含 `index.html` 的那个文件夹路径，例如 `/home/ubuntu/apple_torrent_dashboard`）。
+   - 在 **“文件路径 (Files path)”** 输入框中，填写您存放本项目的**绝对路径**（例如 `/home/ubuntu/apple_torrent_dashboard` 或其 `dist` 目录）。
 3. **保存并应用**：
-   - 滚动到页面底部，点击 **“保存 (Save)”**。
-   - 刷新您的浏览器页面，即可开始体验精美的苹果风格 Torrent Omni 备用面板！
+   - 点击 **“保存 (Save)”**。
+   - 刷新浏览器页面，即可开始体验精美的苹果风格 Torrent Omni 备用面板！
 
 ---
 
 ## ❓ 常见问题
 
-*   **Q：为什么我访问页面时显示“qBittorrent 离线/未登入”？**
-    *   **A**：主题直接通过当前浏览器的 Session 会话进行 API 通信。若显示离线，请先访问 qBittorrent 默认的 Web 登录接口进行登录，验证通过后刷新页面即可恢复在线。
-*   **Q：此版本支持服务器 CPU 温度和系统负载显示吗？**
-    *   **A**：不支持。由于安全沙箱限制，纯前端主题无法越权访问服务器的底层硬件接口。如果您需要服务器整机负载看板，请使用先前的 Python 后端版本。
+* **Q：为什么访问页面时显示“离线/未登入”？**
+  * **A**：主题直接通过当前浏览器的 Session 会话进行 API 通信。若显示离线，请先访问 qBittorrent 默认的 Web 登录接口进行登录，验证通过后刷新页面即可恢复在线。
+* **Q：修改了 `src/` 中的代码后如何生效？**
+  * **A**：运行 `npm run build` 或 `node scripts/build.js`，脚本会自动将模块化代码合并生成最新的单文件 `dist/index.html` 并同步更新根目录 `index.html`。

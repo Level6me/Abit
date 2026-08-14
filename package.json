@@ -1,0 +1,21 @@
+{
+  "name": "apple-torrent-dashboard",
+  "version": "2.0.0",
+  "description": "A refined, zero-overhead, Apple-styled Alternative WebUI for qBittorrent (Torrent Omni)",
+  "main": "scripts/build.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/dev.js",
+    "dev:dist": "node scripts/dev.js --dist",
+    "check": "node scripts/check.js"
+  },
+  "keywords": [
+    "qbittorrent",
+    "webui",
+    "apple-ui",
+    "alternative-webui",
+    "torrent-dashboard"
+  ],
+  "author": "Level6me",
+  "license": "MIT"
+}
