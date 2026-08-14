@@ -401,22 +401,24 @@
                     </label>
                 </div>
 
-                <div class="grid-3" style="margin-top:10px; margin-bottom:10px;">
-                    <div>
-                        <div class="val-sub" style="margin-bottom:4px;">起始时间</div>
-                        <input class="input-box" type="time" id="pref-schedule-from" value="08:00">
-                    </div>
-                    <div>
-                        <div class="val-sub" style="margin-bottom:4px;">结束时间</div>
-                        <input class="input-box" type="time" id="pref-schedule-to" value="20:00">
-                    </div>
-                    <div>
-                        <div class="val-sub" style="margin-bottom:4px;">生效周期</div>
-                        <select class="select-custom input-box" id="pref-scheduler-days">
-                            <option value="0">每天 (Every Day)</option>
-                            <option value="1">仅工作日 (Mon-Fri)</option>
-                            <option value="2">仅周末 (Sat-Sun)</option>
-                        </select>
+                <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin:10px 0 14px 0; border:1px solid var(--border-subtle);">
+                    <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;">
+                        <div>
+                            <div class="val-sub" style="margin-bottom:6px; font-weight:600;">限速生效时段</div>
+                            <div style="display:inline-flex; align-items:center; gap:8px;">
+                                <input class="input-box-time" type="time" id="pref-schedule-from" value="08:00">
+                                <span style="font-size:12px; color:var(--text-sec); font-weight:700;">➔</span>
+                                <input class="input-box-time" type="time" id="pref-schedule-to" value="20:00">
+                            </div>
+                        </div>
+                        <div style="min-width:140px; flex:1; max-width:220px;">
+                            <div class="val-sub" style="margin-bottom:6px; font-weight:600;">生效周期</div>
+                            <select class="select-custom" id="pref-scheduler-days" style="width:100%; padding:6px 10px; font-size:12px; height:36px;">
+                                <option value="0">每天 (Every Day)</option>
+                                <option value="1">仅工作日 (Mon-Fri)</option>
+                                <option value="2">仅周末 (Sat-Sun)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

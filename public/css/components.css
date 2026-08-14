@@ -111,6 +111,28 @@
     background: var(--card);
 }
 
+.input-box-time {
+    width: 105px;
+    height: 36px;
+    padding: 4px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    text-align: center;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+}
+.input-box-time:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
 .search-box {
     position: relative;
     flex: 1;
