@@ -102,15 +102,6 @@
         });
     }
 
-    async function sha256(text) {
-        if (!text) return '';
-        const encoder = new TextEncoder();
-        const data = encoder.encode(text);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
     function showToast(message, isSuccess = true) {
         const id = 'toast_' + Date.now();
         const icon = isSuccess ? '✅' : '⚠️';
@@ -1666,18 +1657,8 @@
             web_ui_ban_duration: parseInt($('#pref-ban-duration').val()) || 3600
         };
 
-        if (newUsername) {
-            prefs.web_ui_username = newUsername;
-            localStorage.setItem('omni_master_user', newUsername);
-        }
-        if (newPassword) {
-            prefs.web_ui_password = newPassword;
-            if (typeof sha256 === 'function') {
-                sha256(newPassword).then(hash => {
-                    localStorage.setItem('omni_pwd_hash', hash);
-                });
-            }
-        }
+        if (newUsername) prefs.web_ui_username = newUsername;
+        if (newPassword) prefs.web_ui_password = newPassword;
 
         $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
         $.post('/api/v2/transfer/setUploadLimit', { limit: up });
@@ -1894,42 +1875,29 @@
         }, 150);
     }
 
-    async function submitLogin() {
+    function submitLogin() {
         const username = $('#login-user').val().trim();
         const password = $('#login-pass').val();
         const remember = $('#login-remember').is(':checked');
 
         if (!username || !password) {
-            showToast('⚠️ 请完整输入 WebUI 登录用户名与密码', false);
+            showToast('⚠️ 请输入完整的 WebUI 用户名与密码', false);
             if (!username) $('#login-user').focus();
             else $('#login-pass').focus();
             return;
         }
 
-        const inputHash = (typeof sha256 === 'function') ? await sha256(password) : '';
-        const storedHash = localStorage.getItem('omni_pwd_hash');
-        const storedUser = localStorage.getItem('omni_master_user');
+        // 清理旧版可能残留的本地锁
+        localStorage.removeItem('omni_pwd_hash');
+        localStorage.removeItem('omni_master_user');
 
-        // 双重安全守卫：若本地已建立密码哈希特征，密码不符直接阻断，杜绝免密穿透
-        if (storedHash && inputHash) {
-            if (inputHash !== storedHash || (storedUser && username !== storedUser)) {
-                setAuthPassed(false, false);
-                showToast('❌ 用户名或密码错误，请检查后重试！', false);
-                $('#login-pass').val('').focus();
-                return;
-            }
-        }
-
-        $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
-            const respStr = (typeof res === 'string') ? res.trim() : '';
-            if (respStr === 'Ok.' || respStr === 'Ok') {
-                $.get('/api/v2/app/version', function() {
-                    // 若尚未绑定哈希基准，首次认证通过时自动建立安全基准
-                    if (!storedHash && inputHash) {
-                        localStorage.setItem('omni_pwd_hash', inputHash);
-                        localStorage.setItem('omni_master_user', username);
-                    }
-
+        $.ajax({
+            url: '/api/v2/auth/login',
+            type: 'POST',
+            data: { username: username, password: password },
+            success: function(res) {
+                const respStr = String(res || '').trim();
+                if (respStr === 'Ok.' || respStr === 'Ok') {
                     setAuthPassed(true, remember);
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
@@ -1941,22 +1909,20 @@
                         pollFastData();
                         pollSlowData();
                     }
-                }).fail(function() {
+                } else {
                     setAuthPassed(false, false);
-                    showToast('❌ 凭据校验未通过，请重新输入正确的密码', false);
+                    showToast('❌ 用户名或密码错误，请核对后重试！', false);
                     $('#login-pass').val('').focus();
-                });
-            } else {
+                }
+            },
+            error: function(xhr) {
                 setAuthPassed(false, false);
-                showToast('❌ 用户名或密码错误，请检查后重试！', false);
+                if (xhr.status === 403 || xhr.status === 401) {
+                    showToast('❌ 登录失败：用户名/密码不匹配或尝试过多被临时锁定', false);
+                } else {
+                    showToast('❌ 连接 qBittorrent 登录接口失败 (' + xhr.status + ')', false);
+                }
                 $('#login-pass').val('').focus();
-            }
-        }).fail(function(err) {
-            setAuthPassed(false, false);
-            if (err.status === 403 || err.status === 401) {
-                showToast('❌ 登录失败：用户名/密码不匹配或 IP 被限制', false);
-            } else {
-                showToast('❌ 连接 qBittorrent 服务失败，请确认服务已启动', false);
             }
         });
     }
@@ -2136,6 +2102,10 @@
         const now = new Date();
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
+
+        // Clean legacy stale hash keys
+        localStorage.removeItem('omni_pwd_hash');
+        localStorage.removeItem('omni_master_user');
 
         // Strict Auth Gate: In incognito or new session, require explicit login first
         if (!isAuthPassed()) {

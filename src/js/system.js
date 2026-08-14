@@ -145,18 +145,8 @@
             web_ui_ban_duration: parseInt($('#pref-ban-duration').val()) || 3600
         };
 
-        if (newUsername) {
-            prefs.web_ui_username = newUsername;
-            localStorage.setItem('omni_master_user', newUsername);
-        }
-        if (newPassword) {
-            prefs.web_ui_password = newPassword;
-            if (typeof sha256 === 'function') {
-                sha256(newPassword).then(hash => {
-                    localStorage.setItem('omni_pwd_hash', hash);
-                });
-            }
-        }
+        if (newUsername) prefs.web_ui_username = newUsername;
+        if (newPassword) prefs.web_ui_password = newPassword;
 
         $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
         $.post('/api/v2/transfer/setUploadLimit', { limit: up });

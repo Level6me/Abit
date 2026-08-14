@@ -113,6 +113,10 @@
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
+        // Clean legacy stale hash keys
+        localStorage.removeItem('omni_pwd_hash');
+        localStorage.removeItem('omni_master_user');
+
         // Strict Auth Gate: In incognito or new session, require explicit login first
         if (!isAuthPassed()) {
             $('#qbt-dot').addClass('offline');
