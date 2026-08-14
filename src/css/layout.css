@@ -3,13 +3,15 @@
     margin: 8px 0 18px 0;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+    min-height: 52px;
 }
 .header-left {
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 .date-badge {
     font-size: 12px;
@@ -30,6 +32,7 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    margin-left: auto;
 }
 
 .subtitle {

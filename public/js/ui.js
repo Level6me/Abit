@@ -61,7 +61,7 @@
         $(btn).addClass('active');
         $('#page-title').text(title);
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, 0);
 
         if (pageId === 'p-search') fetchSearchPlugins();
         if (pageId === 'p-rss') fetchRssData();
@@ -110,24 +110,51 @@
     }
 
     // --- Authentication & Login Dialog ---
-    function openLoginModal() { openModal('login-modal'); }
+    function openLoginModal(isForced) {
+        if (isForced) {
+            $('#login-modal').addClass('forced-login');
+        } else {
+            $('#login-modal').removeClass('forced-login');
+        }
+        openModal('login-modal');
+        setTimeout(() => {
+            if (!$('#login-user').val()) $('#login-user').focus();
+            else $('#login-pass').focus();
+        }, 150);
+    }
 
     function submitLogin() {
         const username = $('#login-user').val().trim() || 'admin';
         const password = $('#login-pass').val();
 
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
-            if (res === 'Ok.' || res === 'Ok') {
+            if (res === 'Ok.' || res === 'Ok' || res === '') {
+                $('#login-modal').removeClass('forced-login');
                 closeModal('login-modal');
                 $('#login-pass').val('');
-                showToast('已成功登入 qBittorrent 面板');
+                showToast('✅ 身份验证通过，已成功登录！');
                 pollFastData();
                 pollSlowData();
             } else {
-                showToast('登录失败，请检查用户名或密码！', false);
+                showToast('❌ 用户名或密码错误，请重试！', false);
             }
+        }).fail(function(err) {
+            if (err.status === 403 || err.status === 401) {
+                showToast('❌ 登录失败：用户名/密码不匹配或 IP 被限制', false);
+            } else {
+                showToast('❌ 连接 qBittorrent 服务失败，请确认服务已启动', false);
+            }
+        });
+    }
+
+    function logout() {
+        $.post('/api/v2/auth/logout', function() {
+            showToast('已退出登录');
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('已注销/未登录');
+            openLoginModal(true);
         }).fail(function() {
-            showToast('连接认证失败，请确认 qBittorrent 服务已正常启动。', false);
+            openLoginModal(true);
         });
     }
 

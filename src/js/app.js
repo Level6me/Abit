@@ -71,9 +71,12 @@
         initChart();
         initDragAndDrop();
 
-        // Backdrop click to close modals
+        // Backdrop click to close modals (except forced login)
         $(document).on('click', '.modal-overlay', function(e) {
             if (e.target === this) {
+                if (this.id === 'login-modal' && $(this).hasClass('forced-login')) {
+                    return;
+                }
                 closeModal(this.id);
             }
         });
@@ -83,6 +86,9 @@
             if (e.key === 'Escape') {
                 const activeModal = $('.modal-overlay.active').last();
                 if (activeModal.length > 0) {
+                    if (activeModal.attr('id') === 'login-modal' && activeModal.hasClass('forced-login')) {
+                        return;
+                    }
                     closeModal(activeModal.attr('id'));
                 }
             } else if (!$(e.target).is('input, textarea, select')) {
@@ -102,27 +108,41 @@
             }
         });
 
-        // Fetch version
-        $.get('/api/v2/app/version', function(ver) {
-            qbtVersion = ver;
-            $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
-        });
-        $.get('/api/v2/app/webapiVersion', function(ver) {
-            webapiVersion = ver;
-            $('#sys-webapi-version-text').text(`v${ver}`);
-        });
-
         // Set Date
         const now = new Date();
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        // Initial Data Poll
-        pollFastData();
-        pollSlowData();
+        // Initial Auth Verification & Version Loading
+        $.get('/api/v2/app/version', function(ver) {
+            qbtVersion = ver;
+            $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
+            $('#login-modal').removeClass('forced-login');
 
-        // High frequency (1.8s) only for lightweight transfer rates & torrents
-        fastPollTimer = setInterval(pollFastData, 1800);
-        // Low frequency (15s) for static categories & preferences
-        slowPollTimer = setInterval(pollSlowData, 15000);
+            $.get('/api/v2/app/webapiVersion', function(wver) {
+                webapiVersion = wver;
+                $('#sys-webapi-version-text').text(`v${wver}`);
+            });
+
+            // Initial Data Poll
+            pollFastData();
+            pollSlowData();
+
+            // Setup recurring timers
+            if (fastPollTimer) clearInterval(fastPollTimer);
+            if (slowPollTimer) clearInterval(slowPollTimer);
+            fastPollTimer = setInterval(pollFastData, 1800);
+            slowPollTimer = setInterval(pollSlowData, 15000);
+        }).fail(function(err) {
+            if (err.status === 403 || err.status === 401) {
+                $('#qbt-dot').addClass('offline');
+                $('#qbt-status-text').text('未登录/待验证');
+                openLoginModal(true);
+            } else {
+                pollFastData();
+                pollSlowData();
+                fastPollTimer = setInterval(pollFastData, 1800);
+                slowPollTimer = setInterval(pollSlowData, 15000);
+            }
+        });
     });

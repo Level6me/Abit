@@ -1578,6 +1578,7 @@
             if (prefs.max_ratio_act !== undefined) $('#pref-max-ratio-act').val(prefs.max_ratio_act);
 
             // WebUI
+            if (!$('#pref-webui-username').is(':focus')) $('#pref-webui-username').val(prefs.web_ui_username || '');
             if (!$('#pref-webui-port').is(':focus')) $('#pref-webui-port').val(prefs.web_ui_port || 8080);
             if (!$('#pref-session-timeout').is(':focus')) $('#pref-session-timeout').val(prefs.web_ui_session_timeout ? Math.round(prefs.web_ui_session_timeout / 60) : 60);
             $('#pref-bypass-local-auth').prop('checked', !!prefs.bypass_local_auth);
@@ -1594,6 +1595,14 @@
 
         const fromTime = ($('#pref-schedule-from').val() || '08:00').split(':');
         const toTime = ($('#pref-schedule-to').val() || '20:00').split(':');
+
+        const newUsername = $('#pref-webui-username').val().trim();
+        const newPassword = $('#pref-webui-password').val();
+        const confirmPassword = $('#pref-webui-password-confirm').val();
+
+        if (newPassword && newPassword !== confirmPassword) {
+            return showToast('❌ 两次输入的新密码不一致，请重新核对！', false);
+        }
 
         const prefs = {
             // Speed & limits
@@ -1647,10 +1656,15 @@
             web_ui_ban_duration: parseInt($('#pref-ban-duration').val()) || 3600
         };
 
+        if (newUsername) prefs.web_ui_username = newUsername;
+        if (newPassword) prefs.web_ui_password = newPassword;
+
         $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
         $.post('/api/v2/transfer/setUploadLimit', { limit: up });
         $.post('/api/v2/app/setPreferences', { json: JSON.stringify(prefs) }, function() {
-            showToast('✅ 系统与速率配置已全量更新保存！');
+            $('#pref-webui-password').val('');
+            $('#pref-webui-password-confirm').val('');
+            showToast('✅ 系统配置与安全凭据已全量保存！');
             loadAllSystemPreferences();
         }).fail(function() {
             showToast('保存配置失败，请检查网络或权限', false);
@@ -1779,7 +1793,7 @@
         $(btn).addClass('active');
         $('#page-title').text(title);
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, 0);
 
         if (pageId === 'p-search') fetchSearchPlugins();
         if (pageId === 'p-rss') fetchRssData();
@@ -1828,24 +1842,51 @@
     }
 
     // --- Authentication & Login Dialog ---
-    function openLoginModal() { openModal('login-modal'); }
+    function openLoginModal(isForced) {
+        if (isForced) {
+            $('#login-modal').addClass('forced-login');
+        } else {
+            $('#login-modal').removeClass('forced-login');
+        }
+        openModal('login-modal');
+        setTimeout(() => {
+            if (!$('#login-user').val()) $('#login-user').focus();
+            else $('#login-pass').focus();
+        }, 150);
+    }
 
     function submitLogin() {
         const username = $('#login-user').val().trim() || 'admin';
         const password = $('#login-pass').val();
 
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
-            if (res === 'Ok.' || res === 'Ok') {
+            if (res === 'Ok.' || res === 'Ok' || res === '') {
+                $('#login-modal').removeClass('forced-login');
                 closeModal('login-modal');
                 $('#login-pass').val('');
-                showToast('已成功登入 qBittorrent 面板');
+                showToast('✅ 身份验证通过，已成功登录！');
                 pollFastData();
                 pollSlowData();
             } else {
-                showToast('登录失败，请检查用户名或密码！', false);
+                showToast('❌ 用户名或密码错误，请重试！', false);
             }
+        }).fail(function(err) {
+            if (err.status === 403 || err.status === 401) {
+                showToast('❌ 登录失败：用户名/密码不匹配或 IP 被限制', false);
+            } else {
+                showToast('❌ 连接 qBittorrent 服务失败，请确认服务已启动', false);
+            }
+        });
+    }
+
+    function logout() {
+        $.post('/api/v2/auth/logout', function() {
+            showToast('已退出登录');
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('已注销/未登录');
+            openLoginModal(true);
         }).fail(function() {
-            showToast('连接认证失败，请确认 qBittorrent 服务已正常启动。', false);
+            openLoginModal(true);
         });
     }
 
@@ -1971,9 +2012,12 @@
         initChart();
         initDragAndDrop();
 
-        // Backdrop click to close modals
+        // Backdrop click to close modals (except forced login)
         $(document).on('click', '.modal-overlay', function(e) {
             if (e.target === this) {
+                if (this.id === 'login-modal' && $(this).hasClass('forced-login')) {
+                    return;
+                }
                 closeModal(this.id);
             }
         });
@@ -1983,6 +2027,9 @@
             if (e.key === 'Escape') {
                 const activeModal = $('.modal-overlay.active').last();
                 if (activeModal.length > 0) {
+                    if (activeModal.attr('id') === 'login-modal' && activeModal.hasClass('forced-login')) {
+                        return;
+                    }
                     closeModal(activeModal.attr('id'));
                 }
             } else if (!$(e.target).is('input, textarea, select')) {
@@ -2002,27 +2049,41 @@
             }
         });
 
-        // Fetch version
-        $.get('/api/v2/app/version', function(ver) {
-            qbtVersion = ver;
-            $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
-        });
-        $.get('/api/v2/app/webapiVersion', function(ver) {
-            webapiVersion = ver;
-            $('#sys-webapi-version-text').text(`v${ver}`);
-        });
-
         // Set Date
         const now = new Date();
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        // Initial Data Poll
-        pollFastData();
-        pollSlowData();
+        // Initial Auth Verification & Version Loading
+        $.get('/api/v2/app/version', function(ver) {
+            qbtVersion = ver;
+            $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
+            $('#login-modal').removeClass('forced-login');
 
-        // High frequency (1.8s) only for lightweight transfer rates & torrents
-        fastPollTimer = setInterval(pollFastData, 1800);
-        // Low frequency (15s) for static categories & preferences
-        slowPollTimer = setInterval(pollSlowData, 15000);
+            $.get('/api/v2/app/webapiVersion', function(wver) {
+                webapiVersion = wver;
+                $('#sys-webapi-version-text').text(`v${wver}`);
+            });
+
+            // Initial Data Poll
+            pollFastData();
+            pollSlowData();
+
+            // Setup recurring timers
+            if (fastPollTimer) clearInterval(fastPollTimer);
+            if (slowPollTimer) clearInterval(slowPollTimer);
+            fastPollTimer = setInterval(pollFastData, 1800);
+            slowPollTimer = setInterval(pollSlowData, 15000);
+        }).fail(function(err) {
+            if (err.status === 403 || err.status === 401) {
+                $('#qbt-dot').addClass('offline');
+                $('#qbt-status-text').text('未登录/待验证');
+                openLoginModal(true);
+            } else {
+                pollFastData();
+                pollSlowData();
+                fastPollTimer = setInterval(pollFastData, 1800);
+                slowPollTimer = setInterval(pollSlowData, 15000);
+            }
+        });
     });

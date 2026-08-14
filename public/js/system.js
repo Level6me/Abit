@@ -67,6 +67,7 @@
             if (prefs.max_ratio_act !== undefined) $('#pref-max-ratio-act').val(prefs.max_ratio_act);
 
             // WebUI
+            if (!$('#pref-webui-username').is(':focus')) $('#pref-webui-username').val(prefs.web_ui_username || '');
             if (!$('#pref-webui-port').is(':focus')) $('#pref-webui-port').val(prefs.web_ui_port || 8080);
             if (!$('#pref-session-timeout').is(':focus')) $('#pref-session-timeout').val(prefs.web_ui_session_timeout ? Math.round(prefs.web_ui_session_timeout / 60) : 60);
             $('#pref-bypass-local-auth').prop('checked', !!prefs.bypass_local_auth);
@@ -83,6 +84,14 @@
 
         const fromTime = ($('#pref-schedule-from').val() || '08:00').split(':');
         const toTime = ($('#pref-schedule-to').val() || '20:00').split(':');
+
+        const newUsername = $('#pref-webui-username').val().trim();
+        const newPassword = $('#pref-webui-password').val();
+        const confirmPassword = $('#pref-webui-password-confirm').val();
+
+        if (newPassword && newPassword !== confirmPassword) {
+            return showToast('❌ 两次输入的新密码不一致，请重新核对！', false);
+        }
 
         const prefs = {
             // Speed & limits
@@ -136,10 +145,15 @@
             web_ui_ban_duration: parseInt($('#pref-ban-duration').val()) || 3600
         };
 
+        if (newUsername) prefs.web_ui_username = newUsername;
+        if (newPassword) prefs.web_ui_password = newPassword;
+
         $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
         $.post('/api/v2/transfer/setUploadLimit', { limit: up });
         $.post('/api/v2/app/setPreferences', { json: JSON.stringify(prefs) }, function() {
-            showToast('✅ 系统与速率配置已全量更新保存！');
+            $('#pref-webui-password').val('');
+            $('#pref-webui-password-confirm').val('');
+            showToast('✅ 系统配置与安全凭据已全量保存！');
             loadAllSystemPreferences();
         }).fail(function() {
             showToast('保存配置失败，请检查网络或权限', false);

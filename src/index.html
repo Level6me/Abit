@@ -639,29 +639,48 @@
 
             <!-- 5. WebUI & Security Card -->
             <div class="card">
-                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">🛡️ WebUI 访问与安全</div>
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">🛡️ WebUI 账户密码与安全配置</div>
+                
+                <div style="background:var(--card-sec); border-radius:14px; padding:14px; margin-bottom:14px; border:1px solid var(--border-subtle);">
+                    <div style="font-weight:700; font-size:13px; margin-bottom:8px; color:var(--accent);">🔐 修改 WebUI 登录账户与凭据</div>
+                    <div style="margin-bottom:10px;">
+                        <div class="val-sub" style="margin-bottom:4px;">WebUI 登录用户名</div>
+                        <input class="input-box" id="pref-webui-username" placeholder="留空则保持当前用户名 (如: admin)">
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <div class="val-sub" style="margin-bottom:4px;">新密码 (留空则不修改密码)</div>
+                            <input class="input-box" id="pref-webui-password" type="password" placeholder="输入新密码">
+                        </div>
+                        <div>
+                            <div class="val-sub" style="margin-bottom:4px;">确认新密码</div>
+                            <input class="input-box" id="pref-webui-password-confirm" type="password" placeholder="再次输入新密码">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid-2" style="margin-bottom:10px;">
                     <div>
-                        <div class="val-sub" style="margin-bottom:4px;">WebUI 端口</div>
+                        <div class="val-sub" style="margin-bottom:4px;">WebUI 监听端口</div>
                         <input class="input-box" id="pref-webui-port" type="number" placeholder="例如: 8080">
                     </div>
                     <div>
                         <div class="val-sub" style="margin-bottom:4px;">会话超时时间 (分钟)</div>
-                        <input class="input-box" id="pref-session-timeout" type="number" placeholder="默认: 3600 秒">
+                        <input class="input-box" id="pref-session-timeout" type="number" placeholder="默认: 60 分钟">
                     </div>
                 </div>
 
                 <div class="setting-row">
                     <div>
-                        <div class="setting-label">对本地子网客户端跳过身份验证</div>
-                        <div class="setting-desc">同一局域网访问无需反复输入密码</div>
+                        <div class="setting-label">对本地主机及子网客户端跳过身份验证</div>
+                        <div class="setting-desc">开启后局域网访问无需输入密码；若需强制登录请关闭此项</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="pref-bypass-local-auth">
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div class="grid-2" style="margin-top:10px;">
+                <div class="grid-2" style="margin-top:10px; margin-bottom:14px;">
                     <div>
                         <div class="val-sub" style="margin-bottom:4px;">登录失败尝试封禁次数</div>
                         <input class="input-box" id="pref-ban-count" type="number" placeholder="例如: 5">
@@ -670,6 +689,12 @@
                         <div class="val-sub" style="margin-bottom:4px;">IP 封禁时长 (秒)</div>
                         <input class="input-box" id="pref-ban-duration" type="number" placeholder="例如: 3600">
                     </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end;">
+                    <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="logout()">
+                        🚪 退出当前登录 (Logout)
+                    </button>
                 </div>
             </div>
 
@@ -956,12 +981,20 @@
 <!-- 9. Auth Login Modal (Auto pops up when session expires) -->
 <div class="modal-overlay" id="login-modal">
     <div class="modal-card" style="max-width:400px; text-align:center;">
-        <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+        <div style="font-size:36px; margin-bottom:8px;">🔒</div>
         <div style="font-size:18px; font-weight:800; margin-bottom:4px;">qBittorrent 身份验证</div>
-        <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;">会话已过期或未登录，请输入凭据登录：</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;" id="login-modal-sub">
+            请输入 qBittorrent WebUI 用户名与密码：
+        </div>
         <input class="input-box" id="login-user" placeholder="用户名 (默认: admin)" style="margin-bottom:10px;">
-        <input class="input-box" type="password" id="login-pass" placeholder="密码" style="margin-bottom:16px;" onkeydown="if(event.key==='Enter') submitLogin();">
-        <button class="btn w-full" onclick="submitLogin()">登录进入面板</button>
+        <input class="input-box" type="password" id="login-pass" placeholder="密码" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') submitLogin();">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:12px; color:var(--text-sec);">
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="login-remember" checked> 记住凭据
+            </label>
+            <span style="font-size:11px; opacity:0.8;">默认密码可查阅日志</span>
+        </div>
+        <button class="btn w-full" style="padding:12px;" onclick="submitLogin()">登录进入面板</button>
     </div>
 </div>
 
