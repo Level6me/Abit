@@ -4069,31 +4069,40 @@ input:checked + .slider:before { transform: translateX(20px); }
         const password = $('#login-pass').val();
         const remember = $('#login-remember').is(':checked');
 
-        if (!username) {
-            showToast('⚠️ 请输入 WebUI 登录用户名', false);
-            $('#login-user').focus();
+        if (!username || !password) {
+            showToast('⚠️ 请完整输入 WebUI 登录用户名与密码', false);
+            if (!username) $('#login-user').focus();
+            else $('#login-pass').focus();
             return;
         }
 
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
             const respStr = (typeof res === 'string') ? res.trim() : '';
             if (respStr === 'Ok.' || respStr === 'Ok') {
-                setAuthPassed(true, remember);
-                $('#login-modal').removeClass('forced-login');
-                closeModal('login-modal');
-                $('#login-pass').val('');
-                showToast('✅ 身份验证通过，已成功登录！');
-                if (typeof startAuthenticatedApp === 'function') {
-                    startAuthenticatedApp();
-                } else {
-                    pollFastData();
-                    pollSlowData();
-                }
+                $.get('/api/v2/app/version', function() {
+                    setAuthPassed(true, remember);
+                    $('#login-modal').removeClass('forced-login');
+                    closeModal('login-modal');
+                    $('#login-pass').val('');
+                    showToast('✅ 身份验证通过，已成功登录！');
+                    if (typeof startAuthenticatedApp === 'function') {
+                        startAuthenticatedApp();
+                    } else {
+                        pollFastData();
+                        pollSlowData();
+                    }
+                }).fail(function() {
+                    setAuthPassed(false, false);
+                    showToast('❌ 凭据校验未通过，请重新输入正确的密码', false);
+                    $('#login-pass').val('').focus();
+                });
             } else {
+                setAuthPassed(false, false);
                 showToast('❌ 用户名或密码错误，请检查后重试！', false);
                 $('#login-pass').val('').focus();
             }
         }).fail(function(err) {
+            setAuthPassed(false, false);
             if (err.status === 403 || err.status === 401) {
                 showToast('❌ 登录失败：用户名/密码不匹配或 IP 被限制', false);
             } else {
