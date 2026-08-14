@@ -2149,7 +2149,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;" id="login-modal-sub">
             请输入 qBittorrent WebUI 用户名与密码：
         </div>
-        <input class="input-box" id="login-user" placeholder="用户名 (默认: admin)" style="margin-bottom:10px;">
+        <input class="input-box" id="login-user" placeholder="用户名 (默认: admin)" style="margin-bottom:10px;" onkeydown="if(event.key==='Enter') submitLogin();">
         <input class="input-box" type="password" id="login-pass" placeholder="密码" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') submitLogin();">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:12px; color:var(--text-sec);">
             <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
