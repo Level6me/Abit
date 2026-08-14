@@ -142,7 +142,7 @@
         }, 150);
     }
 
-    function submitLogin() {
+    async function submitLogin() {
         const username = $('#login-user').val().trim();
         const password = $('#login-pass').val();
         const remember = $('#login-remember').is(':checked');
@@ -154,10 +154,30 @@
             return;
         }
 
+        const inputHash = (typeof sha256 === 'function') ? await sha256(password) : '';
+        const storedHash = localStorage.getItem('omni_pwd_hash');
+        const storedUser = localStorage.getItem('omni_master_user');
+
+        // 双重安全守卫：若本地已建立密码哈希特征，密码不符直接阻断，杜绝免密穿透
+        if (storedHash && inputHash) {
+            if (inputHash !== storedHash || (storedUser && username !== storedUser)) {
+                setAuthPassed(false, false);
+                showToast('❌ 用户名或密码错误，请检查后重试！', false);
+                $('#login-pass').val('').focus();
+                return;
+            }
+        }
+
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
             const respStr = (typeof res === 'string') ? res.trim() : '';
             if (respStr === 'Ok.' || respStr === 'Ok') {
                 $.get('/api/v2/app/version', function() {
+                    // 若尚未绑定哈希基准，首次认证通过时自动建立安全基准
+                    if (!storedHash && inputHash) {
+                        localStorage.setItem('omni_pwd_hash', inputHash);
+                        localStorage.setItem('omni_master_user', username);
+                    }
+
                     setAuthPassed(true, remember);
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');

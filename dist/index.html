@@ -2291,6 +2291,15 @@ input:checked + .slider:before { transform: translateX(20px); }
         });
     }
 
+    async function sha256(text) {
+        if (!text) return '';
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
     function showToast(message, isSuccess = true) {
         const id = 'toast_' + Date.now();
         const icon = isSuccess ? '✅' : '⚠️';
@@ -3846,8 +3855,18 @@ input:checked + .slider:before { transform: translateX(20px); }
             web_ui_ban_duration: parseInt($('#pref-ban-duration').val()) || 3600
         };
 
-        if (newUsername) prefs.web_ui_username = newUsername;
-        if (newPassword) prefs.web_ui_password = newPassword;
+        if (newUsername) {
+            prefs.web_ui_username = newUsername;
+            localStorage.setItem('omni_master_user', newUsername);
+        }
+        if (newPassword) {
+            prefs.web_ui_password = newPassword;
+            if (typeof sha256 === 'function') {
+                sha256(newPassword).then(hash => {
+                    localStorage.setItem('omni_pwd_hash', hash);
+                });
+            }
+        }
 
         $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
         $.post('/api/v2/transfer/setUploadLimit', { limit: up });
@@ -4064,7 +4083,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         }, 150);
     }
 
-    function submitLogin() {
+    async function submitLogin() {
         const username = $('#login-user').val().trim();
         const password = $('#login-pass').val();
         const remember = $('#login-remember').is(':checked');
@@ -4076,10 +4095,30 @@ input:checked + .slider:before { transform: translateX(20px); }
             return;
         }
 
+        const inputHash = (typeof sha256 === 'function') ? await sha256(password) : '';
+        const storedHash = localStorage.getItem('omni_pwd_hash');
+        const storedUser = localStorage.getItem('omni_master_user');
+
+        // 双重安全守卫：若本地已建立密码哈希特征，密码不符直接阻断，杜绝免密穿透
+        if (storedHash && inputHash) {
+            if (inputHash !== storedHash || (storedUser && username !== storedUser)) {
+                setAuthPassed(false, false);
+                showToast('❌ 用户名或密码错误，请检查后重试！', false);
+                $('#login-pass').val('').focus();
+                return;
+            }
+        }
+
         $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
             const respStr = (typeof res === 'string') ? res.trim() : '';
             if (respStr === 'Ok.' || respStr === 'Ok') {
                 $.get('/api/v2/app/version', function() {
+                    // 若尚未绑定哈希基准，首次认证通过时自动建立安全基准
+                    if (!storedHash && inputHash) {
+                        localStorage.setItem('omni_pwd_hash', inputHash);
+                        localStorage.setItem('omni_master_user', username);
+                    }
+
                     setAuthPassed(true, remember);
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
