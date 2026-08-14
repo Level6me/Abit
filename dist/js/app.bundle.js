@@ -1659,7 +1659,11 @@
         };
 
         if (newUsername) prefs.web_ui_username = newUsername;
-        if (newPassword) prefs.web_ui_password = newPassword;
+        if (newPassword) {
+            prefs.web_ui_password = newPassword;
+            prefs.bypass_auth_subnet_whitelist_enabled = false;
+            prefs.bypass_local_auth = false;
+        }
 
         $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
         $.post('/api/v2/transfer/setUploadLimit', { limit: up });
