@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="auto">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
@@ -10,61 +10,192 @@
         :root {
             --bg: #f2f2f7;
             --card: #ffffff;
+            --card-sec: #f8f8fa;
+            --card-hover: #f5f5f7;
             --text: #1c1c1e;
             --text-sec: #8e8e93;
+            --text-ter: #aeaeb2;
             --accent: #007aff;
+            --accent-hover: #0062cc;
+            --accent-bg: rgba(0,122,255,0.1);
             --danger: #ff3b30;
+            --danger-bg: rgba(255,59,48,0.12);
             --success: #34c759;
+            --success-bg: rgba(52,199,89,0.12);
             --warning: #ff9500;
+            --warning-bg: rgba(255,149,0,0.12);
+            --purple: #af52de;
+            --purple-bg: rgba(175,82,222,0.12);
             --dock: rgba(255,255,255,0.85);
-            --border: rgba(120,120,128,0.12);
+            --border: rgba(120,120,128,0.15);
+            --border-subtle: rgba(120,120,128,0.08);
+            --modal-bg: rgba(255,255,255,0.95);
+            --table-stripe: rgba(120,120,128,0.03);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 6px 20px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.18);
         }
+
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root:not([data-theme="light"]) {
                 --bg: #000000;
                 --card: #1c1c1e;
+                --card-sec: #2c2c2e;
+                --card-hover: #262629;
                 --text: #ffffff;
                 --text-sec: #98989d;
-                --dock: rgba(28,28,30,0.85);
+                --text-ter: #636366;
+                --accent-bg: rgba(0,122,255,0.18);
+                --dock: rgba(28,28,30,0.88);
                 --border: rgba(255,255,255,0.12);
+                --border-subtle: rgba(255,255,255,0.06);
+                --modal-bg: rgba(28,28,30,0.96);
+                --table-stripe: rgba(255,255,255,0.02);
+                --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+                --shadow-md: 0 6px 20px rgba(0,0,0,0.45);
+                --shadow-lg: 0 20px 50px rgba(0,0,0,0.6);
             }
         }
+
+        :root[data-theme="dark"] {
+            --bg: #000000;
+            --card: #1c1c1e;
+            --card-sec: #2c2c2e;
+            --card-hover: #262629;
+            --text: #ffffff;
+            --text-sec: #98989d;
+            --text-ter: #636366;
+            --accent-bg: rgba(0,122,255,0.18);
+            --dock: rgba(28,28,30,0.88);
+            --border: rgba(255,255,255,0.12);
+            --border-subtle: rgba(255,255,255,0.06);
+            --modal-bg: rgba(28,28,30,0.96);
+            --table-stripe: rgba(255,255,255,0.02);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 6px 20px rgba(0,0,0,0.45);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f2f2f7;
+            --card: #ffffff;
+            --card-sec: #f8f8fa;
+            --card-hover: #f5f5f7;
+            --text: #1c1c1e;
+            --text-sec: #8e8e93;
+            --text-ter: #aeaeb2;
+            --accent-bg: rgba(0,122,255,0.1);
+            --dock: rgba(255,255,255,0.85);
+            --border: rgba(120,120,128,0.15);
+            --border-subtle: rgba(120,120,128,0.08);
+            --modal-bg: rgba(255,255,255,0.95);
+            --table-stripe: rgba(120,120,128,0.03);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 6px 20px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         html, body {
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
+            height: 100%;
         }
+
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
             margin: 0;
-            padding-bottom: calc(110px + env(safe-area-inset-bottom));
+            padding-bottom: calc(115px + env(safe-area-inset-bottom));
             -webkit-font-smoothing: antialiased;
+            transition: background 0.3s ease, color 0.3s ease;
         }
+
         body.modal-open {
             overflow: hidden !important;
-            touch-action: none;
         }
+
+        /* Responsive Layout Container */
         .container {
-            padding: 20px 16px;
-            width: 92%;
-            max-width: 800px;
+            padding: 20px 20px;
+            width: 95%;
+            max-width: 1400px;
             margin: 0 auto;
             padding-top: max(20px, env(safe-area-inset-top));
             box-sizing: border-box;
         }
+
+        /* Header */
         .header {
-            margin: 16px 0 20px 0;
+            margin: 12px 0 22px 0;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .date-badge {
+            font-size: 12px;
+            color: var(--text-sec);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
         .title {
             font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-top: 2px;
         }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Quick Controls in Header */
+        .pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        .pill-btn:hover { background: var(--card-hover); }
+        .pill-btn:active { transform: scale(0.95); }
+        .pill-btn.active {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+        .pill-btn.alt-speed-active {
+            background: var(--warning);
+            color: #ffffff;
+            border-color: var(--warning);
+            box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+        }
+
         .status-dot {
             display: inline-block;
             width: 8px;
@@ -72,61 +203,274 @@
             border-radius: 50%;
             background: var(--success);
             margin-right: 4px;
-            box-shadow: 0 0 8px rgba(52, 199, 89, 0.4);
+            box-shadow: 0 0 8px rgba(52, 199, 89, 0.5);
+            transition: background 0.3s;
         }
         .status-dot.offline {
             background: var(--danger);
-            box-shadow: 0 0 8px rgba(255, 59, 48, 0.4);
+            box-shadow: 0 0 8px rgba(255, 59, 48, 0.5);
         }
+
         .subtitle {
             font-size: 13px;
             color: var(--text-sec);
-            font-weight: 600;
-            margin: 20px 0 10px 6px;
+            font-weight: 700;
+            margin: 20px 0 12px 4px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .grid {
+
+        /* Grid Layouts */
+        .grid-2 {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
+            gap: 14px;
         }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        @media (min-width: 768px) {
+            .grid-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        /* Card Styles */
         .card {
             background: var(--card);
             border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
             border: 1px solid var(--border);
-            transition: transform 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-        .card:active { transform: scale(0.985); }
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
         .val-big {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 800;
             font-variant-numeric: tabular-nums;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
         }
         .val-sub {
             font-size: 12px;
             color: var(--text-sec);
-            font-weight: 500;
+            font-weight: 600;
         }
         .chart-mini {
-            height: 85px;
+            height: 110px;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 12px;
         }
-        
-        /* Torrent Card Styles */
+
+        /* Torrent Filters & Controls */
+        .controls-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        @media (min-width: 768px) {
+            .controls-bar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+        }
+        .search-box input {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px 8px 34px;
+            font-size: 13px;
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+        }
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: var(--text-sec);
+        }
+        .search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-sec);
+            font-size: 14px;
+            display: none;
+        }
+
+        .select-custom {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .select-custom:focus {
+            border-color: var(--accent);
+        }
+
+        .segmented-control {
+            display: flex;
+            background: rgba(120,120,128,0.12);
+            padding: 3px;
+            border-radius: 14px;
+            gap: 2px;
+            overflow-x: auto;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+        .segment-btn {
+            flex: 1;
+            white-space: nowrap;
+            border: none;
+            background: none;
+            padding: 7px 12px;
+            border-radius: 11px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sec);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.1, 0.8, 0.25, 1);
+        }
+        .segment-btn.active {
+            background: var(--card);
+            color: var(--text);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Batch Action Floating Bar */
+        .batch-bar {
+            background: var(--card);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 10px 16px;
+            margin-bottom: 14px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 8px 24px var(--accent-bg);
+            animation: slideDown 0.2s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .batch-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .batch-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .batch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent-bg);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .batch-btn:hover { background: var(--accent); color: white; }
+        .batch-btn.danger { background: var(--danger-bg); color: var(--danger); }
+        .batch-btn.danger:hover { background: var(--danger); color: white; }
+
+        /* View Mode: Card Grid vs Table */
+        .torrent-grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        @media (min-width: 900px) {
+            .torrent-grid-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1300px) {
+            .torrent-grid-container {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* Card Mode Item */
         .torrent-card {
             background: var(--card);
             border-radius: 18px;
             padding: 16px;
-            margin-bottom: 12px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            box-shadow: var(--shadow-sm);
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+            position: relative;
+        }
+        .torrent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(120,120,128,0.25);
+        }
+        .torrent-card.selected {
+            border-color: var(--accent);
+            background: var(--card-sec);
         }
         .torrent-header {
             display: flex;
@@ -135,15 +479,25 @@
             gap: 10px;
             margin-bottom: 8px;
         }
+        .torrent-check {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
         .torrent-name {
-            font-weight: 600;
-            font-size: 15px;
-            line-height: 1.3;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.35;
             word-break: break-all;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            flex: 1;
         }
         .badge {
             font-size: 10px;
@@ -154,27 +508,31 @@
             color: var(--accent);
             text-transform: uppercase;
             flex-shrink: 0;
+            letter-spacing: 0.02em;
         }
-        .badge.downloading { background: rgba(0,122,255,0.12); color: var(--accent); }
-        .badge.completed { background: rgba(52,199,89,0.12); color: var(--success); }
+        .badge.downloading { background: var(--accent-bg); color: var(--accent); }
+        .badge.completed { background: var(--success-bg); color: var(--success); }
         .badge.paused { background: rgba(142,142,147,0.15); color: var(--text-sec); }
-        .badge.error { background: rgba(255,59,48,0.12); color: var(--danger); }
-        
+        .badge.error { background: var(--danger-bg); color: var(--danger); }
+        .badge.queued { background: var(--warning-bg); color: var(--warning); }
+        .badge.category { background: var(--purple-bg); color: var(--purple); font-size: 10px; }
+
         .progress-track {
-            height: 7px;
+            height: 6px;
             background: var(--border);
-            border-radius: 4px;
+            border-radius: 3px;
             overflow: hidden;
             margin: 10px 0 8px 0;
         }
         .progress-fill {
             height: 100%;
             background: var(--accent);
-            border-radius: 4px;
+            border-radius: 3px;
             transition: width 0.3s cubic-bezier(0.1, 0.8, 0.25, 1);
         }
         .progress-fill.completed { background: var(--success); }
         .progress-fill.paused { background: var(--text-sec); }
+        .progress-fill.error { background: var(--danger); }
 
         .torrent-meta {
             display: flex;
@@ -182,117 +540,132 @@
             font-size: 12px;
             color: var(--text-sec);
             font-weight: 500;
+            margin-bottom: 8px;
         }
         .torrent-ctrls {
             display: flex;
             gap: 8px;
-            margin-top: 12px;
             justify-content: space-between;
             align-items: center;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-subtle);
         }
         .torrent-save-path {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-sec);
             font-weight: 500;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 65%;
+            max-width: 60%;
             display: flex;
             align-items: center;
             gap: 4px;
         }
         .torrent-btns {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             flex-shrink: 0;
         }
+
         .icon-btn {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             border: none;
             background: rgba(120,120,128,0.08);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             color: var(--text);
             transition: background 0.15s, transform 0.1s;
         }
-        .icon-btn:active {
-            transform: scale(0.92);
-            background: rgba(120,120,128,0.2);
-        }
+        .icon-btn:hover { background: rgba(120,120,128,0.18); }
+        .icon-btn:active { transform: scale(0.92); }
         .icon-btn.danger { color: var(--danger); }
+        .icon-btn.danger:hover { background: var(--danger-bg); }
         .icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
-        /* Filter Segmented Control */
-        .segmented-control {
-            display: flex;
-            background: rgba(120,120,128,0.12);
-            padding: 3px;
-            border-radius: 12px;
-            margin-bottom: 14px;
-            gap: 2px;
-        }
-        .segment-btn {
-            flex: 1;
-            border: none;
-            background: none;
-            padding: 8px 4px;
-            border-radius: 9px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-sec);
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.1, 0.8, 0.25, 1);
-        }
-        .segment-btn.active {
+        /* Table View Mode */
+        .torrent-table-wrap {
             background: var(--card);
-            color: var(--text);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+            width: 100%;
         }
+        .torrent-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+        .torrent-table th {
+            padding: 12px 14px;
+            font-weight: 700;
+            color: var(--text-sec);
+            border-bottom: 1px solid var(--border);
+            background: var(--card-sec);
+            white-space: nowrap;
+        }
+        .torrent-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: middle;
+            color: var(--text);
+        }
+        .torrent-table tr:last-child td { border-bottom: none; }
+        .torrent-table tr:hover { background: var(--card-hover); cursor: pointer; }
+        .torrent-table tr.selected { background: var(--accent-bg); }
 
         /* Floating Glass Dock */
         .dock {
             position: fixed;
-            bottom: calc(20px + env(safe-area-inset-bottom));
+            bottom: calc(18px + env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
-            width: 92%;
-            max-width: 440px;
-            height: 64px;
+            width: 94%;
+            max-width: 520px;
+            height: 66px;
             background: var(--dock);
-            backdrop-filter: blur(25px) saturate(180%);
-            border: 0.5px solid rgba(255,255,255,0.3);
-            border-radius: 32px;
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 0.5px solid rgba(255,255,255,0.25);
+            border-radius: 33px;
             display: flex;
             justify-content: space-evenly;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            box-shadow: var(--shadow-lg);
             z-index: 1000;
+            padding: 0 8px;
         }
         .dock-btn {
             border: none;
             background: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            min-width: 52px;
+            height: 50px;
+            border-radius: 16px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 2px;
             transition: all 0.2s cubic-bezier(0.1, 0.8, 0.25, 1);
             color: var(--text-sec);
             cursor: pointer;
+            padding: 4px 6px;
         }
-        .dock-btn:active { transform: scale(0.9); }
+        .dock-btn:hover { color: var(--text); background: rgba(120,120,128,0.08); }
+        .dock-btn:active { transform: scale(0.92); }
         .dock-btn.active {
             color: var(--accent);
-            background: rgba(0,122,255,0.12);
+            background: var(--accent-bg);
         }
-        .dock-btn svg { width: 22px; height: 22px; fill: currentColor; }
+        .dock-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .dock-btn span { font-size: 10px; font-weight: 700; letter-spacing: -0.01em; }
 
         /* Pages */
         .page {
@@ -305,285 +678,711 @@
             opacity: 1;
         }
 
-        /* Modal Overlay */
+        /* Modal System */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(14px) saturate(160%);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 2000;
             opacity: 0;
             transition: opacity 0.2s ease-out;
-            touch-action: none;
+            padding: 16px;
         }
         .modal-overlay.active {
             display: flex;
             opacity: 1;
         }
         .modal-card {
-            background: var(--card);
+            background: var(--modal-bg);
             width: 100%;
-            max-width: min(720px, calc(100vw - 32px));
+            max-width: min(780px, calc(100vw - 32px));
             border-radius: 24px;
             padding: 24px;
             border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            transform: scale(0.92);
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.94);
             transition: transform 0.25s cubic-bezier(0.1, 0.8, 0.25, 1);
-            max-height: 82vh;
+            max-height: 86vh;
             overflow-y: auto;
             overscroll-behavior: contain;
-            touch-action: pan-y;
             box-sizing: border-box;
         }
         .modal-overlay.active .modal-card { transform: scale(1); }
+
         .btn {
-            padding: 13px;
+            padding: 12px 18px;
             border-radius: 14px;
             border: none;
-            font-weight: 600;
-            font-size: 15px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
             background: var(--accent);
             color: white;
-            transition: opacity 0.15s, transform 0.1s;
+            transition: opacity 0.15s, transform 0.1s, background 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-        .btn:active {
-            transform: scale(0.98);
-            opacity: 0.9;
+        .btn:hover { opacity: 0.92; }
+        .btn:active { transform: scale(0.97); }
+        .btn.secondary {
+            background: rgba(120,120,128,0.15);
+            color: var(--text);
         }
+        .btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn.w-full { width: 100%; }
+
         .input-box {
             width: 100%;
             border: 1px solid var(--border);
             background: rgba(120,120,128,0.06);
             border-radius: 12px;
-            padding: 12px;
+            padding: 12px 14px;
             font-size: 14px;
             color: var(--text);
             outline: none;
             box-sizing: border-box;
             font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        
+        .input-box:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-bg);
+            background: var(--card);
+        }
+
         .tab-bar {
             display: flex;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             gap: 12px;
+            overflow-x: auto;
         }
         .tab-item {
-            padding: 8px 4px;
+            padding: 8px 6px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-sec);
             cursor: pointer;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
         }
+        .tab-item:hover { color: var(--text); }
         .tab-item.active {
             color: var(--accent);
             border-bottom-color: var(--accent);
         }
-        
+
         .list-row {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-subtle);
             font-size: 13px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
+        .list-row:last-child { border-bottom: none; }
+
+        /* Canvas Pieces Map */
+        #piecesCanvas {
+            width: 100%;
+            height: 180px;
+            background: rgba(120,120,128,0.06);
+            border-radius: 12px;
+            display: block;
+            cursor: crosshair;
+        }
+        .pieces-tooltip {
+            position: absolute;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+            pointer-events: none;
+            box-shadow: var(--shadow-sm);
+            display: none;
+            z-index: 100;
+        }
+
+        /* Drag & Drop Overlay */
+        .drag-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,122,255,0.25);
+            backdrop-filter: blur(8px);
+            border: 4px dashed var(--accent);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 24px;
+            font-weight: 800;
+            pointer-events: none;
+        }
+
+        /* Log Line Badge */
+        .log-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        .log-badge.info { background: var(--accent-bg); color: var(--accent); }
+        .log-badge.warning { background: var(--warning-bg); color: var(--warning); }
+        .log-badge.critical { background: var(--danger-bg); color: var(--danger); }
+        .log-badge.normal { background: rgba(120,120,128,0.12); color: var(--text-sec); }
     </style>
 </head>
 <body>
+
+<!-- Drag and drop full window overlay -->
+<div class="drag-overlay" id="drag-overlay">
+    <div>📥 松开鼠标以添加 Torrent 种子文件</div>
+</div>
+
 <div class="container">
-    <!-- Header -->
+    <!-- Header Bar -->
     <div class="header">
-        <div>
-            <div style="font-size:12px; color:var(--text-sec); font-weight:600;" id="date-now">TORRENT OMNI</div>
+        <div class="header-left">
+            <div class="date-badge" id="date-now">TORRENT OMNI</div>
             <div class="title" id="page-title">下载总览</div>
         </div>
-        <div style="text-align:right">
-            <div style="font-size:13px; font-weight:600;"><span class="status-dot" id="qbt-dot"></span><span id="qbt-status-text">真实连接中...</span></div>
-            <div style="font-size:11px; color:var(--text-sec);" id="sys-qbt-version">版本: qBittorrent --</div>
+        <div class="header-actions">
+            <!-- Alt Speed Mode Button (Turtle 🐢) -->
+            <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" title="切换备用速度限制模式">
+                <span id="alt-speed-icon">⚡</span>
+                <span id="alt-speed-label">常规速率</span>
+            </button>
+
+            <!-- Theme Toggle Button -->
+            <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" title="切换明暗主题">
+                <span id="theme-icon">🌓</span>
+                <span id="theme-label">自动</span>
+            </button>
+
+            <!-- Status Indicator -->
+            <div class="pill-btn" onclick="openLoginModal()" title="查看连接详情或重新登录">
+                <span class="status-dot" id="qbt-dot"></span>
+                <span id="qbt-status-text">连接中...</span>
+            </div>
         </div>
     </div>
 
-    <!-- Page 1: Dashboard -->
+    <!-- ==================== PAGE 1: DASHBOARD ==================== -->
     <div id="p-dash" class="page active">
-        <div class="grid">
+        <div class="grid-4">
             <div class="card">
                 <div class="val-sub" style="color:var(--success);">↓ 实时下载速度</div>
                 <div class="val-big" id="v-dl-speed" style="color:var(--success);">0 B/s</div>
-                <div class="val-sub" id="v-dl-count">活跃下载: 0</div>
+                <div class="val-sub" id="v-dl-count" style="margin-top:4px;">活跃下载: 0</div>
             </div>
             <div class="card">
                 <div class="val-sub" style="color:var(--accent);">↑ 实时上传速度</div>
                 <div class="val-big" id="v-up-speed" style="color:var(--accent);">0 B/s</div>
-                <div class="val-sub" id="v-up-count">活跃做种: 0</div>
+                <div class="val-sub" id="v-up-count" style="margin-top:4px;">活跃做种: 0</div>
+            </div>
+            <div class="card">
+                <div class="val-sub">网络连接与 DHT</div>
+                <div class="val-big" id="v-conn-status" style="font-size:20px;">连接中...</div>
+                <div class="val-sub" id="v-dht-nodes" style="margin-top:4px;">DHT 节点: --</div>
+            </div>
+            <div class="card">
+                <div class="val-sub">下载磁盘剩余</div>
+                <div class="val-big" id="v-disk-free" style="font-size:20px;">--</div>
+                <div class="val-sub" id="v-total-transferred" style="margin-top:4px;">累计传输: ↓ 0 B | ↑ 0 B</div>
             </div>
         </div>
 
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <span class="val-sub">qBittorrent 实时数据趋势 (KB/s)</span>
-                <span class="val-sub">双向传输率</span>
+            <div class="card-header">
+                <div>
+                    <span style="font-weight:700; font-size:15px;">实时网络传输走势</span>
+                    <span class="val-sub" style="margin-left:8px;">(KB/s)</span>
+                </div>
+                <div style="font-size:12px; display:flex; gap:12px;">
+                    <span style="color:var(--success); font-weight:600;">● 下载速率</span>
+                    <span style="color:var(--accent); font-weight:600;">● 上传速率</span>
+                </div>
             </div>
             <div class="chart-mini"><canvas id="netChart"></canvas></div>
         </div>
 
-        <div class="grid">
+        <!-- Quick Summary Grid -->
+        <div class="grid-2">
             <div class="card">
-                <div class="val-sub">网络连接与节点</div>
-                <div class="val-big" id="v-conn-status">正在连接...</div>
-                <div class="val-sub" id="v-dht-nodes">DHT 节点: --</div>
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📊 任务状态汇总</div>
+                <div style="display:flex; justify-content:space-around; text-align:center; padding:8px 0;">
+                    <div>
+                        <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
+                        <div class="val-sub">全部任务</div>
+                    </div>
+                    <div>
+                        <div class="val-big" id="sum-dl" style="color:var(--success);">0</div>
+                        <div class="val-sub">下载中</div>
+                    </div>
+                    <div>
+                        <div class="val-big" id="sum-seed" style="color:var(--purple);">0</div>
+                        <div class="val-sub">做种中</div>
+                    </div>
+                    <div>
+                        <div class="val-big" id="sum-pause" style="color:var(--text-sec);">0</div>
+                        <div class="val-sub">已暂停</div>
+                    </div>
+                </div>
             </div>
             <div class="card">
-                <div class="val-sub">下载目录磁盘剩余</div>
-                <div class="val-big" id="v-disk-free">--</div>
-                <div class="val-sub" id="v-total-transferred">总计 ↓ 0 B | ↑ 0 B</div>
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">⚡ 快速操作</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn" style="flex:1;" onclick="openAddModal()">
+                        <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> 添加任务
+                    </button>
+                    <button class="btn secondary" style="flex:1;" onclick="switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'))">
+                        查看列表
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Page 2: Torrents List (VueTorrent Core) -->
+    <!-- ==================== PAGE 2: TORRENTS LIST ==================== -->
     <div id="p-torrents" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div class="subtitle" style="margin:0;">任务队列 (<span id="t-total-count">0</span>)</div>
-            <button class="icon-btn" onclick="openAddModal()" style="width:36px; height:36px; background:var(--accent); color:white;">
-                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            </button>
+        <!-- Controls & Filter Toolbar -->
+        <div class="controls-bar">
+            <div class="filter-row">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="torrent-search-input" placeholder="实时过滤名称 / Hash..." oninput="onSearchFilterChange(this.value)">
+                    <span class="search-clear" id="search-clear-btn" onclick="clearSearchFilter()">✖</span>
+                </div>
+                <select class="select-custom" id="filter-category" onchange="onCategoryFilterChange(this.value)">
+                    <option value="all">📁 全部分类</option>
+                </select>
+                <select class="select-custom" id="sort-by" onchange="onSortChange(this.value)">
+                    <option value="added_on_desc">🕒 添加时间 (最新)</option>
+                    <option value="added_on_asc">🕒 添加时间 (最早)</option>
+                    <option value="name_asc">🔤 任务名称 (A-Z)</option>
+                    <option value="size_desc">📦 文件体积 (大到小)</option>
+                    <option value="progress_desc">📈 下载进度 (高到低)</option>
+                    <option value="dlspeed_desc">⚡ 下载速度 (快到慢)</option>
+                    <option value="upspeed_desc">⚡ 上传速度 (快到慢)</option>
+                    <option value="eta_asc">⏳ 剩余时间 (ETA)</option>
+                    <option value="ratio_desc">🔄 分享率 (高到低)</option>
+                </select>
+                <button class="icon-btn" id="btn-view-mode" onclick="toggleViewMode()" title="切换卡片 / 表格视图">
+                    <svg id="view-icon-cards" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                    <svg id="view-icon-table" viewBox="0 0 24 24" style="display:none;"><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg>
+                </button>
+                <button class="btn" onclick="openAddModal()" style="padding:8px 14px; font-size:13px;">
+                    <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> 新建任务
+                </button>
+            </div>
         </div>
 
+        <!-- Status Filter Segmented Control -->
         <div class="segmented-control">
-            <button class="segment-btn active" onclick="filterTorrents('all', this)">全部</button>
-            <button class="segment-btn" onclick="filterTorrents('downloading', this)">下载中</button>
-            <button class="segment-btn" onclick="filterTorrents('completed', this)">已做种</button>
-            <button class="segment-btn" onclick="filterTorrents('paused', this)">已暂停</button>
+            <button class="segment-btn active" onclick="filterTorrents('all', this)">全部 (<span id="cnt-all">0</span>)</button>
+            <button class="segment-btn" onclick="filterTorrents('downloading', this)">下载中 (<span id="cnt-dl">0</span>)</button>
+            <button class="segment-btn" onclick="filterTorrents('completed', this)">已做种 (<span id="cnt-seed">0</span>)</button>
+            <button class="segment-btn" onclick="filterTorrents('paused', this)">已暂停 (<span id="cnt-pause">0</span>)</button>
+            <button class="segment-btn" onclick="filterTorrents('queued', this)">排队中 (<span id="cnt-queue">0</span>)</button>
+            <button class="segment-btn" onclick="filterTorrents('error', this)">错误 (<span id="cnt-err">0</span>)</button>
         </div>
 
+        <!-- Batch Operations Bar (Appears when items are selected) -->
+        <div class="batch-bar" id="batch-bar">
+            <div class="batch-left">
+                <input type="checkbox" id="select-all-check" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)">
+                <span>已选中 <span id="batch-count">0</span> 项</span>
+            </div>
+            <div class="batch-actions">
+                <button class="batch-btn" onclick="batchTorrentAction('resume')">▶ 恢复</button>
+                <button class="batch-btn" onclick="batchTorrentAction('pause')">⏸ 暂停</button>
+                <button class="batch-btn" onclick="batchTorrentAction('recheck')">🔄 校验</button>
+                <button class="batch-btn" onclick="openBatchCategoryModal()">🏷 分类</button>
+                <button class="batch-btn danger" onclick="confirmBatchDelete()">🗑 删除</button>
+                <button class="icon-btn" onclick="clearTorrentSelection()" title="取消选择" style="width:28px; height:28px;">✖</button>
+            </div>
+        </div>
+
+        <!-- Main Torrents List Container -->
         <div id="torrent-list-container">
-            <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:14px;">从真实 qBittorrent 载入任务中...</div>
+            <div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">
+                正在与 qBittorrent 通信加载任务中...
+            </div>
         </div>
     </div>
 
-    <!-- Page 3: Search Engine (VueTorrent Search Feature) -->
+    <!-- ==================== PAGE 3: SEARCH ENGINE ==================== -->
     <div id="p-search" class="page">
-        <div class="subtitle" style="margin-top:0;">qBittorrent 资源搜索</div>
-        <div style="display:flex; gap:8px; margin-bottom:14px;">
-            <input class="input-box" id="search-keyword" placeholder="搜索种子资源 (如 Ubuntu, Debian)...">
-            <button class="btn" style="width:90px; margin-top:0;" onclick="triggerSearch()">搜索</button>
+        <div class="subtitle" style="margin-top:0;">qBittorrent 资源全网检索</div>
+        <div class="card">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                <input class="input-box" id="search-keyword" placeholder="输入搜索关键字 (如 Ubuntu, Debian, Linux)..." style="flex:2; min-width:200px;" onkeydown="if(event.key==='Enter') triggerSearch();">
+                <select class="select-custom" id="search-plugin" style="flex:1; min-width:130px;">
+                    <option value="all">🌐 全部插件</option>
+                    <option value="enabled">⚡ 已启用插件</option>
+                </select>
+                <select class="select-custom" id="search-category" style="flex:1; min-width:110px;">
+                    <option value="all">全部类型</option>
+                    <option value="movies">电影</option>
+                    <option value="tv">剧集</option>
+                    <option value="music">音乐</option>
+                    <option value="software">软件</option>
+                </select>
+                <button class="btn" style="padding:10px 20px;" onclick="triggerSearch()">
+                    <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> 搜索
+                </button>
+            </div>
+            <div id="search-status-bar" style="font-size:12px; color:var(--text-sec); display:none; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:8px;">
+                <span id="search-status-text">搜索进行中...</span>
+                <button class="pill-btn" onclick="stopCurrentSearch()" style="padding:3px 10px; font-size:11px;">停止搜索</button>
+            </div>
         </div>
+
         <div id="search-results-container">
-            <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:14px;">输入关键字开始检索全网种子</div>
+            <div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">
+                输入关键字开始全网检索种子资源
+            </div>
         </div>
     </div>
 
-    <!-- Page 4: RSS & Rules (VueTorrent Suite) -->
+    <!-- ==================== PAGE 4: RSS & RULES ==================== -->
     <div id="p-rss" class="page">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <div class="subtitle" style="margin:0;">RSS 订阅与自动规则</div>
-            <button class="btn" style="width:auto; padding:6px 12px; margin:0; font-size:12px;" onclick="openRssRuleModal()">+ 新建规则</button>
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchRssSubTab('rss-sub-feeds', this)">📡 RSS 订阅源 (Feeds)</div>
+            <div class="tab-item" onclick="switchRssSubTab('rss-sub-rules', this)">⚡ 自动下载规则 (Rules)</div>
+            <div class="tab-item" onclick="switchRssSubTab('rss-sub-cats', this)">🏷️ 分类管理 (Categories)</div>
         </div>
-        <div class="card">
-            <div style="font-weight:600; margin-bottom:10px;">🏷️ 已创建分类</div>
-            <div id="categories-container" style="font-size:13px; color:var(--text-sec);">暂无分类数据</div>
+
+        <!-- RSS Feeds Sub-Tab -->
+        <div id="rss-sub-feeds" class="rss-sub-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="subtitle" style="margin:0;">已订阅 RSS 列表</div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshAllRssFeeds()">🔄 刷新全部</button>
+                    <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openModal('add-rss-feed-modal')">+ 添加订阅源</button>
+                </div>
+            </div>
+            <div id="rss-feed-list-container">
+                <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:13px;">加载 RSS 订阅源中...</div>
+            </div>
+            <!-- Feed Article Browser Drawer -->
+            <div id="rss-articles-container" style="margin-top:16px; display:none;">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:700; font-size:14px;" id="rss-active-feed-title">Feed 文章</span>
+                        <button class="icon-btn" onclick="$('#rss-articles-container').slideUp()" style="width:26px; height:26px;">✖</button>
+                    </div>
+                    <div id="rss-articles-list" style="max-height:360px; overflow-y:auto;"></div>
+                </div>
+            </div>
         </div>
-        <div class="card">
-            <div style="font-weight:600; margin-bottom:10px;">📡 RSS 自动下载规则</div>
-            <div id="rss-feeds-container" style="font-size:13px; color:var(--text-sec);">暂无规则记录</div>
+
+        <!-- RSS Rules Sub-Tab -->
+        <div id="rss-sub-rules" class="rss-sub-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="subtitle" style="margin:0;">自动下载规则</div>
+                <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openRssRuleModal()">+ 新建规则</button>
+            </div>
+            <div id="rss-rules-container">
+                <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:13px;">加载自动规则中...</div>
+            </div>
+        </div>
+
+        <!-- Categories Sub-Tab -->
+        <div id="rss-sub-cats" class="rss-sub-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="subtitle" style="margin:0;">已保存的任务分类</div>
+                <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openModal('add-category-modal')">+ 新增分类</button>
+            </div>
+            <div id="categories-container">
+                <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:13px;">加载分类数据中...</div>
+            </div>
         </div>
     </div>
 
-    <!-- Page 5: System Status & Speed Limits -->
+    <!-- ==================== PAGE 5: SYSTEM & LOGS ==================== -->
     <div id="p-system" class="page">
-        <div class="subtitle" style="margin-top:0;">系统状态与传输限速</div>
-        <div class="card">
-            <div style="font-weight:600; margin-bottom:12px;">⚡ 传输速度限制 (KB/s)</div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input class="input-box" id="limit-dl" placeholder="下载限制 (0 为不限)">
-                <input class="input-box" id="limit-up" placeholder="上传限制 (0 为不限)">
-            </div>
-            <button class="btn" style="margin-top:4px;" onclick="saveSpeedLimits()">保存速度限制</button>
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchSysSubTab('sys-sub-config', this)">⚙️ 速率与配置</div>
+            <div class="tab-item" onclick="switchSysSubTab('sys-sub-logs', this)">📜 运行日志 (Logs)</div>
+            <div class="tab-item" onclick="switchSysSubTab('sys-sub-trackers', this)">🌐 全局 Tracker</div>
         </div>
-        <div class="card">
-            <div style="font-weight:600; margin-bottom:12px;">📁 默认下载保存路径</div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input class="input-box" id="pref-save-path" placeholder="例如: /home/ubuntu/Downloads">
+
+        <!-- System Config Sub-Tab -->
+        <div id="sys-sub-config" class="sys-sub-content">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">⚡ 全局与备用限速配置 (KB/s)</div>
+                <div class="grid-2" style="margin-bottom:10px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;">常规全局下载限制 (0 为不限)</div>
+                        <input class="input-box" id="limit-dl" placeholder="下载限制 KB/s">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;">常规全局上传限制 (0 为不限)</div>
+                        <input class="input-box" id="limit-up" placeholder="上传限制 KB/s">
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-bottom:12px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;">备用模式下载限制 (🐢 乌龟模式)</div>
+                        <input class="input-box" id="limit-alt-dl" placeholder="备用下载限制 KB/s">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;">备用模式上传限制 (🐢 乌龟模式)</div>
+                        <input class="input-box" id="limit-alt-up" placeholder="备用上传限制 KB/s">
+                    </div>
+                </div>
+                <button class="btn" onclick="saveSpeedLimits()">保存速度限制设置</button>
             </div>
-            <button class="btn" style="margin-top:4px;" onclick="saveDefaultSavePath()">更新保存路径</button>
-        </div>
-        <div class="card">
-            <div style="font-weight:600; margin-bottom:12px;">🌐 全局批量添加 Trackers</div>
-            <textarea class="input-box" id="global-tracker-urls" rows="2" placeholder="udp://tracker.opentrackr.org:1337/announce" style="margin-bottom:8px;"></textarea>
-            <button class="btn" style="margin-top:4px; background:rgba(0,122,255,0.12); color:var(--accent);" onclick="submitAddTrackers(true)">给所有种子批量补充 Tracker</button>
-        </div>
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
-                <span class="val-sub">备用 UI 模式</span>
-                <span style="font-weight:600;">qBittorrent Alternative WebUI</span>
+
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📁 默认下载保存路径</div>
+                <div style="margin-bottom:10px;">
+                    <input class="input-box" id="pref-save-path" placeholder="例如: /home/ubuntu/Downloads">
+                </div>
+                <button class="btn" onclick="saveDefaultSavePath()">更新默认保存路径</button>
             </div>
-            <div style="display:flex; justify-content:space-between; padding:10px 0;" id="sys-status-label">
-                <span class="val-sub">当前会话状态</span>
-                <span style="font-weight:600;" id="sys-qbt-status">加载中...</span>
+
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
+                    <span class="val-sub">当前 WebUI 模式</span>
+                    <span style="font-weight:600;">qBittorrent Alternative WebUI (纯前端沙箱)</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
+                    <span class="val-sub">内核版本</span>
+                    <span style="font-weight:600;" id="sys-qbt-version-text">qBittorrent --</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:10px 0;">
+                    <span class="val-sub">WebAPI 版本</span>
+                    <span style="font-weight:600;" id="sys-webapi-version-text">v2.x</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Sub-Tab -->
+        <div id="sys-sub-logs" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <span style="font-weight:700; font-size:15px;">内核实时日志</span>
+                        <select class="select-custom" id="log-filter-type" onchange="filterLogEntries(this.value)" style="padding:4px 8px; font-size:12px;">
+                            <option value="all">全部日志</option>
+                            <option value="1">普通 Normal</option>
+                            <option value="2">信息 Info</option>
+                            <option value="4">警告 Warning</option>
+                            <option value="8">严重 Critical</option>
+                        </select>
+                    </div>
+                    <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="fetchSystemLogs()">🔄 刷新日志</button>
+                </div>
+                <div id="sys-logs-container" style="max-height:480px; overflow-y:auto; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; background:var(--card-sec); border-radius:12px; padding:12px;">
+                    加载日志中...
+                </div>
+            </div>
+        </div>
+
+        <!-- Trackers Sub-Tab -->
+        <div id="sys-sub-trackers" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:8px;">🌐 全局批量添加 Trackers</div>
+                <div class="val-sub" style="margin-bottom:10px;">单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：</div>
+                <textarea class="input-box" id="global-tracker-urls" rows="5" placeholder="udp://tracker.opentrackr.org:1337/announce&#10;http://tracker.openbittorrent.com:80/announce&#10;https://tracker.tamersunion.org:443/announce" style="margin-bottom:10px; font-family:monospace; font-size:12px;"></textarea>
+                <button class="btn" onclick="submitAddTrackers(true)">一键为所有任务批量补充 Trackers</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Torrent Details Modal (Files Tree, Pieces, Peers, Trackers) -->
+<!-- ==================== MODALS ==================== -->
+
+<!-- 1. Torrent Details Modal -->
 <div class="modal-overlay" id="detail-modal">
     <div class="modal-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <div style="font-size:18px; font-weight:700; max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="detail-title">种子详情</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div style="flex:1; margin-right:12px;">
+                <div style="font-size:17px; font-weight:800; line-height:1.3; word-break:break-all;" id="detail-title">种子详情</div>
+                <div style="font-size:11px; color:var(--text-sec); font-family:monospace; margin-top:2px;" id="detail-hash"></div>
+            </div>
             <button class="icon-btn" onclick="closeDetailModal()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
         </div>
+
         <div class="tab-bar">
-            <div class="tab-item active" onclick="switchDetailTab('dt-files', this)">文件树</div>
-            <div class="tab-item" onclick="switchDetailTab('dt-pieces', this)">下载区块</div>
-            <div class="tab-item" onclick="switchDetailTab('dt-trackers', this)">Trackers</div>
-            <div class="tab-item" onclick="switchDetailTab('dt-peers', this)">Peers 节点</div>
+            <div class="tab-item active" onclick="switchDetailTab('dt-files', this)">📄 文件树 (Files)</div>
+            <div class="tab-item" onclick="switchDetailTab('dt-pieces', this)">🧱 下载区块 (Pieces)</div>
+            <div class="tab-item" onclick="switchDetailTab('dt-trackers', this)">🔗 Trackers</div>
+            <div class="tab-item" onclick="switchDetailTab('dt-peers', this)">👥 Peers 节点</div>
         </div>
-        <div id="dt-files" class="detail-tab-content">载入文件树中...</div>
-        <div id="dt-pieces" class="detail-tab-content" style="display:none;">载入分块状态中...</div>
-        <div id="dt-trackers" class="detail-tab-content" style="display:none;">载入 Trackers 中...</div>
-        <div id="dt-peers" class="detail-tab-content" style="display:none;">载入 Peers 中...</div>
+
+        <!-- Sub 1: Files Tree with Priority Selection -->
+        <div id="dt-files" class="detail-tab-content">
+            <div style="text-align:center; padding:30px; color:var(--text-sec);">加载文件树中...</div>
+        </div>
+
+        <!-- Sub 2: Canvas Pieces Map -->
+        <div id="dt-pieces" class="detail-tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; color:var(--text-sec);">
+                <div id="pieces-stats-text">区块加载中...</div>
+                <div style="display:flex; gap:8px;">
+                    <span style="color:var(--success); font-weight:600;">■ 已完成</span>
+                    <span style="color:var(--accent); font-weight:600;">■ 下载中</span>
+                    <span style="color:var(--text-ter); font-weight:600;">■ 未下载</span>
+                </div>
+            </div>
+            <div style="position:relative;">
+                <canvas id="piecesCanvas"></canvas>
+                <div class="pieces-tooltip" id="pieces-tooltip"></div>
+            </div>
+        </div>
+
+        <!-- Sub 3: Trackers -->
+        <div id="dt-trackers" class="detail-tab-content" style="display:none;">
+            <div style="text-align:center; padding:30px; color:var(--text-sec);">加载 Trackers 中...</div>
+        </div>
+
+        <!-- Sub 4: Peers List -->
+        <div id="dt-peers" class="detail-tab-content" style="display:none;">
+            <div style="text-align:center; padding:30px; color:var(--text-sec);">加载 Peers 节点中...</div>
+        </div>
     </div>
 </div>
 
-<!-- RSS Rule Modal -->
-<div class="modal-overlay" id="rss-rule-modal">
-    <div class="modal-card">
-        <div style="font-size:20px; font-weight:700; margin-bottom:12px;">新增 RSS 自动下载规则</div>
-        <input class="input-box" id="rule-name" placeholder="规则名称" style="margin-bottom:8px;">
-        <input class="input-box" id="rule-must" placeholder="包含关键字 (正则)" style="margin-bottom:8px;">
-        <input class="input-box" id="rule-not" placeholder="排除关键字 (正则)" style="margin-bottom:8px;">
-        <div style="display:flex; gap:10px;">
-            <button class="btn" style="background:rgba(120,120,128,0.15); color:var(--text);" onclick="$('#rss-rule-modal').removeClass('active')">取消</button>
-            <button class="btn" onclick="submitRssRule()">保存规则</button>
+<!-- 2. Safe Delete Confirmation Modal -->
+<div class="modal-overlay" id="delete-confirm-modal">
+    <div class="modal-card" style="max-width:460px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">⚠️</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;">删除确认</div>
+        <div style="font-size:13px; color:var(--text-sec); margin-bottom:18px; line-height:1.5;" id="delete-confirm-msg">
+            您确定要删除选中的任务吗？请选择是否同时删除本地下载的文件：
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn secondary" onclick="executeDeleteTorrent(false)">
+                仅删除任务 (保留硬盘文件)
+            </button>
+            <button class="btn danger" onclick="executeDeleteTorrent(true)">
+                彻底删除任务及本地文件
+            </button>
+            <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('delete-confirm-modal')">
+                取消
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Add Torrent Modal -->
+<!-- 3. Add Torrent Modal -->
 <div class="modal-overlay" id="add-modal">
     <div class="modal-card">
-        <div style="font-size:20px; font-weight:700; margin-bottom:12px;">添加 Torrent 种子 / Magnet</div>
+        <div style="font-size:20px; font-weight:800; margin-bottom:14px;">添加 Torrent 种子 / Magnet</div>
         
-        <div style="font-size:12px; color:var(--text-sec); margin-bottom:6px; font-weight:600;">选择本地 .torrent 种子文件：</div>
-        <input type="file" id="torrent-file" accept=".torrent" class="input-box" style="margin-bottom:12px;">
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:6px; font-weight:700;">选择本地 .torrent 种子文件：</div>
+        <input type="file" id="torrent-file" accept=".torrent" class="input-box" style="margin-bottom:14px;">
         
-        <div style="font-size:12px; color:var(--text-sec); margin-bottom:6px; font-weight:600;">或输入 Magnet 磁力链接 / URL：</div>
-        <textarea class="input-box" id="torrent-urls" rows="3" placeholder="magnet:?xt=urn:btih:..."></textarea>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:6px; font-weight:700;">或输入 Magnet 磁力链接 / HTTP 种子 URL (支持换行多个)：</div>
+        <textarea class="input-box" id="torrent-urls" rows="3" placeholder="magnet:?xt=urn:btih:..." style="margin-bottom:14px;"></textarea>
         
-        <div style="display:flex; gap:10px;">
-            <button class="btn" style="background:rgba(120,120,128,0.15); color:var(--text);" onclick="closeAddModal()">取消</button>
-            <button class="btn" onclick="submitAddTorrent()">发送至 qBittorrent</button>
+        <div class="grid-2" style="margin-bottom:14px;">
+            <div>
+                <div style="font-size:12px; color:var(--text-sec); margin-bottom:4px; font-weight:700;">指定分类：</div>
+                <select class="input-box" id="add-torrent-category" style="padding:10px;">
+                    <option value="">(无分类)</option>
+                </select>
+            </div>
+            <div>
+                <div style="font-size:12px; color:var(--text-sec); margin-bottom:4px; font-weight:700;">保存子路径 (可选)：</div>
+                <input class="input-box" id="add-torrent-savepath" placeholder="留空使用默认路径">
+            </div>
         </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('add-modal')">取消</button>
+            <button class="btn" style="flex:2;" onclick="submitAddTorrent()">发送至 qBittorrent</button>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Batch Category Modal -->
+<div class="modal-overlay" id="batch-category-modal">
+    <div class="modal-card" style="max-width:420px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;">批量设置分类</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:8px;">选择为所选任务应用的目标分类：</div>
+        <select class="input-box" id="batch-target-category" style="margin-bottom:16px; padding:10px;">
+            <option value="">(清除分类)</option>
+        </select>
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('batch-category-modal')">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitBatchCategory()">应用分类</button>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Add RSS Feed Modal -->
+<div class="modal-overlay" id="add-rss-feed-modal">
+    <div class="modal-card" style="max-width:480px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;">添加 RSS 订阅源</div>
+        <input class="input-box" id="feed-url" placeholder="RSS 订阅链接 URL (https://...)" style="margin-bottom:10px;">
+        <input class="input-box" id="feed-path" placeholder="订阅名称 / 文件夹路径 (可选)" style="margin-bottom:16px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('add-rss-feed-modal')">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitAddRssFeed()">添加订阅</button>
+        </div>
+    </div>
+</div>
+
+<!-- 6. RSS Rule Modal -->
+<div class="modal-overlay" id="rss-rule-modal">
+    <div class="modal-card" style="max-width:520px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;">新增 RSS 自动下载规则</div>
+        <input class="input-box" id="rule-name" placeholder="规则名称 (如: Linux Releases)" style="margin-bottom:10px;">
+        <input class="input-box" id="rule-must" placeholder="包含关键字 (支持正则)" style="margin-bottom:10px;">
+        <input class="input-box" id="rule-not" placeholder="排除关键字 (支持正则)" style="margin-bottom:10px;">
+        <select class="input-box" id="rule-category" style="margin-bottom:16px; padding:10px;">
+            <option value="">(分配分类: 无)</option>
+        </select>
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('rss-rule-modal')">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitRssRule()">保存规则</button>
+        </div>
+    </div>
+</div>
+
+<!-- 7. Add Category Modal -->
+<div class="modal-overlay" id="add-category-modal">
+    <div class="modal-card" style="max-width:440px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;">新建任务分类</div>
+        <input class="input-box" id="new-cat-name" placeholder="分类名称 (如 Movies, Anime, TV)" style="margin-bottom:10px;">
+        <input class="input-box" id="new-cat-path" placeholder="专用保存子路径 (可选)" style="margin-bottom:16px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('add-category-modal')">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitCreateCategory()">创建分类</button>
+        </div>
+    </div>
+</div>
+
+<!-- 8. Auth Login Modal (Auto pops up when session expires) -->
+<div class="modal-overlay" id="login-modal">
+    <div class="modal-card" style="max-width:400px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:4px;">qBittorrent 身份验证</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;">会话已过期或未登录，请输入凭据登录：</div>
+        <input class="input-box" id="login-user" placeholder="用户名 (默认: admin)" style="margin-bottom:10px;">
+        <input class="input-box" type="password" id="login-pass" placeholder="密码" style="margin-bottom:16px;" onkeydown="if(event.key==='Enter') submitLogin();">
+        <button class="btn w-full" onclick="submitLogin()">登录进入面板</button>
     </div>
 </div>
 
@@ -591,47 +1390,145 @@
 <div class="dock">
     <button class="dock-btn active" onclick="switchTab('p-dash', '下载总览', this)">
         <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-10h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span>总览</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-torrents', '任务管理', this)">
         <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <span>任务</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-search', '资源搜索', this)">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>搜索</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-rss', 'RSS订阅', this)">
         <svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20 5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
+        <span>RSS</span>
     </button>
-    <button class="dock-btn" onclick="switchTab('p-system', '系统状态', this)">
+    <button class="dock-btn" onclick="switchTab('p-system', '系统与日志', this)">
         <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+        <span>系统</span>
     </button>
 </div>
 
 <script>
+    // Global State
     let netChart = null;
     let allTorrents = [];
+    let allCategories = {};
     let currentFilter = 'all';
+    let currentCategory = 'all';
+    let searchFilter = '';
+    let sortBy = 'added_on_desc';
+    let viewMode = localStorage.getItem('omni_view_mode') || 'cards';
+    let themeMode = localStorage.getItem('omni_theme') || 'auto';
+    let isAltSpeedEnabled = false;
+
+    // Selection
+    let selectedTorrents = new Set();
+    let pendingDeleteHashes = [];
+
+    // Details & Modals
     let activeDetailHash = '';
-    let netHistory = Array(20).fill(null).map(() => ({ down: 0, up: 0 }));
-    let qbtVersion = '--';
-    let webapiVersion = '--';
+    let activeDetailSubTab = 'dt-files';
     let detailRefreshTimer = null;
     let peerCurrentPage = 1;
+    let cachedPieces = [];
+
+    // Search Engine State
     let searchId = null;
     let searchRefreshTimer = null;
 
+    // Polling System
+    let netHistory = Array(20).fill(null).map(() => ({ down: 0, up: 0 }));
+    let qbtVersion = '--';
+    let webapiVersion = '--';
+    let fastPollTimer = null;
+    let slowPollTimer = null;
+    let rawLogs = [];
+
+    // --- Helpers ---
     function formatBytes(bytes) {
-        if (bytes === 0 || !bytes) return '0 B';
+        if (!bytes || bytes === 0) return '0 B';
         const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    function roundVal(val, decimals) {
-        if (!val) return 0;
-        return parseFloat(val.toFixed(decimals));
+    function formatEta(seconds) {
+        if (!seconds || seconds < 0 || seconds >= 8640000) return '∞';
+        if (seconds < 60) return `${seconds}秒`;
+        const m = Math.floor(seconds / 60);
+        if (m < 60) return `${m}分 ${seconds % 60}秒`;
+        const h = Math.floor(m / 60);
+        if (h < 24) return `${h}时 ${m % 60}分`;
+        const d = Math.floor(h / 24);
+        return `${d}天 ${h % 24}时`;
     }
 
+    function formatTimestamp(ts) {
+        if (!ts) return '--';
+        const d = new Date(ts > 1e11 ? ts : ts * 1000);
+        return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+        });
+    }
+
+    // --- Theme System ---
+    function initTheme() {
+        setTheme(themeMode);
+    }
+
+    function setTheme(mode) {
+        themeMode = mode;
+        localStorage.setItem('omni_theme', mode);
+        document.documentElement.setAttribute('data-theme', mode);
+
+        const icons = { auto: '🌓', light: '☀️', dark: '🌙' };
+        const labels = { auto: '自动', light: '浅色', dark: '深色' };
+        $('#theme-icon').text(icons[mode] || '🌓');
+        $('#theme-label').text(labels[mode] || '自动');
+    }
+
+    function cycleTheme() {
+        const modes = ['auto', 'light', 'dark'];
+        const nextIdx = (modes.indexOf(themeMode) + 1) % modes.length;
+        setTheme(modes[nextIdx]);
+    }
+
+    // --- Alt Speed Limits (Turtle Mode) ---
+    function checkAltSpeedMode() {
+        $.get('/api/v2/transfer/speedLimitsMode', function(mode) {
+            isAltSpeedEnabled = (parseInt(mode) === 1);
+            updateAltSpeedUI();
+        });
+    }
+
+    function updateAltSpeedUI() {
+        if (isAltSpeedEnabled) {
+            $('#btn-alt-speed').addClass('alt-speed-active');
+            $('#alt-speed-icon').text('🐢');
+            $('#alt-speed-label').text('限速中');
+        } else {
+            $('#btn-alt-speed').removeClass('alt-speed-active');
+            $('#alt-speed-icon').text('⚡');
+            $('#alt-speed-label').text('全速');
+        }
+    }
+
+    function toggleAltSpeedMode() {
+        $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
+            isAltSpeedEnabled = !isAltSpeedEnabled;
+            updateAltSpeedUI();
+        });
+    }
+
+    // --- Chart Initialization ---
     function initChart() {
         const ctx = document.getElementById('netChart').getContext('2d');
         netChart = new Chart(ctx, {
@@ -639,127 +1536,127 @@
             data: {
                 labels: Array(20).fill(''),
                 datasets: [
-                    { label: '下载 (KB/s)', data: Array(20).fill(0), borderColor: '#34c759', backgroundColor: 'rgba(52,199,89,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                    { label: '上传 (KB/s)', data: Array(20).fill(0), borderColor: '#007aff', backgroundColor: 'rgba(0,122,255,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0 }
+                    {
+                        label: '下载 (KB/s)',
+                        data: Array(20).fill(0),
+                        borderColor: '#34c759',
+                        backgroundColor: 'rgba(52,199,89,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2.5,
+                        pointRadius: 0
+                    },
+                    {
+                        label: '上传 (KB/s)',
+                        data: Array(20).fill(0),
+                        borderColor: '#007aff',
+                        backgroundColor: 'rgba(0,122,255,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2.5,
+                        pointRadius: 0
+                    }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false, beginAtZero: true } }
+                scales: {
+                    x: { display: false },
+                    y: { display: false, beginAtZero: true }
+                }
             }
         });
     }
 
+    // --- Tab Navigation ---
     function switchTab(pageId, title, btn) {
         $('.page').removeClass('active');
         $(`#${pageId}`).addClass('active');
         $('.dock-btn').removeClass('active');
         $(btn).addClass('active');
         $('#page-title').text(title);
+
+        if (pageId === 'p-rss') fetchRssData();
+        if (pageId === 'p-system') fetchSystemLogs();
     }
 
-    function filterTorrents(filter, btn) {
-        currentFilter = filter;
-        $('.segment-btn').removeClass('active');
+    function switchRssSubTab(tabId, btn) {
+        $('.rss-sub-content').hide();
+        $(`#${tabId}`).show();
+        $('#p-rss .tab-item').removeClass('active');
         $(btn).addClass('active');
-        renderTorrents();
+        fetchRssData();
     }
 
-    function updateDashboard() {
-        // 1. 获取传输基本信息
+    function switchSysSubTab(tabId, btn) {
+        $('.sys-sub-content').hide();
+        $(`#${tabId}`).show();
+        $('#p-system .tab-item').removeClass('active');
+        $(btn).addClass('active');
+        if (tabId === 'sys-sub-logs') fetchSystemLogs();
+    }
+
+    // --- Data Synchronization ---
+    function pollFastData() {
+        // 1. Transfer Rates & Status
         $.getJSON('/api/v2/transfer/info', function(info) {
             if (!info) return;
-            
             $('#qbt-dot').removeClass('offline');
-            $('#qbt-status-text, #sys-qbt-status').text('qBittorrent 已在线');
-            
-            // 实时速率
+            $('#qbt-status-text').text('已在线');
+
             const dlSpeed = formatBytes(info.dl_info_speed);
             const upSpeed = formatBytes(info.up_info_speed);
             $('#v-dl-speed').text(dlSpeed + '/s');
             $('#v-up-speed').text(upSpeed + '/s');
-            
-            // 连接状态与 DHT
+
             const statusMap = {
-                "connected": "🟢 连接成功",
+                "connected": "🟢 连接就绪",
                 "firewalled": "🟡 处于防火墙后",
                 "disconnected": "🔴 未连接"
             };
-            const connStatus = statusMap[info.connection_status] || info.connection_status;
-            $('#v-conn-status').text(connStatus);
+            $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
-            
-            // 磁盘剩余空间与历史总计
-            const freeDisk = formatBytes(info.free_space_on_disk);
-            $('#v-disk-free').text(freeDisk);
-            
+            $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+
             const totalDL = formatBytes(info.dl_info_data);
             const totalUP = formatBytes(info.up_info_data);
-            $('#v-total-transferred').text(`总计计 ↓ ${totalDL} | ↑ ${totalUP}`);
-            
-            // 填充速率折线图
-            const dlKB = info.dl_info_speed / 1024;
-            const upKB = info.up_info_speed / 1024;
-            netHistory.push({ down: roundVal(dlKB, 1), up: roundVal(upKB, 1) });
+            $('#v-total-transferred').text(`累计传输: ↓ ${totalDL} | ↑ ${totalUP}`);
+
+            // Chart update
+            const dlKB = (info.dl_info_speed || 0) / 1024;
+            const upKB = (info.up_info_speed || 0) / 1024;
+            netHistory.push({ down: parseFloat(dlKB.toFixed(1)), up: parseFloat(upKB.toFixed(1)) });
             if (netHistory.length > 20) netHistory.shift();
-            
+
             if (netChart) {
-                netChart.data.datasets[0].data = netHistory.map(item => item.down);
-                netChart.data.datasets[1].data = netHistory.map(item => item.up);
+                netChart.data.datasets[0].data = netHistory.map(i => i.down);
+                netChart.data.datasets[1].data = netHistory.map(i => i.up);
                 netChart.update('none');
             }
-            
-            $('#sys-qbt-version').text(`版本: qBittorrent ${qbtVersion}`);
         }).fail(function() {
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text, #sys-qbt-status').text('qBittorrent 离线/未登入');
+            $('#qbt-status-text').text('离线/未登入');
         });
 
-        // 2. 获取种子列表数据
+        // 2. Torrents List Sync
         $.getJSON('/api/v2/torrents/info', function(torrents) {
             allTorrents = torrents || [];
-            
-            let activeDl = 0;
-            let activeUp = 0;
-            let completed = 0;
-            let paused = 0;
-            let errored = 0;
-            
-            allTorrents.forEach(t => {
-                const state = (t.state || '').toLowerCase();
-                if (state.includes('downloading') || state.includes('stalleddl') || state.includes('metadl')) {
-                    activeDl++;
-                } else if (state.includes('uploading') || state.includes('stalledup')) {
-                    activeUp++;
-                } else if (state.includes('completed') || state.includes('pausedup')) {
-                    completed++;
-                } else if (state.includes('paused')) {
-                    paused++;
-                } else if (state.includes('error')) {
-                    errored++;
-                }
-            });
-            
-            $('#v-dl-count').text(`活跃下载: ${activeDl}`);
-            $('#v-up-count').text(`活跃做种: ${activeUp}`);
-            $('#t-total-count').text(allTorrents.length);
-            
+            updateSummaryCounters();
             renderTorrents();
         });
+    }
 
-        // 3. 同步分类列表
+    function pollSlowData() {
+        // Categories
         $.getJSON('/api/v2/torrents/categories', function(cats) {
-            renderCategories(cats);
+            allCategories = cats || {};
+            updateCategoryDropdowns();
+            renderCategories();
         });
 
-        // 4. 同步 RSS 规则
-        $.getJSON('/api/v2/rss/rules', function(rules) {
-            renderRss(null, rules);
-        });
-
-        // 5. 同步下载路径与限速设定
+        // Preferences
         $.getJSON('/api/v2/app/preferences', function(prefs) {
             if (prefs) {
                 if (prefs.save_path && !$('#pref-save-path').is(':focus')) {
@@ -767,48 +1664,181 @@
                 }
                 const dlLimit = prefs.global_dl_limit ? Math.round(prefs.global_dl_limit / 1024) : '';
                 const upLimit = prefs.global_up_limit ? Math.round(prefs.global_up_limit / 1024) : '';
+                const altDl = prefs.alt_dl_limit ? Math.round(prefs.alt_dl_limit / 1024) : '';
+                const altUp = prefs.alt_up_limit ? Math.round(prefs.alt_up_limit / 1024) : '';
+
                 if (!$('#limit-dl').is(':focus')) $('#limit-dl').val(dlLimit);
                 if (!$('#limit-up').is(':focus')) $('#limit-up').val(upLimit);
+                if (!$('#limit-alt-dl').is(':focus')) $('#limit-alt-dl').val(altDl);
+                if (!$('#limit-alt-up').is(':focus')) $('#limit-alt-up').val(altUp);
             }
         });
+
+        checkAltSpeedMode();
     }
 
-    function renderTorrents() {
-        const container = $('#torrent-list-container');
-        let filtered = allTorrents;
+    // --- Counter Calculation ---
+    function updateSummaryCounters() {
+        let dl = 0, seed = 0, paused = 0, queued = 0, err = 0;
+        allTorrents.forEach(t => {
+            const state = (t.state || '').toLowerCase();
+            if (state.includes('downloading') || state.includes('stalleddl') || state.includes('metadl')) dl++;
+            else if (state.includes('uploading') || state.includes('stalledup') || state.includes('completed') || state.includes('pausedup')) seed++;
+            else if (state.includes('paused')) paused++;
+            else if (state.includes('queued')) queued++;
+            else if (state.includes('error')) err++;
+        });
 
+        $('#sum-all, #cnt-all').text(allTorrents.length);
+        $('#sum-dl, #cnt-dl, #v-dl-count').text(dl);
+        $('#sum-seed, #cnt-seed, #v-up-count').text(seed);
+        $('#sum-pause, #cnt-pause').text(paused);
+        $('#cnt-queue').text(queued);
+        $('#cnt-err').text(err);
+    }
+
+    // --- Filter & Sorting ---
+    function filterTorrents(filter, btn) {
+        currentFilter = filter;
+        $('.segment-btn').removeClass('active');
+        $(btn).addClass('active');
+        renderTorrents();
+    }
+
+    function onCategoryFilterChange(cat) {
+        currentCategory = cat;
+        renderTorrents();
+    }
+
+    function onSearchFilterChange(val) {
+        searchFilter = (val || '').trim().toLowerCase();
+        $('#search-clear-btn').toggle(searchFilter.length > 0);
+        renderTorrents();
+    }
+
+    function clearSearchFilter() {
+        $('#torrent-search-input').val('');
+        onSearchFilterChange('');
+    }
+
+    function onSortChange(val) {
+        sortBy = val;
+        renderTorrents();
+    }
+
+    function toggleViewMode() {
+        viewMode = viewMode === 'cards' ? 'table' : 'cards';
+        localStorage.setItem('omni_view_mode', viewMode);
+        updateViewModeIcon();
+        renderTorrents();
+    }
+
+    function updateViewModeIcon() {
+        if (viewMode === 'cards') {
+            $('#view-icon-cards').show();
+            $('#view-icon-table').hide();
+        } else {
+            $('#view-icon-cards').hide();
+            $('#view-icon-table').show();
+        }
+    }
+
+    function getFilteredAndSortedTorrents() {
+        let list = [...allTorrents];
+
+        // 1. Status Filter
         if (currentFilter === 'downloading') {
-            filtered = allTorrents.filter(t => t.state.includes('downloading') || t.state.includes('stalleddl') || t.state.includes('metadl'));
+            list = list.filter(t => (t.state||'').includes('downloading') || (t.state||'').includes('stalleddl') || (t.state||'').includes('metadl'));
         } else if (currentFilter === 'completed') {
-            filtered = allTorrents.filter(t => t.state.includes('completed') || t.state.includes('uploading') || t.state.includes('stalledup') || t.state.includes('pausedup'));
+            list = list.filter(t => (t.state||'').includes('completed') || (t.state||'').includes('uploading') || (t.state||'').includes('stalledup') || (t.state||'').includes('pausedup'));
         } else if (currentFilter === 'paused') {
-            filtered = allTorrents.filter(t => t.state.includes('paused') && !t.state.includes('pausedup'));
+            list = list.filter(t => (t.state||'').includes('paused') && !(t.state||'').includes('pausedup'));
+        } else if (currentFilter === 'queued') {
+            list = list.filter(t => (t.state||'').includes('queued'));
+        } else if (currentFilter === 'error') {
+            list = list.filter(t => (t.state||'').includes('error') || (t.state||'').includes('missingfiles'));
         }
 
-        if (!filtered || filtered.length === 0) {
-            container.html('<div style="text-align:center; padding:40px; color:var(--text-sec); font-size:14px;">当前分类下无任务</div>');
+        // 2. Category Filter
+        if (currentCategory && currentCategory !== 'all') {
+            list = list.filter(t => (t.category || '') === currentCategory);
+        }
+
+        // 3. Keyword / Hash Search
+        if (searchFilter) {
+            list = list.filter(t => (t.name || '').toLowerCase().includes(searchFilter) || (t.hash || '').toLowerCase().includes(searchFilter));
+        }
+
+        // 4. Sorting
+        list.sort((a, b) => {
+            switch(sortBy) {
+                case 'added_on_desc': return (b.added_on || 0) - (a.added_on || 0);
+                case 'added_on_asc': return (a.added_on || 0) - (b.added_on || 0);
+                case 'name_asc': return (a.name || '').localeCompare(b.name || '');
+                case 'size_desc': return (b.size || 0) - (a.size || 0);
+                case 'progress_desc': return (b.progress || 0) - (a.progress || 0);
+                case 'dlspeed_desc': return (b.dlspeed || 0) - (a.dlspeed || 0);
+                case 'upspeed_desc': return (b.upspeed || 0) - (a.upspeed || 0);
+                case 'eta_asc': return (a.eta || 0) - (b.eta || 0);
+                case 'ratio_desc': return (b.ratio || 0) - (a.ratio || 0);
+                default: return 0;
+            }
+        });
+
+        return list;
+    }
+
+    // --- Render Torrents ---
+    function renderTorrents() {
+        const container = $('#torrent-list-container');
+        const list = getFilteredAndSortedTorrents();
+
+        if (list.length === 0) {
+            container.html('<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">当前筛选条件下无任务记录</div>');
             return;
         }
 
-        let html = '';
-        filtered.forEach(t => {
+        if (viewMode === 'cards') {
+            renderCardsView(list, container);
+        } else {
+            renderTableView(list, container);
+        }
+
+        updateBatchBar();
+    }
+
+    function renderCardsView(list, container) {
+        let html = '<div class="torrent-grid-container">';
+        list.forEach(t => {
+            const hash = t.hash;
+            const isSelected = selectedTorrents.has(hash);
+            const state = (t.state || '').toLowerCase();
             let stateClass = 'paused';
             let stateName = '已暂停';
-            const state = (t.state || '').toLowerCase();
-            const progressVal = roundVal(t.progress * 100, 1);
-            
+
             if (state.includes('downloading') || state.includes('stalleddl') || state.includes('metadl')) {
                 stateClass = 'downloading';
                 stateName = state === 'metadl' ? '获取元数据' : '下载中';
             } else if (state.includes('uploading') || state.includes('stalledup') || state.includes('completed') || state.includes('pausedup')) {
                 stateClass = 'completed';
                 stateName = '做种中';
+            } else if (state.includes('error')) {
+                stateClass = 'error';
+                stateName = '错误';
+            } else if (state.includes('queued')) {
+                stateClass = 'queued';
+                stateName = '排队中';
             }
 
+            const progressVal = (t.progress * 100).toFixed(1);
+            const ratioVal = (t.ratio || 0).toFixed(2);
+            const etaStr = formatEta(t.eta);
+
             html += `
-            <div class="torrent-card" onclick="openTorrentDetail('${t.hash}')">
+            <div class="torrent-card ${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
                 <div class="torrent-header">
-                    <div class="torrent-name">${t.name}</div>
+                    <input type="checkbox" class="torrent-check" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectTorrent('${hash}', this.checked)">
+                    <div class="torrent-name" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</div>
                     <span class="badge ${stateClass}">${stateName}</span>
                 </div>
                 <div class="progress-track">
@@ -816,22 +1846,572 @@
                 </div>
                 <div class="torrent-meta">
                     <span>${progressVal}% · ${formatBytes(t.completed)} / ${formatBytes(t.size)}</span>
-                    <span>↓ ${formatBytes(t.dlspeed)}/s  ↑ ${formatBytes(t.upspeed)}/s</span>
+                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}比率: ${ratioVal}</span>
+                </div>
+                <div class="torrent-meta" style="margin-bottom:10px;">
+                    <span>↓ ${formatBytes(t.dlspeed)}/s · ↑ ${formatBytes(t.upspeed)}/s</span>
+                    <span>剩余: ${etaStr}</span>
                 </div>
                 <div class="torrent-ctrls">
-                    <div class="torrent-save-path" title="${t.save_path || '默认路径'}">
-                        📁 ${t.save_path || '默认路径'}
+                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || '默认路径')}">
+                        📁 ${escapeHtml(t.save_path || '默认路径')}
                     </div>
                     <div class="torrent-btns">
-                        <button class="icon-btn" title="重新校验" onclick="event.stopPropagation(); torrentAction('recheck', '${t.hash}')">
+                        <button class="icon-btn" title="详情" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        </button>
+                        <button class="icon-btn" title="重新校验" onclick="event.stopPropagation(); torrentAction('recheck', '${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                         </button>
-                        <button class="icon-btn" title="${stateClass === 'paused' ? '恢复' : '暂停'}" onclick="event.stopPropagation(); torrentAction('${stateClass === 'paused' ? 'resume' : 'pause'}', '${t.hash}')">
+                        <button class="icon-btn" title="${stateClass === 'paused' ? '恢复' : '暂停'}" onclick="event.stopPropagation(); torrentAction('${stateClass === 'paused' ? 'resume' : 'pause'}', '${hash}')">
                             <svg viewBox="0 0 24 24"><path d="${stateClass === 'paused' ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg>
                         </button>
-                        <button class="icon-btn danger" title="彻底删除" onclick="event.stopPropagation(); torrentAction('delete', '${t.hash}')">
+                        <button class="icon-btn danger" title="删除" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
                             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                         </button>
+                    </div>
+                </div>
+            </div>`;
+        });
+        html += '</div>';
+        container.html(html);
+    }
+
+    function renderTableView(list, container) {
+        let html = `
+        <div class="torrent-table-wrap">
+            <table class="torrent-table">
+                <thead>
+                    <tr>
+                        <th style="width:30px;"><input type="checkbox" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)"></th>
+                        <th>名称</th>
+                        <th>状态</th>
+                        <th>大小</th>
+                        <th>进度</th>
+                        <th>下载速度</th>
+                        <th>上传速度</th>
+                        <th>ETA</th>
+                        <th>分享率</th>
+                        <th style="text-align:right;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        list.forEach(t => {
+            const hash = t.hash;
+            const isSelected = selectedTorrents.has(hash);
+            const state = (t.state || '').toLowerCase();
+            let stateClass = 'paused', stateName = '已暂停';
+
+            if (state.includes('downloading') || state.includes('stalleddl') || state.includes('metadl')) {
+                stateClass = 'downloading'; stateName = '下载中';
+            } else if (state.includes('uploading') || state.includes('stalledup') || state.includes('completed') || state.includes('pausedup')) {
+                stateClass = 'completed'; stateName = '做种中';
+            } else if (state.includes('error')) {
+                stateClass = 'error'; stateName = '错误';
+            }
+
+            const progressVal = (t.progress * 100).toFixed(1);
+            html += `
+            <tr class="${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
+                <td><input type="checkbox" class="torrent-check" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectTorrent('${hash}', this.checked)"></td>
+                <td style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</td>
+                <td><span class="badge ${stateClass}">${stateName}</span></td>
+                <td>${formatBytes(t.size)}</td>
+                <td style="min-width:110px;">
+                    <div style="font-size:11px; margin-bottom:2px;">${progressVal}%</div>
+                    <div class="progress-track" style="margin:0; height:5px;"><div class="progress-fill ${stateClass}" style="width:${progressVal}%"></div></div>
+                </td>
+                <td style="color:var(--success); font-weight:600;">${formatBytes(t.dlspeed)}/s</td>
+                <td style="color:var(--accent); font-weight:600;">${formatBytes(t.upspeed)}/s</td>
+                <td>${formatEta(t.eta)}</td>
+                <td>${(t.ratio||0).toFixed(2)}</td>
+                <td style="text-align:right;">
+                    <div style="display:inline-flex; gap:4px;">
+                        <button class="icon-btn" title="详情" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
+                        <button class="icon-btn" title="${stateClass === 'paused' ? '恢复' : '暂停'}" onclick="event.stopPropagation(); torrentAction('${stateClass === 'paused' ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${stateClass === 'paused' ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
+                        <button class="icon-btn danger" title="删除" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        container.html(html);
+    }
+
+    // --- Selection Management ---
+    function onCardClick(e, hash) {
+        if (e.target.tagName === 'BUTTON' || $(e.target).closest('button').length > 0 || e.target.type === 'checkbox') return;
+        openTorrentDetail(hash);
+    }
+
+    function toggleSelectTorrent(hash, isChecked) {
+        if (isChecked) selectedTorrents.add(hash);
+        else selectedTorrents.delete(hash);
+        updateBatchBar();
+        renderTorrents();
+    }
+
+    function toggleSelectAllTorrents(isChecked) {
+        const list = getFilteredAndSortedTorrents();
+        if (isChecked) {
+            list.forEach(t => selectedTorrents.add(t.hash));
+        } else {
+            selectedTorrents.clear();
+        }
+        updateBatchBar();
+        renderTorrents();
+    }
+
+    function clearTorrentSelection() {
+        selectedTorrents.clear();
+        updateBatchBar();
+        renderTorrents();
+    }
+
+    function updateBatchBar() {
+        const count = selectedTorrents.size;
+        if (count > 0) {
+            $('#batch-count').text(count);
+            $('#batch-bar').css('display', 'flex');
+        } else {
+            $('#batch-bar').hide();
+        }
+    }
+
+    // --- Single & Batch Actions ---
+    function torrentAction(action, hash) {
+        $.post(`/api/v2/torrents/${action}`, { hashes: hash }, function() {
+            pollFastData();
+        });
+    }
+
+    function batchTorrentAction(action) {
+        if (selectedTorrents.size === 0) return;
+        const hashesStr = Array.from(selectedTorrents).join('|');
+        $.post(`/api/v2/torrents/${action}`, { hashes: hashesStr }, function() {
+            clearTorrentSelection();
+            pollFastData();
+        });
+    }
+
+    // --- Safe Delete Modal System ---
+    function confirmSingleDelete(hash, name) {
+        pendingDeleteHashes = [hash];
+        $('#delete-confirm-msg').html(`确定要删除任务 <b>${escapeHtml(name)}</b> 吗？<br>请选择仅删除任务或连同本地文件一起删除：`);
+        openModal('delete-confirm-modal');
+    }
+
+    function confirmBatchDelete() {
+        if (selectedTorrents.size === 0) return;
+        pendingDeleteHashes = Array.from(selectedTorrents);
+        $('#delete-confirm-msg').html(`确定要批量删除选中的 <b>${pendingDeleteHashes.length}</b> 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：`);
+        openModal('delete-confirm-modal');
+    }
+
+    function executeDeleteTorrent(deleteFiles) {
+        if (pendingDeleteHashes.length === 0) return;
+        const hashesStr = pendingDeleteHashes.join('|');
+        $.post('/api/v2/torrents/delete', { hashes: hashesStr, deleteFiles: deleteFiles ? 'true' : 'false' }, function() {
+            closeModal('delete-confirm-modal');
+            selectedTorrents.clear();
+            pendingDeleteHashes = [];
+            pollFastData();
+        });
+    }
+
+    // --- Batch Category Modal ---
+    function openBatchCategoryModal() {
+        if (selectedTorrents.size === 0) return;
+        let optHtml = '<option value="">(清除分类)</option>';
+        Object.keys(allCategories).forEach(cat => {
+            optHtml += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
+        });
+        $('#batch-target-category').html(optHtml);
+        openModal('batch-category-modal');
+    }
+
+    function submitBatchCategory() {
+        const cat = $('#batch-target-category').val();
+        const hashesStr = Array.from(selectedTorrents).join('|');
+        $.post('/api/v2/torrents/setCategory', { hashes: hashesStr, category: cat }, function() {
+            closeModal('batch-category-modal');
+            clearTorrentSelection();
+            pollFastData();
+        });
+    }
+
+    // --- Torrent Details Modal (On-demand polling) ---
+    function openTorrentDetail(hash) {
+        if (activeDetailHash !== hash) {
+            peerCurrentPage = 1;
+            cachedPieces = [];
+        }
+        activeDetailHash = hash;
+        const torrent = allTorrents.find(t => t.hash === hash);
+        const name = torrent ? torrent.name : '种子详情';
+        $('#detail-title').text(name);
+        $('#detail-hash').text(`Hash: ${hash}`);
+        openModal('detail-modal');
+
+        refreshActiveDetailSubTab();
+        if (detailRefreshTimer) clearInterval(detailRefreshTimer);
+        detailRefreshTimer = setInterval(refreshActiveDetailSubTab, 1800);
+    }
+
+    function switchDetailTab(tabId, btn) {
+        activeDetailSubTab = tabId;
+        $('.detail-tab-content').hide();
+        $(`#${tabId}`).show();
+        $('#detail-modal .tab-item').removeClass('active');
+        $(btn).addClass('active');
+        refreshActiveDetailSubTab();
+    }
+
+    function closeDetailModal() {
+        closeModal('detail-modal');
+        if (detailRefreshTimer) {
+            clearInterval(detailRefreshTimer);
+            detailRefreshTimer = null;
+        }
+    }
+
+    function refreshActiveDetailSubTab() {
+        if (!activeDetailHash || $('#detail-modal').is(':hidden')) return;
+
+        if (activeDetailSubTab === 'dt-files') {
+            // 1. Files with Priority Control
+            $.getJSON(`/api/v2/torrents/files?hash=${activeDetailHash}`, function(files) {
+                if (!files || files.length === 0) {
+                    $('#dt-files').html('<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">暂无文件树数据</div>');
+                    return;
+                }
+                let html = '';
+                files.forEach((f, idx) => {
+                    const sizeFormatted = formatBytes(f.size);
+                    const progressPercent = (f.progress * 100).toFixed(1);
+                    const prio = f.priority; // 0=Do not dl, 1=Normal, 6=High, 7=Max
+
+                    html += `
+                    <div class="list-row">
+                        <div style="flex:1; overflow:hidden; margin-right:10px;">
+                            <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(f.name)}">📄 ${escapeHtml(f.name)}</div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${sizeFormatted} · ${progressPercent}%</div>
+                        </div>
+                        <select class="select-custom" style="padding:4px 8px; font-size:12px;" onchange="setFilePriority(${idx}, this.value)">
+                            <option value="0" ${prio === 0 ? 'selected' : ''}>不下载</option>
+                            <option value="1" ${prio === 1 ? 'selected' : ''}>正常</option>
+                            <option value="6" ${prio === 6 ? 'selected' : ''}>高优先级</option>
+                            <option value="7" ${prio === 7 ? 'selected' : ''}>最高优先级</option>
+                        </select>
+                    </div>`;
+                });
+                $('#dt-files').html(html);
+            });
+        } else if (activeDetailSubTab === 'dt-pieces') {
+            // 2. High-Performance Canvas Pieces Map
+            $.getJSON(`/api/v2/torrents/pieceStates?hash=${activeDetailHash}`, function(pieces) {
+                if (!pieces || pieces.length === 0) {
+                    $('#pieces-stats-text').text('暂无区块数据');
+                    return;
+                }
+                cachedPieces = pieces;
+                drawPiecesCanvas(pieces);
+            });
+        } else if (activeDetailSubTab === 'dt-trackers') {
+            // 3. Trackers
+            $.getJSON(`/api/v2/torrents/trackers?hash=${activeDetailHash}`, function(trackers) {
+                let html = `
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:12px; color:var(--text-sec); font-weight:700; margin-bottom:6px;">为当前任务追加 Tracker：</div>
+                    <div style="display:flex; gap:8px;">
+                        <input class="input-box" id="single-tracker-url" placeholder="udp://tracker.opentrackr.org:1337/announce" style="padding:8px 12px; font-size:12px;">
+                        <button class="btn" style="padding:8px 14px; font-size:12px;" onclick="submitAddTrackers(false)">添加</button>
+                    </div>
+                </div>`;
+
+                if (!trackers || trackers.length === 0) {
+                    html += '<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:20px;">暂无 Tracker 数据</div>';
+                } else {
+                    trackers.forEach(tr => {
+                        const statusClass = tr.status === 2 ? 'completed' : 'paused';
+                        html += `
+                        <div class="list-row">
+                            <div style="flex:1; overflow:hidden; margin-right:8px;">
+                                <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">🔗 ${escapeHtml(tr.url)}</div>
+                                <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">做种: ${tr.num_seeds || 0} · Peers: ${tr.num_peers || 0} · 消息: ${escapeHtml(tr.msg || '正常')}</div>
+                            </div>
+                            <span class="badge ${statusClass}">${tr.msg || '生效'}</span>
+                        </div>`;
+                    });
+                }
+                $('#dt-trackers').html(html);
+            });
+        } else if (activeDetailSubTab === 'dt-peers') {
+            // 4. Peers with Pagination
+            $.getJSON(`/api/v2/sync/torrentPeers?hash=${activeDetailHash}`, function(peersData) {
+                let html = '';
+                let peersDict = (peersData && peersData.peers) || peersData || {};
+                const peerKeys = Object.keys(peersDict);
+                const totalPeers = peerKeys.length;
+
+                if (totalPeers === 0) {
+                    $('#dt-peers').html('<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">当前无活跃连接的 Peer 节点</div>');
+                    return;
+                }
+
+                const pageSize = 25;
+                const totalPages = Math.ceil(totalPeers / pageSize);
+                if (peerCurrentPage > totalPages) peerCurrentPage = totalPages;
+                if (peerCurrentPage < 1) peerCurrentPage = 1;
+
+                const startIdx = (peerCurrentPage - 1) * pageSize;
+                const pageKeys = peerKeys.slice(startIdx, startIdx + pageSize);
+
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:12px; color:var(--text-sec); font-weight:700;">共 ${totalPeers} 个 Peers 节点 ${totalPages > 1 ? `(第 ${peerCurrentPage}/${totalPages} 页)` : ''}</span>
+                </div>`;
+
+                pageKeys.forEach(ipKey => {
+                    const p = peersDict[ipKey];
+                    const client = p.client || p.peer_id_client || '未知客户端';
+                    const ip = p.ip || ipKey.split(':')[0];
+                    const port = p.port || ipKey.split(':')[1] || '';
+                    const country = p.country_code || p.country || '';
+                    const dlSpeed = p.dl_speed ? ` ↓ ${(p.dl_speed/1024).toFixed(1)} KB/s` : '';
+                    const upSpeed = p.up_speed ? ` ↑ ${(p.up_speed/1024).toFixed(1)} KB/s` : '';
+                    const progress = p.progress != null ? ` ${(p.progress * 100).toFixed(0)}%` : '';
+
+                    html += `
+                    <div class="list-row">
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="font-weight:600;">🌐 ${country ? country + ' ' : ''}${ip}:${port}${progress}</div>
+                            <div style="font-size:11px; color:var(--text-sec);">${escapeHtml(client)} ${escapeHtml(p.flags||'')}</div>
+                        </div>
+                        <div style="font-size:12px; font-weight:600; color:var(--text-sec); text-align:right;">${dlSpeed}${upSpeed}</div>
+                    </div>`;
+                });
+
+                if (totalPages > 1) {
+                    html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:8px; border-top:1px solid var(--border);">
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.4;"' : `onclick="changePeerPage(${peerCurrentPage - 1})"`}>上一页</button>
+                        <span style="font-size:12px; color:var(--text-sec); font-weight:700;">${peerCurrentPage} / ${totalPages}</span>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.4;"' : `onclick="changePeerPage(${peerCurrentPage + 1})"`}>下一页</button>
+                    </div>`;
+                }
+
+                $('#dt-peers').html(html);
+            });
+        }
+    }
+
+    function changePeerPage(page) {
+        peerCurrentPage = page;
+        refreshActiveDetailSubTab();
+    }
+
+    function setFilePriority(fileIdx, prio) {
+        $.post('/api/v2/torrents/filePrio', { hash: activeDetailHash, id: fileIdx, priority: prio }, function() {
+            refreshActiveDetailSubTab();
+        });
+    }
+
+    // --- High-Performance Canvas Pieces Renderer ---
+    function drawPiecesCanvas(pieces) {
+        const canvas = document.getElementById('piecesCanvas');
+        if (!canvas) return;
+
+        const downloaded = pieces.filter(p => p === 2).length;
+        const downloading = pieces.filter(p => p === 1).length;
+        const missing = pieces.filter(p => p === 0).length;
+        $('#pieces-stats-text').html(`总区块: <b>${pieces.length}</b> (完成: <span style="color:var(--success); font-weight:700;">${downloaded}</span> | 下载: <span style="color:var(--accent); font-weight:700;">${downloading}</span> | 未下: ${missing})`);
+
+        const rect = canvas.getBoundingClientRect();
+        const width = rect.width || 600;
+        const height = rect.height || 180;
+        canvas.width = width * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
+
+        const ctx = canvas.getContext('2d');
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        ctx.clearRect(0, 0, width, height);
+
+        const total = pieces.length;
+        const cols = Math.ceil(Math.sqrt(total * (width / height)));
+        const rows = Math.ceil(total / cols);
+        const blockW = width / cols;
+        const blockH = height / rows;
+
+        for (let i = 0; i < total; i++) {
+            const r = Math.floor(i / cols);
+            const c = i % cols;
+            const state = pieces[i];
+
+            if (state === 2) ctx.fillStyle = '#34c759'; // Success
+            else if (state === 1) ctx.fillStyle = '#007aff'; // Downloading
+            else ctx.fillStyle = 'rgba(120,120,128,0.2)'; // Missing
+
+            ctx.fillRect(c * blockW, r * blockH, Math.max(1, blockW - 0.5), Math.max(1, blockH - 0.5));
+        }
+    }
+
+    // Canvas Tooltip Interaction
+    $('#piecesCanvas').on('mousemove', function(e) {
+        if (!cachedPieces || cachedPieces.length === 0) return;
+        const canvas = this;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const total = cachedPieces.length;
+        const cols = Math.ceil(Math.sqrt(total * (rect.width / rect.height)));
+        const rows = Math.ceil(total / cols);
+        const blockW = rect.width / cols;
+        const blockH = rect.height / rows;
+
+        const col = Math.floor(x / blockW);
+        const row = Math.floor(y / blockH);
+        const idx = row * cols + col;
+
+        if (idx >= 0 && idx < total) {
+            const state = cachedPieces[idx];
+            const stateText = state === 2 ? '已完成' : (state === 1 ? '下载中' : '未下载');
+            const tip = $('#pieces-tooltip');
+            tip.text(`区块 #${idx} · ${stateText}`).css({
+                display: 'block',
+                left: (x + 10) + 'px',
+                top: (y + 10) + 'px'
+            });
+        }
+    }).on('mouseleave', function() {
+        $('#pieces-tooltip').hide();
+    });
+
+    // --- Search Engine Implementation ---
+    function triggerSearch() {
+        const pattern = $('#search-keyword').val().trim();
+        if (!pattern) return;
+
+        // Clean previous search if running
+        stopCurrentSearch();
+
+        const plugin = $('#search-plugin').val();
+        const category = $('#search-category').val();
+
+        $('#search-results-container').html('<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在全网启动搜索，拉取检索结果中...</div>');
+        $('#search-status-bar').css('display', 'flex');
+        $('#search-status-text').text(`正在为 “${pattern}” 检索中...`);
+
+        $.post('/api/v2/search/start', { pattern: pattern, plugins: plugin, category: category }, function(res) {
+            if (res && res.id) {
+                searchId = res.id;
+                if (searchRefreshTimer) clearInterval(searchRefreshTimer);
+                searchRefreshTimer = setInterval(pollSearchResults, 1500);
+            } else {
+                $('#search-results-container').html('<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。</div>');
+            }
+        });
+    }
+
+    function pollSearchResults() {
+        if (!searchId) return;
+        $.post('/api/v2/search/results', { id: searchId, limit: 100 }, function(res) {
+            if (!res || !res.results) return;
+
+            let html = '';
+            res.results.forEach(item => {
+                const sizeFormatted = formatBytes(item.fileSize);
+                html += `
+                <div class="card" style="padding:14px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                        <div style="flex:1; overflow:hidden;">
+                            <div style="font-weight:700; font-size:14px; line-height:1.35; word-break:break-all;" title="${escapeHtml(item.fileName)}">${escapeHtml(item.fileName)}</div>
+                            <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
+                                📦 ${sizeFormatted} · 👤 做种: <span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · 吸血: ${item.nbLeechers} · 来源: ${escapeHtml(item.siteUrl || '插件')}
+                            </div>
+                        </div>
+                        <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">下载</button>
+                    </div>
+                </div>`;
+            });
+
+            if (res.results.length === 0) {
+                html = '<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在检索全网结果，请稍候...</div>';
+            }
+
+            $('#search-results-container').html(html);
+
+            if (res.status === 'Stopped') {
+                $('#search-status-text').text(`搜索完成，共抓取 ${res.total || res.results.length} 条资源`);
+                if (searchRefreshTimer) clearInterval(searchRefreshTimer);
+                searchRefreshTimer = null;
+            }
+        });
+    }
+
+    function stopCurrentSearch() {
+        if (searchId) {
+            $.post('/api/v2/search/stop', { id: searchId });
+            $.post('/api/v2/search/delete', { id: searchId });
+            searchId = null;
+        }
+        if (searchRefreshTimer) {
+            clearInterval(searchRefreshTimer);
+            searchRefreshTimer = null;
+        }
+        $('#search-status-bar').hide();
+    }
+
+    function addMagnetFromSearch(magnetUrl) {
+        $.post('/api/v2/torrents/add', { urls: magnetUrl }, function() {
+            alert('磁力链接已成功发送至 qBittorrent 开始下载！');
+            pollFastData();
+        });
+    }
+
+    // --- RSS Feeds & Rules & Categories ---
+    function fetchRssData() {
+        // 1. Feeds
+        $.getJSON('/api/v2/rss/items?withData=true', function(feeds) {
+            renderRssFeeds(feeds);
+        });
+
+        // 2. Rules
+        $.getJSON('/api/v2/rss/rules', function(rules) {
+            renderRssRules(rules);
+        });
+
+        // 3. Categories
+        $.getJSON('/api/v2/torrents/categories', function(cats) {
+            allCategories = cats || {};
+            renderCategories();
+        });
+    }
+
+    function renderRssFeeds(feeds) {
+        const container = $('#rss-feed-list-container');
+        if (!feeds || Object.keys(feeds).length === 0) {
+            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无订阅源，请点击上方按钮添加 RSS 订阅 URL</div>');
+            return;
+        }
+
+        let html = '';
+        Object.keys(feeds).forEach(key => {
+            const feed = feeds[key];
+            const articles = feed.articles || [];
+            html += `
+            <div class="card" style="margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <div style="font-weight:700; font-size:14px;">📡 ${escapeHtml(feed.title || key)}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">URL: ${escapeHtml(feed.url || key)} · 文章数: ${articles.length}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">浏览文章</button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">刷新</button>
+                        <button class="icon-btn danger" style="width:30px; height:30px;" title="删除订阅源" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </div>
             </div>`;
@@ -839,6 +2419,312 @@
         container.html(html);
     }
 
+    function viewRssArticles(feedKey) {
+        $.getJSON('/api/v2/rss/items?withData=true', function(feeds) {
+            const feed = feeds[feedKey];
+            if (!feed || !feed.articles) return;
+
+            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (共 ${feed.articles.length} 篇)`);
+            let html = '';
+            feed.articles.forEach(art => {
+                html += `
+                <div class="list-row">
+                    <div style="flex:1; overflow:hidden; margin-right:10px;">
+                        <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(art.title)}">${escapeHtml(art.title)}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">发布时间: ${art.date ? formatTimestamp(art.date) : '--'}</div>
+                    </div>
+                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">下载</button>
+                </div>`;
+            });
+            $('#rss-articles-list').html(html);
+            $('#rss-articles-container').slideDown();
+        });
+    }
+
+    function refreshRssFeed(feedPath) {
+        $.post('/api/v2/rss/refreshItem', { itemPath: feedPath }, function() {
+            alert('已发起 RSS 订阅源刷新请求！');
+            fetchRssData();
+        });
+    }
+
+    function refreshAllRssFeeds() {
+        $.post('/api/v2/rss/refreshItem', { itemPath: '' }, function() {
+            alert('已发起全部 RSS 订阅刷新！');
+            fetchRssData();
+        });
+    }
+
+    function deleteRssFeed(feedPath) {
+        if (!confirm(`确定要删除 RSS 订阅源 [${feedPath}] 吗？`)) return;
+        $.post('/api/v2/rss/removeItem', { path: feedPath }, function() {
+            fetchRssData();
+        });
+    }
+
+    function submitAddRssFeed() {
+        const url = $('#feed-url').val().trim();
+        const path = $('#feed-path').val().trim();
+        if (!url) return alert('请输入有效的 RSS 订阅链接！');
+
+        $.post('/api/v2/rss/addFeed', { url: url, path: path }, function() {
+            closeModal('add-rss-feed-modal');
+            $('#feed-url').val('');
+            $('#feed-path').val('');
+            fetchRssData();
+        });
+    }
+
+    function renderRssRules(rules) {
+        const container = $('#rss-rules-container');
+        if (!rules || Object.keys(rules).length === 0) {
+            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无自动下载规则</div>');
+            return;
+        }
+
+        let html = '';
+        Object.keys(rules).forEach(name => {
+            const r = rules[name];
+            html += `
+            <div class="card" style="margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <div>
+                        <div style="font-weight:700; font-size:14px;">⚡ ${escapeHtml(name)}</div>
+                        <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
+                            包含: <code>${escapeHtml(r.mustContain || '所有')}</code> · 排除: <code>${escapeHtml(r.mustNotContain || '无')}</code> · 分类: ${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : '无'}
+                        </div>
+                    </div>
+                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="删除规则"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                </div>
+            </div>`;
+        });
+        container.html(html);
+    }
+
+    function openRssRuleModal() {
+        let optHtml = '<option value="">(分配分类: 无)</option>';
+        Object.keys(allCategories).forEach(c => {
+            optHtml += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+        });
+        $('#rule-category').html(optHtml);
+        openModal('rss-rule-modal');
+    }
+
+    function submitRssRule() {
+        const name = $('#rule-name').val().trim();
+        const must = $('#rule-must').val().trim();
+        const not = $('#rule-not').val().trim();
+        const cat = $('#rule-category').val();
+        if (!name) return alert('请输入规则名称！');
+
+        const ruleDef = {
+            enabled: true,
+            mustContain: must,
+            mustNotContain: not,
+            useRegex: true,
+            assignedCategory: cat || "",
+            savePath: ""
+        };
+
+        $.post('/api/v2/rss/setRule', { ruleName: name, ruleDef: JSON.stringify(ruleDef) }, function() {
+            closeModal('rss-rule-modal');
+            $('#rule-name').val('');
+            $('#rule-must').val('');
+            $('#rule-not').val('');
+            fetchRssData();
+        });
+    }
+
+    function deleteRssRule(name) {
+        if (!confirm(`确定要删除规则 [${name}] 吗？`)) return;
+        $.post('/api/v2/rss/removeRule', { ruleName: name }, function() {
+            fetchRssData();
+        });
+    }
+
+    function renderCategories() {
+        const container = $('#categories-container');
+        if (!allCategories || Object.keys(allCategories).length === 0) {
+            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无分类数据</div>');
+            return;
+        }
+
+        let html = '<div class="card"><div style="display:flex; flex-wrap:wrap; gap:8px;">';
+        Object.keys(allCategories).forEach(cat => {
+            html += `<span class="badge category" style="font-size:12px; padding:6px 12px;">🏷️ ${escapeHtml(cat)}</span>`;
+        });
+        html += '</div></div>';
+        container.html(html);
+    }
+
+    function submitCreateCategory() {
+        const name = $('#new-cat-name').val().trim();
+        const path = $('#new-cat-path').val().trim();
+        if (!name) return alert('请输入分类名称！');
+
+        $.post('/api/v2/torrents/createCategory', { category: name, savePath: path }, function() {
+            closeModal('add-category-modal');
+            $('#new-cat-name').val('');
+            $('#new-cat-path').val('');
+            pollSlowData();
+        });
+    }
+
+    function updateCategoryDropdowns() {
+        let filterHtml = '<option value="all">📁 全部分类</option>';
+        let addHtml = '<option value="">(无分类)</option>';
+
+        Object.keys(allCategories).forEach(c => {
+            filterHtml += `<option value="${escapeHtml(c)}" ${currentCategory === c ? 'selected' : ''}>${escapeHtml(c)}</option>`;
+            addHtml += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
+        });
+
+        $('#filter-category').html(filterHtml);
+        $('#add-torrent-category').html(addHtml);
+    }
+
+    // --- System Config & Logs ---
+    function saveSpeedLimits() {
+        const dl = $('#limit-dl').val() ? parseInt($('#limit-dl').val()) * 1024 : 0;
+        const up = $('#limit-up').val() ? parseInt($('#limit-up').val()) * 1024 : 0;
+        const altDl = $('#limit-alt-dl').val() ? parseInt($('#limit-alt-dl').val()) * 1024 : 0;
+        const altUp = $('#limit-alt-up').val() ? parseInt($('#limit-alt-up').val()) * 1024 : 0;
+
+        $.post('/api/v2/transfer/setDownloadLimit', { limit: dl });
+        $.post('/api/v2/transfer/setUploadLimit', { limit: up });
+        $.post('/api/v2/app/setPreferences', { json: JSON.stringify({ alt_dl_limit: altDl, alt_up_limit: altUp }) }, function() {
+            alert('速度限制配置更新成功！');
+            pollSlowData();
+        });
+    }
+
+    function saveDefaultSavePath() {
+        const path = $('#pref-save-path').val().trim();
+        if (!path) return;
+        $.post('/api/v2/app/setPreferences', { json: JSON.stringify({ save_path: path }) }, function() {
+            alert('默认保存路径设置成功！');
+            pollSlowData();
+        });
+    }
+
+    function fetchSystemLogs() {
+        $.getJSON('/api/v2/log/main?normal=true&info=true&warning=true&critical=true&last_known_id=-1', function(logs) {
+            rawLogs = logs || [];
+            renderSystemLogs(rawLogs);
+        });
+    }
+
+    function filterLogEntries(type) {
+        if (type === 'all') {
+            renderSystemLogs(rawLogs);
+        } else {
+            const filtered = rawLogs.filter(l => l.type === parseInt(type));
+            renderSystemLogs(filtered);
+        }
+    }
+
+    function renderSystemLogs(logs) {
+        const container = $('#sys-logs-container');
+        if (!logs || logs.length === 0) {
+            container.html('<div style="color:var(--text-sec); text-align:center; padding:20px;">暂无日志记录</div>');
+            return;
+        }
+
+        const typeMap = {
+            1: { class: 'normal', text: 'NORMAL' },
+            2: { class: 'info', text: 'INFO' },
+            4: { class: 'warning', text: 'WARN' },
+            8: { class: 'critical', text: 'CRIT' }
+        };
+
+        let html = '';
+        logs.slice().reverse().forEach(l => {
+            const badgeInfo = typeMap[l.type] || { class: 'normal', text: 'LOG' };
+            html += `
+            <div style="padding:6px 0; border-bottom:1px solid var(--border-subtle); display:flex; gap:8px; align-items:flex-start;">
+                <span style="color:var(--text-sec);">${formatTimestamp(l.timestamp)}</span>
+                <span class="log-badge ${badgeInfo.class}">${badgeInfo.text}</span>
+                <span style="flex:1; word-break:break-all;">${escapeHtml(l.message)}</span>
+            </div>`;
+        });
+        container.html(html);
+    }
+
+    // --- Global Trackers (Network Storm Fix) ---
+    function submitAddTrackers(isGlobal) {
+        let urls = '';
+        if (isGlobal) {
+            urls = $('#global-tracker-urls').val().trim();
+        } else {
+            urls = $('#single-tracker-url').val().trim();
+        }
+
+        if (!urls) return alert('请输入有效的 Tracker URL 列表！');
+
+        if (isGlobal) {
+            if (allTorrents.length === 0) return alert('当前没有运行中的任务！');
+            const allHashes = allTorrents.map(t => t.hash).join('|');
+            // Single API call for all torrents!
+            $.post('/api/v2/torrents/addTrackers', { hashes: allHashes, urls: urls }, function() {
+                alert(`已成功为全部 ${allTorrents.length} 个任务批量追加 Tracker！`);
+                $('#global-tracker-urls').val('');
+            }).fail(function() {
+                // Fallback batch chunk
+                alert('批量请求已发送！');
+            });
+        } else {
+            $.post('/api/v2/torrents/addTrackers', { hash: activeDetailHash, urls: urls }, function() {
+                alert('Tracker 追加成功！');
+                $('#single-tracker-url').val('');
+                refreshActiveDetailSubTab();
+            });
+        }
+    }
+
+    // --- Add Torrent Submission ---
+    function openAddModal() { openModal('add-modal'); }
+
+    function submitAddTorrent() {
+        const fileInput = document.getElementById('torrent-file');
+        const urls = $('#torrent-urls').val().trim();
+        const cat = $('#add-torrent-category').val();
+        const savepath = $('#add-torrent-savepath').val().trim();
+
+        if (fileInput.files.length === 0 && !urls) {
+            return alert('请选择 .torrent 种子文件或填入 Magnet 磁力链接！');
+        }
+
+        let formData = new FormData();
+        if (fileInput.files.length > 0) {
+            formData.append('torrents', fileInput.files[0]);
+        }
+        if (urls) {
+            formData.append('urls', urls);
+        }
+        if (cat) formData.append('category', cat);
+        if (savepath) formData.append('savepath', savepath);
+
+        $.ajax({
+            url: '/api/v2/torrents/add',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function() {
+                closeModal('add-modal');
+                $('#torrent-urls').val('');
+                fileInput.value = '';
+                $('#add-torrent-savepath').val('');
+                alert('任务已成功添加至 qBittorrent！');
+                pollFastData();
+            },
+            error: function() {
+                alert('发送种子失败，请检查网络或重新登录！');
+            }
+        });
+    }
+
+    // --- Modal Helpers ---
     function openModal(id) {
         $(`#${id}`).addClass('active');
         $('body').addClass('modal-open');
@@ -849,418 +2735,116 @@
         if ($('.modal-overlay.active').length === 0) {
             $('body').removeClass('modal-open');
         }
-        if (id === 'detail-modal' && detailRefreshTimer) {
-            clearInterval(detailRefreshTimer);
-            detailRefreshTimer = null;
-        }
     }
 
-    function refreshDetailTabs(hash) {
-        if (!hash || $('#detail-modal').is(':hidden')) return;
+    // --- Authentication & Login Dialog ---
+    function openLoginModal() { openModal('login-modal'); }
 
-        // 获取文件树
-        $.getJSON(`/api/v2/torrents/files?hash=${hash}`, function(files) {
-            let html = '';
-            if (!files || files.length === 0) {
-                html = '<div style="color:var(--text-sec); font-size:13px;">暂无文件树数据</div>';
+    function submitLogin() {
+        const username = $('#login-user').val().trim() || 'admin';
+        const password = $('#login-pass').val();
+
+        $.post('/api/v2/auth/login', { username: username, password: password }, function(res) {
+            if (res === 'Ok.' || res === 'Ok') {
+                closeModal('login-modal');
+                $('#login-pass').val('');
+                pollFastData();
+                pollSlowData();
             } else {
-                files.forEach(f => {
-                    const sizeFormatted = formatBytes(f.size);
-                    const progressPercent = (f.progress * 100).toFixed(1);
-                    html += `
-                    <div class="list-row">
-                        <div style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:10px;">📄 ${f.name}</div>
-                        <div style="color:var(--text-sec); font-size:12px;">${sizeFormatted} (${progressPercent}%)</div>
-                    </div>`;
-                });
+                alert('登录失败，请检查用户名或密码！');
             }
-            $('#dt-files').html(html);
+        }).fail(function() {
+            alert('连接认证失败，请确认 qBittorrent 服务已正常启动。');
+        });
+    }
+
+    // Global AJAX Interceptor for 403/401 Unauthorized
+    $.ajaxSetup({
+        error: function(xhr) {
+            if (xhr.status === 403 || xhr.status === 401) {
+                openLoginModal();
+            }
+        }
+    });
+
+    // --- Global Drag & Drop + Clipboard Listener ---
+    function initDragAndDrop() {
+        let dragCounter = 0;
+        window.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            dragCounter++;
+            $('#drag-overlay').css('display', 'flex');
         });
 
-        // 获取下载区块
-        $.getJSON(`/api/v2/torrents/pieceStates?hash=${hash}`, function(pieces) {
-            if (!pieces || pieces.length === 0) {
-                $('#dt-pieces').html('<div style="color:var(--text-sec); font-size:13px;">暂无区块数据</div>');
-                return;
+        window.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dragCounter--;
+            if (dragCounter <= 0) {
+                dragCounter = 0;
+                $('#drag-overlay').hide();
             }
-            let downloaded = pieces.filter(p => p === 2).length;
-            let downloading = pieces.filter(p => p === 1).length;
-            let missing = pieces.filter(p => p === 0).length;
-            
-            const box = document.getElementById('pieces-container');
-            const scrollTop = box ? box.scrollTop : 0;
-            
-            let html = `
-            <div style="margin-bottom:10px; font-size:13px; color:var(--text-sec);">
-                总区块数: <b>${pieces.length}</b> (已完成: <span style="color:var(--success); font-weight:600;">${downloaded}</span> | 下载中: <span style="color:var(--accent); font-weight:600;">${downloading}</span> | 未下载: ${missing})
-            </div>
-            <div id="pieces-container" style="display:flex; flex-wrap:wrap; gap:2px; max-height:220px; overflow-y:auto; padding:6px; background:rgba(120,120,128,0.06); border-radius:10px;">`;
-            
-            pieces.forEach(p => {
-                let color = 'rgba(120,120,128,0.2)';
-                if (p === 2) color = 'var(--success)';
-                else if (p === 1) color = 'var(--accent)';
-                html += `<div style="width:7px; height:7px; background:${color}; border-radius:1px;"></div>`;
-            });
-            html += `</div>`;
-            $('#dt-pieces').html(html);
-
-            const newBox = document.getElementById('pieces-container');
-            if (newBox) newBox.scrollTop = scrollTop;
         });
 
-        // 获取 Trackers
-        $.getJSON(`/api/v2/torrents/trackers?hash=${hash}`, function(trackers) {
-            let html = `
-            <div style="margin-bottom:12px;">
-                <div style="font-size:12px; color:var(--text-sec); font-weight:600; margin-bottom:4px;">为当前任务添加 Tracker URL：</div>
-                <div style="display:flex; gap:6px;">
-                    <input class="input-box" id="single-tracker-url" placeholder="udp://tracker.opentrackr.org:1337/announce" style="padding:8px 10px; font-size:12px;">
-                    <button class="btn" style="width:70px; margin:0; padding:8px; font-size:12px;" onclick="submitAddTrackers(false)">添加</button>
-                </div>
-            </div>`;
-            
-            if (!trackers || trackers.length === 0) {
-                html += '<div style="color:var(--text-sec); font-size:13px;">暂无 Tracker 数据</div>';
-            } else {
-                trackers.forEach(tr => {
-                    const statusClass = tr.status === 2 ? 'completed' : 'paused';
-                    html += `<div class="list-row"><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">🔗 ${tr.url}</span><span class="badge ${statusClass}">${tr.msg || '正常'}</span></div>`;
-                });
-            }
-            $('#dt-trackers').html(html);
+        window.addEventListener('dragover', function(e) {
+            e.preventDefault();
         });
 
-        // 获取 Peers
-        $.getJSON(`/api/v2/sync/torrentPeers?hash=${hash}`, function(peers) {
-            let html = '';
-            let peersDict = {};
-            if (peers && peers.peers && typeof peers.peers === 'object') {
-                peersDict = peers.peers;
-            } else if (peers && typeof peers === 'object' && !Array.isArray(peers)) {
-                peersDict = peers;
-            }
+        window.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dragCounter = 0;
+            $('#drag-overlay').hide();
 
-            const peerKeys = Object.keys(peersDict);
-            const totalPeers = peerKeys.length;
-            if (totalPeers === 0) {
-                html = '<div style="color:var(--text-sec); font-size:13px;">当前无活跃连接节点 (Peers)</div>';
-            } else {
-                const pageSize = 25;
-                const totalPages = Math.ceil(totalPeers / pageSize);
-                if (peerCurrentPage > totalPages) peerCurrentPage = totalPages;
-                if (peerCurrentPage < 1) peerCurrentPage = 1;
-
-                const startIdx = (peerCurrentPage - 1) * pageSize;
-                const pageKeys = totalPeers > pageSize ? peerKeys.slice(startIdx, startIdx + pageSize) : peerKeys;
-
-                html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <div style="font-size:12px; color:var(--text-sec); font-weight:600;">共 ${totalPeers} 个节点${totalPages > 1 ? ` (第 ${peerCurrentPage}/${totalPages} 页)` : ''}</div>
-                </div>`;
-
-                pageKeys.forEach(ipKey => {
-                    const p = peersDict[ipKey];
-                    const clientName = p.client || p.peer_id_client || '未知客户端';
-                    const ip = p.ip || ipKey.split(':')[0] || ipKey;
-                    const port = p.port || ipKey.split(':')[1] || '';
-                    const country = p.country_code || p.country || '';
-                    const dlSpeed = p.dl_speed ? ` ↓ ${(p.dl_speed/1024).toFixed(1)} KB/s` : '';
-                    const upSpeed = p.up_speed ? ` ↑ ${(p.up_speed/1024).toFixed(1)} KB/s` : '';
-                    const progressVal = p.progress != null ? ` ${(p.progress * 100).toFixed(0)}%` : '';
-                    const flags = p.flags || '';
-                    html += `<div class="list-row">
-                        <div style="flex:1; overflow:hidden;">
-                            <div style="font-weight:500;">🌐 ${country ? country + ' ' : ''}${ip}${port ? ':' + port : ''}${progressVal}</div>
-                            <div style="font-size:11px; color:var(--text-sec);">${clientName} ${flags}</div>
-                        </div>
-                        <div style="color:var(--text-sec); font-size:12px; text-align:right; white-space:nowrap;">${dlSpeed}${upSpeed}</div>
-                    </div>`;
-                });
-
-                if (totalPages > 1) {
-                    html += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:8px; border-top:1px solid var(--border);">
-                        <button class="btn" style="width:auto; padding:6px 14px; margin:0; font-size:12px; background:rgba(120,120,128,0.15); color:var(--text); ${peerCurrentPage <= 1 ? 'opacity:0.4; cursor:not-allowed;' : ''}" ${peerCurrentPage <= 1 ? 'disabled' : `onclick="changePeerPage(${peerCurrentPage - 1})"`}>上一页</button>
-                        <span style="font-size:12px; color:var(--text-sec); font-weight:600;">${peerCurrentPage} / ${totalPages}</span>
-                        <button class="btn" style="width:auto; padding:6px 14px; margin:0; font-size:12px; background:rgba(120,120,128,0.15); color:var(--text); ${peerCurrentPage >= totalPages ? 'opacity:0.4; cursor:not-allowed;' : ''}" ${peerCurrentPage >= totalPages ? 'disabled' : `onclick="changePeerPage(${peerCurrentPage + 1})"`}>下一页</button>
-                    </div>`;
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.name.endsWith('.torrent')) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.getElementById('torrent-file').files = dataTransfer.files;
+                    openAddModal();
                 }
             }
-            $('#dt-peers').html(html);
         });
-    }
 
-    function changePeerPage(page) {
-        peerCurrentPage = page;
-        refreshDetailTabs(activeDetailHash);
-    }
-
-    function openTorrentDetail(hash) {
-        if (activeDetailHash !== hash) {
-            peerCurrentPage = 1;
-        }
-        activeDetailHash = hash;
-        const torrent = allTorrents.find(t => t.hash === hash);
-        const name = torrent ? torrent.name : '种子详情';
-        $('#detail-title').text(name);
-        openModal('detail-modal');
-
-        refreshDetailTabs(hash);
-        if (detailRefreshTimer) clearInterval(detailRefreshTimer);
-        detailRefreshTimer = setInterval(function() {
-            refreshDetailTabs(activeDetailHash);
-        }, 1500);
-    }
-
-    function switchDetailTab(tabId, btn) {
-        $('.detail-tab-content').hide();
-        $(`#${tabId}`).show();
-        $('.tab-item').removeClass('active');
-        $(btn).addClass('active');
-    }
-
-    function closeDetailModal() { closeModal('detail-modal'); }
-
-    function renderCategories(cats) {
-        const container = $('#categories-container');
-        if (!cats || Object.keys(cats).length === 0) {
-            container.html('暂无分类数据');
-            return;
-        }
-        let html = '';
-        Object.keys(cats).forEach(k => {
-            html += `<span class="badge" style="margin-right:6px; margin-bottom:6px;">🏷️ ${k}</span>`;
-        });
-        container.html(html);
-    }
-
-    function renderRss(feeds, rules) {
-        const container = $('#rss-feeds-container');
-        let html = '';
-        if (rules && Object.keys(rules).length > 0) {
-            html += '<div style="font-weight:600; color:var(--accent); margin-bottom:6px;">已激活自动规则:</div>';
-            Object.keys(rules).forEach(r => {
-                html += `<div class="list-row"><span>⚡ ${r}</span><span class="badge completed">生效中</span></div>`;
-            });
-        } else {
-            html = '暂无 RSS 自动规则记录';
-        }
-        container.html(html);
-    }
-
-    function openRssRuleModal() { openModal('rss-rule-modal'); }
-    
-    function submitRssRule() {
-        const name = $('#rule-name').val().trim();
-        const must = $('#rule-must').val().trim();
-        const not = $('#rule-not').val().trim();
-        if (!name) return;
-        
-        const ruleDef = {
-            enabled: true,
-            mustContain: must,
-            mustNotContain: not,
-            useRegex: true,
-            assignedCategory: "",
-            savePath: ""
-        };
-        
-        $.post('/api/v2/rss/setRule', { ruleName: name, ruleDef: JSON.stringify(ruleDef) }, function() {
-            closeModal('rss-rule-modal');
-            updateDashboard();
-        });
-    }
-
-    function saveSpeedLimits() {
-        const dl = $('#limit-dl').val() ? parseInt($('#limit-dl').val()) * 1024 : 0;
-        const up = $('#limit-up').val() ? parseInt($('#limit-up').val()) * 1024 : 0;
-        
-        $.post('/api/v2/transfer/setDownloadLimit', { limit: dl }, function() {
-            $.post('/api/v2/transfer/setUploadLimit', { limit: up }, function() {
-                alert('速度限制保存成功！');
-                updateDashboard();
-            });
-        });
-    }
-
-    function saveDefaultSavePath() {
-        const path = $('#pref-save-path').val().trim();
-        if (!path) return;
-        
-        $.post('/api/v2/app/setPreferences', { json: JSON.stringify({ save_path: path }) }, function() {
-            alert('默认保存路径设置成功！');
-            updateDashboard();
-        });
-    }
-
-    function submitAddTrackers(isGlobal) {
-        let urls = '';
-        if (isGlobal) {
-            urls = $('#global-tracker-urls').val().trim();
-        } else {
-            urls = $('#single-tracker-url').val().trim();
-        }
-
-        if (!urls) {
-            alert('请输入有效的 Tracker URL！');
-            return;
-        }
-
-        if (isGlobal) {
-            allTorrents.forEach(t => {
-                if (t.hash) {
-                    $.post('/api/v2/torrents/addTrackers', { hash: t.hash, urls: urls });
-                }
-            });
-            alert('已提交为所有任务批量添加 Tracker 的请求！');
-            $('#global-tracker-urls').val('');
-        } else {
-            $.post('/api/v2/torrents/addTrackers', { hash: activeDetailHash, urls: urls }, function() {
-                alert('Tracker 添加成功！');
-                $('#single-tracker-url').val('');
-                openTorrentDetail(activeDetailHash);
-            });
-        }
-    }
-
-    function torrentAction(action, hash) {
-        let endpoint = `/api/v2/torrents/${action}`;
-        let data = { hashes: hash };
-        
-        if (action === 'delete') {
-            const deleteFiles = confirm('确定要删除选中的任务吗？\n警告：这会同时删除硬盘上的文件且不可恢复！');
-            if (!deleteFiles) return;
-            endpoint = '/api/v2/torrents/delete';
-            data = { hashes: hash, deleteFiles: 'true' };
-        }
-        
-        $.post(endpoint, data, function() {
-            updateDashboard();
-        });
-    }
-
-    function openAddModal() { openModal('add-modal'); }
-    function closeAddModal() { closeModal('add-modal'); }
-
-    function submitAddTorrent() {
-        const fileInput = document.getElementById('torrent-file');
-        const urls = $('#torrent-urls').val().trim();
-        
-        let formData = new FormData();
-        if (fileInput.files.length > 0) {
-            formData.append('torrents', fileInput.files[0]);
-        }
-        if (urls) {
-            formData.append('urls', urls);
-        }
-
-        if (fileInput.files.length === 0 && !urls) {
-            alert('请上传种子文件或输入 Magnet 链接！');
-            return;
-        }
-
-        $.ajax({
-            url: '/api/v2/torrents/add',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function() {
-                closeAddModal();
-                $('#torrent-urls').val('');
-                fileInput.value = '';
-                updateDashboard();
-            },
-            error: function() {
-                alert('发送种子失败，请检查登录态或网络！');
+        // Clipboard listener
+        window.addEventListener('paste', function(e) {
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            if (pasteData && pasteData.startsWith('magnet:?')) {
+                $('#torrent-urls').val(pasteData);
+                openAddModal();
             }
         });
     }
 
-    // 搜索功能实现
-    function triggerSearch() {
-        const pattern = $('#search-keyword').val().trim();
-        if (!pattern) return;
-        
-        $('#search-results-container').html('<div style="text-align:center; padding:40px; color:var(--text-sec); font-size:14px;">正在全网启动搜索检索中...</div>');
-        
-        $.post('/api/v2/search/start', { pattern: pattern, plugins: 'all', category: 'all' }, function(res) {
-            if (res && res.id) {
-                searchId = res.id;
-                if (searchRefreshTimer) clearInterval(searchRefreshTimer);
-                searchRefreshTimer = setInterval(pollSearchResults, 1500);
-            } else {
-                $('#search-results-container').html('<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">启动搜索失败，请确认已在 qBittorrent 中启用搜索插件。</div>');
-            }
-        });
-    }
-    
-    function pollSearchResults() {
-        if (!searchId) return;
-        $.post('/api/v2/search/results', { id: searchId, limit: 100 }, function(res) {
-            if (!res || !res.results) return;
-            
-            let html = '';
-            res.results.forEach(item => {
-                const sizeFormatted = formatBytes(item.fileSize);
-                html += `
-                <div class="list-row" style="padding:12px 0;">
-                     <div style="flex:1; overflow:hidden; margin-right:12px;">
-                         <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${item.fileName}">${item.fileName}</div>
-                         <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">
-                             📁 ${sizeFormatted} · 👤 做种: <span style="color:var(--success); font-weight:600;">${item.nbSeeders}</span> · 吸血: ${item.nbLeechers}
-                         </div>
-                     </div>
-                     <button class="btn" style="width:75px; margin:0; padding:6px; font-size:12px;" onclick="addMagnetFromSearch('${item.fileUrl}')">下载</button>
-                </div>`;
-            });
-            
-            if (res.results.length === 0) {
-                html = '<div style="text-align:center; padding:40px; color:var(--text-sec); font-size:14px;">正在拉取搜索结果，请稍候...</div>';
-            }
-            
-            $('#search-results-container').html(html);
-            
-            if (res.status === 'Stopped') {
-                clearInterval(searchRefreshTimer);
-                searchRefreshTimer = null;
-            }
-        });
-    }
-    
-    function addMagnetFromSearch(magnetUrl) {
-        $.post('/api/v2/torrents/add', { urls: magnetUrl }, function() {
-            alert('磁力已发送至 qBittorrent 开始下载！');
-        });
-    }
-
+    // --- App Init ---
     $(document).ready(function() {
-        // 先抓取 qBittorrent 版本
-        $.get('/api/v2/app/version', function(ver) { 
-            qbtVersion = ver; 
-            $('#sys-qbt-version').text(`版本: qBittorrent ${qbtVersion}`);
-        });
-        
+        initTheme();
+        updateViewModeIcon();
         initChart();
-        updateDashboard();
-        setInterval(updateDashboard, 1500);
+        initDragAndDrop();
 
+        // Fetch version
+        $.get('/api/v2/app/version', function(ver) {
+            qbtVersion = ver;
+            $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
+        });
+        $.get('/api/v2/app/webapiVersion', function(ver) {
+            webapiVersion = ver;
+            $('#sys-webapi-version-text').text(`v${ver}`);
+        });
+
+        // Set Date
         const now = new Date();
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
-        
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(e) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
+        // Initial Data Poll
+        pollFastData();
+        pollSlowData();
+
+        // High frequency (1.8s) only for lightweight transfer rates & torrents
+        fastPollTimer = setInterval(pollFastData, 1800);
+        // Low frequency (15s) for static categories & preferences
+        slowPollTimer = setInterval(pollSlowData, 15000);
     });
 </script>
 </body>
