@@ -7,7 +7,8 @@
     $.ajaxSetup({
         error: function(xhr) {
             if (xhr.status === 403 || xhr.status === 401) {
-                if (typeof setAuthPassed === 'function') setAuthPassed(false);
+                if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
+                if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
                 if (typeof openLoginModal === 'function') openLoginModal(true);
             }
         }

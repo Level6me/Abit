@@ -113,21 +113,11 @@
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        // Clean legacy stale hash keys
-        localStorage.removeItem('omni_pwd_hash');
-        localStorage.removeItem('omni_master_user');
-
-        // Strict Auth Gate: In incognito or new session, require explicit login first
-        if (!isAuthPassed()) {
-            $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('未登录');
-            openLoginModal(true);
-        } else {
-            startAuthenticatedApp();
-        }
+        // Bootstrap authentication check (VueTorrent-style probe)
+        checkAuthStatus();
     });
 
-    function startAuthenticatedApp() {
+    function checkAuthStatus() {
         $.get('/api/v2/app/version', function(ver) {
             qbtVersion = ver;
             $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
@@ -149,16 +139,10 @@
             fastPollTimer = setInterval(pollFastData, 1800);
             slowPollTimer = setInterval(pollSlowData, 15000);
         }).fail(function(err) {
-            if (err.status === 403 || err.status === 401) {
-                setAuthPassed(false, false);
-                $('#qbt-dot').addClass('offline');
-                $('#qbt-status-text').text('未登录/待验证');
-                openLoginModal(true);
-            } else {
-                pollFastData();
-                pollSlowData();
-                fastPollTimer = setInterval(pollFastData, 1800);
-                slowPollTimer = setInterval(pollSlowData, 15000);
-            }
+            if (fastPollTimer) clearInterval(fastPollTimer);
+            if (slowPollTimer) clearInterval(slowPollTimer);
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('未登录 / 需鉴权');
+            openLoginModal(true);
         });
     }

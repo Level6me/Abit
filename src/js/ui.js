@@ -112,22 +112,6 @@
         }
     }
 
-    function isAuthPassed() {
-        return sessionStorage.getItem('omni_auth_passed') === 'true' || localStorage.getItem('omni_auth_remember') === 'true';
-    }
-
-    function setAuthPassed(passed, remember) {
-        if (passed) {
-            sessionStorage.setItem('omni_auth_passed', 'true');
-            if (remember) {
-                localStorage.setItem('omni_auth_remember', 'true');
-            }
-        } else {
-            sessionStorage.removeItem('omni_auth_passed');
-            localStorage.removeItem('omni_auth_remember');
-        }
-    }
-
     // --- Authentication & Login Dialog ---
     function openLoginModal(isForced) {
         if (isForced) {
@@ -145,7 +129,6 @@
     function submitLogin() {
         const username = $('#login-user').val().trim();
         const password = $('#login-pass').val();
-        const remember = $('#login-remember').is(':checked');
 
         if (!username || !password) {
             showToast('⚠️ 请输入完整的 WebUI 用户名与密码', false);
@@ -158,10 +141,6 @@
         const origText = loginBtn.text();
         loginBtn.prop('disabled', true).text('正在核验中...');
 
-        // 清理旧版可能残留的本地锁
-        localStorage.removeItem('omni_pwd_hash');
-        localStorage.removeItem('omni_master_user');
-
         $.ajax({
             url: '/api/v2/auth/login',
             type: 'POST',
@@ -170,26 +149,20 @@
                 loginBtn.prop('disabled', false).text(origText);
                 const respStr = String(res || '').trim();
                 if (respStr === 'Ok.' || respStr === 'Ok') {
-                    setAuthPassed(true, remember);
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
                     $('#login-pass').val('');
                     showToast('✅ 身份验证通过，已成功登录！');
-                    if (typeof startAuthenticatedApp === 'function') {
-                        startAuthenticatedApp();
-                    } else {
-                        pollFastData();
-                        pollSlowData();
+                    if (typeof checkAuthStatus === 'function') {
+                        checkAuthStatus();
                     }
                 } else {
-                    setAuthPassed(false, false);
                     showToast('❌ 用户名或密码错误，请核对后重试！', false);
                     $('#login-pass').val('').focus();
                 }
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
-                setAuthPassed(false, false);
                 if (xhr.status === 403 || xhr.status === 401) {
                     showToast('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定', false);
                 } else {
@@ -201,15 +174,16 @@
     }
 
     function logout() {
-        setAuthPassed(false, false);
         if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
         if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
             showToast('已退出登录');
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('未登录 / 需鉴权');
+            openLoginModal(true);
+        }).fail(function() {
+            openLoginModal(true);
         });
-        $('#qbt-dot').addClass('offline');
-        $('#qbt-status-text').text('已注销/未登录');
-        openLoginModal(true);
     }
 
 // --- Global Drag & Drop + Clipboard Listener ---

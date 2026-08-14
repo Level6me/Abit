@@ -198,7 +198,8 @@
     $.ajaxSetup({
         error: function(xhr) {
             if (xhr.status === 403 || xhr.status === 401) {
-                if (typeof setAuthPassed === 'function') setAuthPassed(false);
+                if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
+                if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
                 if (typeof openLoginModal === 'function') openLoginModal(true);
             }
         }
@@ -1845,22 +1846,6 @@
         }
     }
 
-    function isAuthPassed() {
-        return sessionStorage.getItem('omni_auth_passed') === 'true' || localStorage.getItem('omni_auth_remember') === 'true';
-    }
-
-    function setAuthPassed(passed, remember) {
-        if (passed) {
-            sessionStorage.setItem('omni_auth_passed', 'true');
-            if (remember) {
-                localStorage.setItem('omni_auth_remember', 'true');
-            }
-        } else {
-            sessionStorage.removeItem('omni_auth_passed');
-            localStorage.removeItem('omni_auth_remember');
-        }
-    }
-
     // --- Authentication & Login Dialog ---
     function openLoginModal(isForced) {
         if (isForced) {
@@ -1878,7 +1863,6 @@
     function submitLogin() {
         const username = $('#login-user').val().trim();
         const password = $('#login-pass').val();
-        const remember = $('#login-remember').is(':checked');
 
         if (!username || !password) {
             showToast('⚠️ 请输入完整的 WebUI 用户名与密码', false);
@@ -1891,10 +1875,6 @@
         const origText = loginBtn.text();
         loginBtn.prop('disabled', true).text('正在核验中...');
 
-        // 清理旧版可能残留的本地锁
-        localStorage.removeItem('omni_pwd_hash');
-        localStorage.removeItem('omni_master_user');
-
         $.ajax({
             url: '/api/v2/auth/login',
             type: 'POST',
@@ -1903,26 +1883,20 @@
                 loginBtn.prop('disabled', false).text(origText);
                 const respStr = String(res || '').trim();
                 if (respStr === 'Ok.' || respStr === 'Ok') {
-                    setAuthPassed(true, remember);
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
                     $('#login-pass').val('');
                     showToast('✅ 身份验证通过，已成功登录！');
-                    if (typeof startAuthenticatedApp === 'function') {
-                        startAuthenticatedApp();
-                    } else {
-                        pollFastData();
-                        pollSlowData();
+                    if (typeof checkAuthStatus === 'function') {
+                        checkAuthStatus();
                     }
                 } else {
-                    setAuthPassed(false, false);
                     showToast('❌ 用户名或密码错误，请核对后重试！', false);
                     $('#login-pass').val('').focus();
                 }
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
-                setAuthPassed(false, false);
                 if (xhr.status === 403 || xhr.status === 401) {
                     showToast('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定', false);
                 } else {
@@ -1934,15 +1908,16 @@
     }
 
     function logout() {
-        setAuthPassed(false, false);
         if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
         if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
             showToast('已退出登录');
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('未登录 / 需鉴权');
+            openLoginModal(true);
+        }).fail(function() {
+            openLoginModal(true);
         });
-        $('#qbt-dot').addClass('offline');
-        $('#qbt-status-text').text('已注销/未登录');
-        openLoginModal(true);
     }
 
 // --- Global Drag & Drop + Clipboard Listener ---
@@ -2109,21 +2084,11 @@
         const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
-        // Clean legacy stale hash keys
-        localStorage.removeItem('omni_pwd_hash');
-        localStorage.removeItem('omni_master_user');
-
-        // Strict Auth Gate: In incognito or new session, require explicit login first
-        if (!isAuthPassed()) {
-            $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('未登录');
-            openLoginModal(true);
-        } else {
-            startAuthenticatedApp();
-        }
+        // Bootstrap authentication check (VueTorrent-style probe)
+        checkAuthStatus();
     });
 
-    function startAuthenticatedApp() {
+    function checkAuthStatus() {
         $.get('/api/v2/app/version', function(ver) {
             qbtVersion = ver;
             $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
@@ -2145,16 +2110,10 @@
             fastPollTimer = setInterval(pollFastData, 1800);
             slowPollTimer = setInterval(pollSlowData, 15000);
         }).fail(function(err) {
-            if (err.status === 403 || err.status === 401) {
-                setAuthPassed(false, false);
-                $('#qbt-dot').addClass('offline');
-                $('#qbt-status-text').text('未登录/待验证');
-                openLoginModal(true);
-            } else {
-                pollFastData();
-                pollSlowData();
-                fastPollTimer = setInterval(pollFastData, 1800);
-                slowPollTimer = setInterval(pollSlowData, 15000);
-            }
+            if (fastPollTimer) clearInterval(fastPollTimer);
+            if (slowPollTimer) clearInterval(slowPollTimer);
+            $('#qbt-dot').addClass('offline');
+            $('#qbt-status-text').text('未登录 / 需鉴权');
+            openLoginModal(true);
         });
     }
