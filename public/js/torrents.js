@@ -322,24 +322,132 @@
         });
     }
 
-    function redownloadTorrent(hash) {
+    let pendingRedownloadHashes = [];
+
+    // 单个任务重新校验（不删本地文件）
+    function recheckTorrent(hash) {
         $.post('/api/v2/torrents/recheck', { hashes: hash }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hash });
-            showToast('已重新校验并启动下载');
+            showToast('已发起重新校验并启动检查');
             pollFastData();
         });
     }
 
-    function batchRedownload() {
+    // 批量强制重新校验
+    function batchForceRecheck() {
         if (selectedTorrents.size === 0) return;
         const hashesStr = Array.from(selectedTorrents).join('|');
+        const count = selectedTorrents.size;
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
-            const count = selectedTorrents.size;
             clearTorrentSelection();
-            showToast(`已对 ${count} 个任务发起重新下载`);
+            showToast(`已对 ${count} 个任务发起强制重新校验`);
             pollFastData();
         });
+    }
+
+    // 单个任务从头重新下载（弹出确认弹窗）
+    function redownloadTorrent(hash) {
+        const t = allTorrents.find(item => item.hash === hash);
+        const name = t ? t.name : hash;
+        pendingRedownloadHashes = [hash];
+        $('#redownload-confirm-msg').html(`确定要清空已下载文件并从头重新下载 <b>${escapeHtml(name)}</b> 吗？<br><span style="color:var(--warning); font-size:12px;">系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。</span>`);
+        openModal('redownload-confirm-modal');
+    }
+
+    // 批量任务从头重新下载（弹出确认弹窗）
+    function batchRedownload() {
+        if (selectedTorrents.size === 0) return;
+        pendingRedownloadHashes = Array.from(selectedTorrents);
+        $('#redownload-confirm-msg').html(`确定要对选中的 <b>${pendingRedownloadHashes.length}</b> 个任务进行从头重新下载吗？<br><span style="color:var(--warning); font-size:12px;">系统将清除已下载本地文件，并从 0% 重新发起下载。</span>`);
+        openModal('redownload-confirm-modal');
+    }
+
+    // 仅执行强制重新校验（不删本地文件）
+    function executeForceRecheckOnly() {
+        if (pendingRedownloadHashes.length === 0) return;
+        const hashesStr = pendingRedownloadHashes.join('|');
+        const count = pendingRedownloadHashes.length;
+        $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
+            $.post('/api/v2/torrents/resume', { hashes: hashesStr });
+            closeModal('redownload-confirm-modal');
+            showToast(`已对 ${count} 个任务发起强制重新校验`);
+            pendingRedownloadHashes = [];
+            clearTorrentSelection();
+            pollFastData();
+        });
+    }
+
+    // 真正从头重新下载：导出种子 -> 删旧任务与本地文件 -> 重新添加并开始下载
+    async function executeRedownloadTorrent() {
+        if (pendingRedownloadHashes.length === 0) return;
+        closeModal('redownload-confirm-modal');
+        showToast('正在准备重新下载任务...');
+
+        const targets = pendingRedownloadHashes.slice();
+        pendingRedownloadHashes = [];
+        let successCount = 0;
+
+        for (const hash of targets) {
+            const t = allTorrents.find(item => item.hash === hash);
+            const savepath = t ? (t.save_path || '') : '';
+            const category = t ? (t.category || '') : '';
+            const tags = t ? (t.tags || '') : '';
+            const magnetUri = t ? (t.magnet_uri || '') : '';
+
+            // 1. 尝试通过 export API 导出 .torrent 二进制文件
+            let torrentBlob = null;
+            try {
+                const res = await fetch(`/api/v2/torrents/export?hash=${hash}`);
+                if (res.ok) {
+                    torrentBlob = await res.blob();
+                }
+            } catch (e) {
+                console.warn(`[Redownload] Failed to export torrent ${hash}:`, e);
+            }
+
+            // 2. 检查是否有种子 Blob 或磁力链接
+            if (!torrentBlob && !magnetUri) {
+                // 如果导出和磁链皆不可用，降级为强制校验
+                await $.post('/api/v2/torrents/recheck', { hashes: hash });
+                await $.post('/api/v2/torrents/resume', { hashes: hash });
+                continue;
+            }
+
+            // 3. 构建重新添加任务的 FormData
+            const formData = new FormData();
+            if (torrentBlob && torrentBlob.size > 0) {
+                formData.append('torrents', torrentBlob, `${(t && t.name) ? t.name : hash}.torrent`);
+            } else if (magnetUri) {
+                formData.append('urls', magnetUri);
+            }
+            if (savepath) formData.append('savepath', savepath);
+            if (category) formData.append('category', category);
+            if (tags) formData.append('tags', tags);
+            formData.append('paused', 'false');
+
+            // 4. 删除原有任务及已下载本地文件
+            try {
+                await $.post('/api/v2/torrents/delete', { hashes: hash, deleteFiles: 'true' });
+                // 延时等待 qBittorrent 释放文件占用
+                await new Promise(resolve => setTimeout(resolve, 350));
+                // 5. 重新添加任务从 0% 开始下载
+                await $.ajax({
+                    url: '/api/v2/torrents/add',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                });
+                successCount++;
+            } catch (err) {
+                console.error(`[Redownload] Failed to recreate torrent ${hash}:`, err);
+            }
+        }
+
+        clearTorrentSelection();
+        showToast(`✅ 已成功重置并从头重新下载 ${successCount} 个任务！`);
+        pollFastData();
     }
 
     function batchTorrentAction(action) {

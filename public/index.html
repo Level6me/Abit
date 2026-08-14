@@ -94,41 +94,29 @@
         </div>
 
         <!-- Quick Summary Grid -->
-        <div class="grid-2">
-            <div class="card">
-                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📊 任务状态汇总 <span class="val-sub" style="font-weight:normal; margin-left:4px;">(点击快速跳转筛选)</span></div>
-                <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
-                    <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" title="点击查看全部任务">
-                        <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
-                        <div class="val-sub">全部任务</div>
-                    </div>
-                    <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" title="点击查看下载中任务">
-                        <div class="val-big" id="sum-dl" style="color:var(--success);">0</div>
-                        <div class="val-sub">下载中</div>
-                    </div>
-                    <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" title="点击查看做种中任务">
-                        <div class="val-big" id="sum-seed" style="color:var(--purple);">0</div>
-                        <div class="val-sub">做种中</div>
-                    </div>
-                    <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" title="点击查看已完成任务">
-                        <div class="val-big" id="sum-completed" style="color:var(--text);">0</div>
-                        <div class="val-sub">已完成</div>
-                    </div>
-                    <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" title="点击查看已暂停任务">
-                        <div class="val-big" id="sum-pause" style="color:var(--text-sec);">0</div>
-                        <div class="val-sub">已暂停</div>
-                    </div>
+        <!-- Task Status Summary Card -->
+        <div class="card">
+            <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📊 任务状态汇总 <span class="val-sub" style="font-weight:normal; margin-left:4px;">(点击快速跳转筛选)</span></div>
+            <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" title="点击查看全部任务">
+                    <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
+                    <div class="val-sub">全部任务</div>
                 </div>
-            </div>
-            <div class="card">
-                <div style="font-weight:700; font-size:15px; margin-bottom:12px;">⚡ 快速操作</div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn" style="flex:1;" onclick="openAddModal()">
-                        <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> 添加任务
-                    </button>
-                    <button class="btn secondary" style="flex:1;" onclick="switchTab('p-torrents', '任务管理', $('.dock-btn:nth-child(2)'))">
-                        查看任务列表
-                    </button>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" title="点击查看下载中任务">
+                    <div class="val-big" id="sum-dl" style="color:var(--success);">0</div>
+                    <div class="val-sub">下载中</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" title="点击查看做种中任务">
+                    <div class="val-big" id="sum-seed" style="color:var(--purple);">0</div>
+                    <div class="val-sub">做种中</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" title="点击查看已完成任务">
+                    <div class="val-big" id="sum-completed" style="color:var(--text);">0</div>
+                    <div class="val-sub">已完成</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" title="点击查看已暂停任务">
+                    <div class="val-big" id="sum-pause" style="color:var(--text-sec);">0</div>
+                    <div class="val-sub">已暂停</div>
                 </div>
             </div>
         </div>
@@ -192,6 +180,7 @@
             <div class="batch-actions">
                 <button class="batch-btn" onclick="batchTorrentAction('resume')">▶ 恢复</button>
                 <button class="batch-btn" onclick="batchTorrentAction('pause')">⏸ 暂停</button>
+                <button class="batch-btn" onclick="batchForceRecheck()">🔍 重新校验</button>
                 <button class="batch-btn" onclick="batchRedownload()">🔄 重新下载</button>
                 <button class="batch-btn" onclick="openBatchCategoryModal()">🏷 分类</button>
                 <button class="batch-btn danger" onclick="confirmBatchDelete()">🗑 删除</button>
@@ -823,6 +812,28 @@
                 彻底删除任务及本地文件
             </button>
             <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('delete-confirm-modal')">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 2.1 Safe Redownload Confirmation Modal -->
+<div class="modal-overlay" id="redownload-confirm-modal">
+    <div class="modal-card" style="max-width:460px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">🔄</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;">重新下载确认</div>
+        <div style="font-size:13px; color:var(--text-sec); margin-bottom:18px; line-height:1.5;" id="redownload-confirm-msg">
+            确定要清空已下载文件并从头重新下载选中的任务吗？<br><span style="color:var(--warning); font-size:12px;">系统将自动导出种子/磁链参数，清除已下载本地文件，并从 0% 重新发起下载。</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn" style="background:var(--accent);" onclick="executeRedownloadTorrent()">
+                确认重新下载 (清除文件从头重下)
+            </button>
+            <button class="btn secondary" onclick="executeForceRecheckOnly()">
+                仅强制重新校验 (不删本地文件)
+            </button>
+            <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('redownload-confirm-modal')">
                 取消
             </button>
         </div>
