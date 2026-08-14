@@ -1887,6 +1887,10 @@
             return;
         }
 
+        const loginBtn = $('#login-modal button.btn.w-full');
+        const origText = loginBtn.text();
+        loginBtn.prop('disabled', true).text('正在核验中...');
+
         // 清理旧版可能残留的本地锁
         localStorage.removeItem('omni_pwd_hash');
         localStorage.removeItem('omni_master_user');
@@ -1896,6 +1900,7 @@
             type: 'POST',
             data: { username: username, password: password },
             success: function(res) {
+                loginBtn.prop('disabled', false).text(origText);
                 const respStr = String(res || '').trim();
                 if (respStr === 'Ok.' || respStr === 'Ok') {
                     setAuthPassed(true, remember);
@@ -1916,9 +1921,10 @@
                 }
             },
             error: function(xhr) {
+                loginBtn.prop('disabled', false).text(origText);
                 setAuthPassed(false, false);
                 if (xhr.status === 403 || xhr.status === 401) {
-                    showToast('❌ 登录失败：用户名/密码不匹配或尝试过多被临时锁定', false);
+                    showToast('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定', false);
                 } else {
                     showToast('❌ 连接 qBittorrent 登录接口失败 (' + xhr.status + ')', false);
                 }

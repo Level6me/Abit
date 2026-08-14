@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Torrent Omni — qBittorrent Apple UI Alternative WebUI</title>
     <!-- Third-party CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -4076,6 +4079,10 @@ input:checked + .slider:before { transform: translateX(20px); }
             return;
         }
 
+        const loginBtn = $('#login-modal button.btn.w-full');
+        const origText = loginBtn.text();
+        loginBtn.prop('disabled', true).text('正在核验中...');
+
         // 清理旧版可能残留的本地锁
         localStorage.removeItem('omni_pwd_hash');
         localStorage.removeItem('omni_master_user');
@@ -4085,6 +4092,7 @@ input:checked + .slider:before { transform: translateX(20px); }
             type: 'POST',
             data: { username: username, password: password },
             success: function(res) {
+                loginBtn.prop('disabled', false).text(origText);
                 const respStr = String(res || '').trim();
                 if (respStr === 'Ok.' || respStr === 'Ok') {
                     setAuthPassed(true, remember);
@@ -4105,9 +4113,10 @@ input:checked + .slider:before { transform: translateX(20px); }
                 }
             },
             error: function(xhr) {
+                loginBtn.prop('disabled', false).text(origText);
                 setAuthPassed(false, false);
                 if (xhr.status === 403 || xhr.status === 401) {
-                    showToast('❌ 登录失败：用户名/密码不匹配或尝试过多被临时锁定', false);
+                    showToast('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定', false);
                 } else {
                     showToast('❌ 连接 qBittorrent 登录接口失败 (' + xhr.status + ')', false);
                 }

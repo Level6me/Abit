@@ -137,15 +137,20 @@ function build() {
         }
     });
 
-    // Generate public/index.html with granular modular CSS link tags
+    // Generate public/index.html with granular modular CSS link tags and cache-busting timestamp
+    const versionStamp = Date.now();
     const modularCssLinks = CSS_ORDER
-        .map(file => `    <link rel="stylesheet" href="css/${file}">`)
+        .map(file => `    <link rel="stylesheet" href="css/${file}?v=${versionStamp}">`)
         .join('\n');
 
     let publicHtml = fs.readFileSync(srcIndexPath, 'utf8');
     publicHtml = publicHtml.replace(
         /<link\s+rel="stylesheet"\s+href="[^"]*css\/style\.css"[^>]*>/i,
         `<!-- Modular Granular Stylesheets -->\n${modularCssLinks}`
+    );
+    publicHtml = publicHtml.replace(
+        /<script\s+src="js\/([a-zA-Z0-9_\.-]+\.js)"><\/script>/gi,
+        `<script src="js/$1?v=${versionStamp}"></script>`
     );
     const publicIndexPath = path.join(PUBLIC_DIR, 'index.html');
     fs.writeFileSync(publicIndexPath, publicHtml);
