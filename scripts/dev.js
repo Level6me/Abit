@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-const PORT = parseInt(process.env.PORT || '3000', 10);
+let PORT = parseInt(process.env.PORT || '3000', 10);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const isDistMode = process.argv.includes('--dist');
 const BASE_DIR = isDistMode ? path.join(ROOT_DIR, 'dist') : path.join(ROOT_DIR, 'src');
@@ -19,6 +19,7 @@ const BASE_DIR = isDistMode ? path.join(ROOT_DIR, 'dist') : path.join(ROOT_DIR, 
 let qbtTarget = process.env.QBT_TARGET || null;
 process.argv.forEach(arg => {
     if (arg.startsWith('--qbt=')) qbtTarget = arg.split('=')[1];
+    if (arg.startsWith('--port=')) PORT = parseInt(arg.split('=')[1], 10);
 });
 
 const MIME_TYPES = {
@@ -200,15 +201,19 @@ function handleMockApi(req, res, pathname) {
 
 function proxyRequest(req, res, targetUrl) {
     const parsedTarget = url.parse(targetUrl);
+    const targetHost = `${parsedTarget.hostname}:${parsedTarget.port || 80}`;
+    const proxyHeaders = {
+        ...req.headers,
+        host: targetHost,
+        origin: `http://${targetHost}`,
+        referer: `http://${targetHost}/`
+    };
     const options = {
         hostname: parsedTarget.hostname,
         port: parsedTarget.port || (parsedTarget.protocol === 'https:' ? 443 : 80),
         path: req.url,
         method: req.method,
-        headers: {
-            ...req.headers,
-            host: `${parsedTarget.hostname}:${parsedTarget.port || 80}`
-        }
+        headers: proxyHeaders
     };
 
     const client = (parsedTarget.protocol === 'https:' ? require('https') : http);
