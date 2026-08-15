@@ -142,7 +142,7 @@
             if (fastPollTimer) clearInterval(fastPollTimer);
             if (slowPollTimer) clearInterval(slowPollTimer);
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('未登录 / 需鉴权');
+            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
             openLoginModal(true);
         });
     }

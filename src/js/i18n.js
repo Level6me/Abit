@@ -513,6 +513,7 @@
         '检索结果: ': 'Results: ',
         ' 条)': ')',
         '已更新所选任务分类': 'Category updated',
+        '确定要卸载搜索插件 ': 'Uninstall search plugin ',
     };
 
     let currentLang = 'zh';
@@ -522,7 +523,10 @@
     } catch (e) { /* storage unavailable */ }
 
     window.t = function (key, fallback) {
-        if (currentLang === 'en' && EN_DICT[key] !== undefined) return EN_DICT[key];
+        // Keys are the original Chinese strings: in zh mode return the key itself,
+        // otherwise the data-i18n elements would keep the previously applied English text.
+        if (currentLang === 'zh') return key;
+        if (EN_DICT[key] !== undefined) return EN_DICT[key];
         return fallback !== undefined ? fallback : key;
     };
 

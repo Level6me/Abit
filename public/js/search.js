@@ -149,7 +149,7 @@
     }
 
     function uninstallSearchPlugin(pluginName) {
-        if (!confirm(`确定要卸载搜索插件 [${pluginName}] 吗？`)) return;
+        if (!confirm(`${t('确定要卸载搜索插件 ')}[${pluginName}]${t(' 吗？')}`)) return;
         $.post('/api/v2/search/uninstallPlugin', { names: pluginName }, function() {
             showToast(`${t('已卸载插件: ')}${pluginName}`);
             fetchSearchPlugins();
