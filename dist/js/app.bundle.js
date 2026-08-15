@@ -695,13 +695,13 @@
 
     function formatEta(seconds) {
         if (!seconds || seconds < 0 || seconds >= 8640000) return '∞';
-        if (seconds < 60) return `${seconds}${t('秒')}`;
+        if (seconds < 60) return `${seconds}${window.t('秒')}`;
         const m = Math.floor(seconds / 60);
-        if (m < 60) return `${m}${t('分')} ${seconds % 60}${t('秒')}`;
+        if (m < 60) return `${m}${window.t('分')} ${seconds % 60}${window.t('秒')}`;
         const h = Math.floor(m / 60);
-        if (h < 24) return `${h}${t('时')} ${m % 60}${t('分')}`;
+        if (h < 24) return `${h}${window.t('时')} ${m % 60}${window.t('分')}`;
         const d = Math.floor(h / 24);
-        return `${d}${t('天')} ${h % 24}${t('时')}`;
+        return `${d}${window.t('天')} ${h % 24}${window.t('时')}`;
     }
 
     function formatTimestamp(ts) {
@@ -746,47 +746,47 @@
         const isActive = (t.dlspeed > 0 || t.upspeed > 0);
 
         let stateClass = 'paused';
-        let stateName = t('已暂停');
+        let stateName = window.t('已暂停');
 
         if (isError) {
             stateClass = 'error';
-            stateName = t('错误/文件丢失');
+            stateName = window.t('错误/文件丢失');
         } else if (state === 'metadl') {
             stateClass = 'downloading';
-            stateName = t('获取元数据');
+            stateName = window.t('获取元数据');
         } else if (state === 'allocating') {
             stateClass = 'downloading';
-            stateName = t('分配磁盘空间');
+            stateName = window.t('分配磁盘空间');
         } else if (isChecking) {
             stateClass = 'queued';
-            stateName = t('校验中');
+            stateName = window.t('校验中');
         } else if (state === 'downloading' || state === 'forceddl') {
             stateClass = 'downloading';
-            stateName = state === 'forceddl' ? t('强制下载') : t('下载中');
+            stateName = state === 'forceddl' ? window.t('强制下载') : window.t('下载中');
         } else if (state === 'stalleddl') {
             stateClass = 'downloading';
-            stateName = t('等待下载');
+            stateName = window.t('等待下载');
         } else if (state === 'queueddl') {
             stateClass = 'queued';
-            stateName = t('排队下载');
+            stateName = window.t('排队下载');
         } else if (state === 'pauseddl') {
             stateClass = 'paused';
-            stateName = t('下载暂停');
+            stateName = window.t('下载暂停');
         } else if (state === 'uploading' || state === 'forcedup') {
             stateClass = 'completed';
-            stateName = state === 'forcedup' ? t('强制做种') : t('做种中');
+            stateName = state === 'forcedup' ? window.t('强制做种') : window.t('做种中');
         } else if (state === 'stalledup') {
             stateClass = 'completed';
-            stateName = t('做种空闲');
+            stateName = window.t('做种空闲');
         } else if (state === 'queuedup') {
             stateClass = 'queued';
-            stateName = t('排队做种');
+            stateName = window.t('排队做种');
         } else if (state === 'pausedup') {
             stateClass = 'paused';
-            stateName = t('做种暂停 (已完成)');
+            stateName = window.t('做种暂停 (已完成)');
         } else if (isCompleted) {
             stateClass = 'completed';
-            stateName = t('已完成');
+            stateName = window.t('已完成');
         }
 
         return {
@@ -835,7 +835,7 @@
                 labels: Array(20).fill(''),
                 datasets: [
                     {
-                        label: t('下载 (KB/s)'),
+                        label: window.t('下载 (KB/s)'),
                         data: Array(20).fill(0),
                         borderColor: '#34c759',
                         backgroundColor: 'rgba(52,199,89,0.08)',
@@ -845,7 +845,7 @@
                         pointRadius: 0
                     },
                     {
-                        label: t('上传 (KB/s)'),
+                        label: window.t('上传 (KB/s)'),
                         data: Array(20).fill(0),
                         borderColor: '#007aff',
                         backgroundColor: 'rgba(0,122,255,0.08)',
@@ -998,7 +998,7 @@
         const list = getFilteredAndSortedTorrents();
 
         if (list.length === 0) {
-            container.html(`<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">${t('当前筛选条件下无任务记录')}</div>`);
+            container.html(`<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">${window.t('当前筛选条件下无任务记录')}</div>`);
             return;
         }
 
@@ -1038,8 +1038,8 @@
 
             const progressVal = (t.progress * 100).toFixed(1);
             const ratioVal = (t.ratio || 0).toFixed(2);
-            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? t('做种中') : t('已完成')) : (status.isPaused ? t('已暂停') : formatEta(t.eta));
-            const seedsText = `${t('做种: ')}${t.num_seeds || 0} (${t.num_complete || 0}) · ${t('节点: ')}${t.num_leechs || 0} (${t.num_incomplete || 0})`;
+            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? window.t('做种中') : window.t('已完成')) : (status.isPaused ? window.t('已暂停') : formatEta(t.eta));
+            const seedsText = `${window.t('做种: ')}${t.num_seeds || 0} (${t.num_complete || 0}) · ${window.t('节点: ')}${t.num_leechs || 0} (${t.num_incomplete || 0})`;
 
             html += `
             <div class="torrent-card ${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
@@ -1053,7 +1053,7 @@
                 </div>
                 <div class="torrent-meta">
                     <span>${progressVal}% · ${formatBytes(t.completed)} / ${formatBytes(t.size)}</span>
-                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}${t('比率: ')}${ratioVal}</span>
+                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}${window.t('比率: ')}${ratioVal}</span>
                 </div>
                 <div class="torrent-meta">
                     <span>↓ ${formatBytes(t.dlspeed)}/s · ↑ ${formatBytes(t.upspeed)}/s</span>
@@ -1064,20 +1064,20 @@
                     <span style="font-family:monospace; font-size:10px; color:var(--text-ter);">${hash.substring(0, 8)}...</span>
                 </div>
                 <div class="torrent-ctrls">
-                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || t('默认路径'))}">
-                        📁 ${escapeHtml(t.save_path || t('默认路径'))}
+                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || window.t('默认路径'))}">
+                        📁 ${escapeHtml(t.save_path || window.t('默认路径'))}
                     </div>
                     <div class="torrent-btns">
-                        <button class="icon-btn" title="${t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
+                        <button class="icon-btn" title="${window.t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                         </button>
-                        <button class="icon-btn accent" title="${t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
+                        <button class="icon-btn accent" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                         </button>
-                        <button class="icon-btn" title="${status.isPaused ? t('恢复') : t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
+                        <button class="icon-btn" title="${status.isPaused ? window.t('恢复') : window.t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
                             <svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg>
                         </button>
-                        <button class="icon-btn danger" title="${t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
+                        <button class="icon-btn danger" title="${window.t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
                             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                         </button>
                     </div>
@@ -1095,16 +1095,16 @@
                 <thead>
                     <tr>
                         <th style="width:30px;"><input type="checkbox" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)"></th>
-                        <th>${t('名称')}</th>
-                        <th>${t('状态')}</th>
-                        <th>${t('大小')}</th>
-                        <th>${t('进度')}</th>
-                        <th>${t('下载速度')}</th>
-                        <th>${t('上传速度')}</th>
-                        <th>${t('做种/节点')}</th>
+                        <th>${window.t('名称')}</th>
+                        <th>${window.t('状态')}</th>
+                        <th>${window.t('大小')}</th>
+                        <th>${window.t('进度')}</th>
+                        <th>${window.t('下载速度')}</th>
+                        <th>${window.t('上传速度')}</th>
+                        <th>${window.t('做种/节点')}</th>
                         <th>ETA</th>
-                        <th>${t('分享率')}</th>
-                        <th style="text-align:right;">${t('操作')}</th>
+                        <th>${window.t('分享率')}</th>
+                        <th style="text-align:right;">${window.t('操作')}</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -1115,7 +1115,7 @@
             const status = getTorrentStatus(t);
 
             const progressVal = (t.progress * 100).toFixed(1);
-            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? t('做种中') : t('已完成')) : (status.isPaused ? t('已暂停') : formatEta(t.eta));
+            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? window.t('做种中') : window.t('已完成')) : (status.isPaused ? window.t('已暂停') : formatEta(t.eta));
             html += `
             <tr class="${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
                 <td><input type="checkbox" class="torrent-check" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectTorrent('${hash}', this.checked)"></td>
@@ -1133,10 +1133,10 @@
                 <td>${(t.ratio||0).toFixed(2)}</td>
                 <td style="text-align:right;">
                     <div style="display:inline-flex; gap:4px;">
-                        <button class="icon-btn" title="${t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
-                        <button class="icon-btn accent" title="${t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
-                        <button class="icon-btn" title="${status.isPaused ? t('恢复') : t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
-                        <button class="icon-btn danger" title="${t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="icon-btn" title="${window.t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
+                        <button class="icon-btn accent" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
+                        <button class="icon-btn" title="${status.isPaused ? window.t('恢复') : window.t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
+                        <button class="icon-btn danger" title="${window.t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </td>
             </tr>`;
@@ -1199,7 +1199,7 @@
     function recheckTorrent(hash) {
         $.post('/api/v2/torrents/recheck', { hashes: hash }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hash });
-            showToast(t('已发起重新校验并启动检查'));
+            showToast(window.t('已发起重新校验并启动检查'));
             pollFastData();
         });
     }
@@ -1212,7 +1212,7 @@
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             clearTorrentSelection();
-            showToast(`${t('已对 ')}${count}${t(' 个任务发起强制重新校验')}`);
+            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验')}`);
             pollFastData();
         });
     }
@@ -1222,7 +1222,7 @@
         const t = allTorrents.find(item => item.hash === hash);
         const name = t ? t.name : hash;
         pendingRedownloadHashes = [hash];
-        $('#redownload-confirm-msg').html(`${t('确定要清空已下载文件并从头重新下载 ')}<b>${escapeHtml(name)}</b>${t(' 吗？')}<br><span style="color:var(--warning); font-size:12px;">${t('系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
+        $('#redownload-confirm-msg').html(`${window.t('确定要清空已下载文件并从头重新下载 ')}<b>${escapeHtml(name)}</b>${window.t(' 吗？')}<br><span style="color:var(--warning); font-size:12px;">${window.t('系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
         openModal('redownload-confirm-modal');
     }
 
@@ -1230,7 +1230,7 @@
     function batchRedownload() {
         if (selectedTorrents.size === 0) return;
         pendingRedownloadHashes = Array.from(selectedTorrents);
-        $('#redownload-confirm-msg').html(`${t('确定要对选中的 ')}<b>${pendingRedownloadHashes.length}</b>${t(' 个任务进行从头重新下载吗？')}<br><span style="color:var(--warning); font-size:12px;">${t('系统将清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
+        $('#redownload-confirm-msg').html(`${window.t('确定要对选中的 ')}<b>${pendingRedownloadHashes.length}</b>${window.t(' 个任务进行从头重新下载吗？')}<br><span style="color:var(--warning); font-size:12px;">${window.t('系统将清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
         openModal('redownload-confirm-modal');
     }
 
@@ -1242,7 +1242,7 @@
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             closeModal('redownload-confirm-modal');
-            showToast(`${t('已对 ')}${count}${t(' 个任务发起强制重新校验')}`);
+            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验')}`);
             pendingRedownloadHashes = [];
             clearTorrentSelection();
             pollFastData();
@@ -1253,7 +1253,7 @@
     async function executeRedownloadTorrent() {
         if (pendingRedownloadHashes.length === 0) return;
         closeModal('redownload-confirm-modal');
-        showToast(t('正在准备重新下载任务...'));
+        showToast(window.t('正在准备重新下载任务...'));
 
         const targets = pendingRedownloadHashes.slice();
         pendingRedownloadHashes = [];
@@ -1317,7 +1317,7 @@
         }
 
         clearTorrentSelection();
-        showToast(`${t('✅ 已成功重置并从头重新下载 ')}${successCount}${t(' 个任务！')}`);
+        showToast(`${window.t('✅ 已成功重置并从头重新下载 ')}${successCount}${window.t(' 个任务！')}`);
         pollFastData();
     }
 
@@ -1327,21 +1327,21 @@
         $.post(`/api/v2/torrents/${action}`, { hashes: hashesStr }, function() {
             clearTorrentSelection();
             pollFastData();
-            showToast(t('批量操作已完成'));
+            showToast(window.t('批量操作已完成'));
         });
     }
 
     // --- Safe Delete Modal System ---
     function confirmSingleDelete(hash, name) {
         pendingDeleteHashes = [hash];
-        $('#delete-confirm-msg').html(`${t('确定要删除任务 ')}<b>${escapeHtml(name)}</b>${t(' 吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
+        $('#delete-confirm-msg').html(`${window.t('确定要删除任务 ')}<b>${escapeHtml(name)}</b>${window.t(' 吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
         openModal('delete-confirm-modal');
     }
 
     function confirmBatchDelete() {
         if (selectedTorrents.size === 0) return;
         pendingDeleteHashes = Array.from(selectedTorrents);
-        $('#delete-confirm-msg').html(`${t('确定要批量删除选中的 ')}<b>${pendingDeleteHashes.length}</b>${t(' 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
+        $('#delete-confirm-msg').html(`${window.t('确定要批量删除选中的 ')}<b>${pendingDeleteHashes.length}</b>${window.t(' 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
         openModal('delete-confirm-modal');
     }
 
@@ -1352,7 +1352,7 @@
             closeModal('delete-confirm-modal');
             selectedTorrents.clear();
             pendingDeleteHashes = [];
-            showToast(t('任务已成功删除'));
+            showToast(window.t('任务已成功删除'));
             pollFastData();
         });
     }
@@ -1360,7 +1360,7 @@
     // --- Batch Category Modal ---
     function openBatchCategoryModal() {
         if (selectedTorrents.size === 0) return;
-        let optHtml = `<option value="">${t('(清除分类)')}</option>`;
+        let optHtml = `<option value="">${window.t('(清除分类)')}</option>`;
         Object.keys(allCategories).forEach(cat => {
             optHtml += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
         });
@@ -1374,7 +1374,7 @@
         $.post('/api/v2/torrents/setCategory', { hashes: hashesStr, category: cat }, function() {
             closeModal('batch-category-modal');
             clearTorrentSelection();
-            showToast(t('已更新所选任务分类'));
+            showToast(window.t('已更新所选任务分类'));
             pollFastData();
         });
     }
@@ -1387,7 +1387,7 @@
         }
         activeDetailHash = hash;
         const torrent = allTorrents.find(t => t.hash === hash);
-        const name = torrent ? torrent.name : t('种子详情');
+        const name = torrent ? torrent.name : window.t('种子详情');
         $('#detail-title').text(name);
         $('#detail-hash').text(`Hash: ${hash}`);
         openModal('detail-modal');
@@ -1420,7 +1420,7 @@
         if (activeDetailSubTab === 'dt-files') {
             $.getJSON(`/api/v2/torrents/files?hash=${activeDetailHash}`, function(files) {
                 if (!files || files.length === 0) {
-                    $('#dt-files').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无文件树数据')}</div>`);
+                    $('#dt-files').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无文件树数据')}</div>`);
                     return;
                 }
                 let html = '';
@@ -1436,10 +1436,10 @@
                             <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${sizeFormatted} · ${progressPercent}%</div>
                         </div>
                         <select class="select-custom" style="padding:4px 8px; font-size:12px;" onchange="setFilePriority(${idx}, this.value)">
-                            <option value="0" ${prio === 0 ? 'selected' : ''}>${t('不下载')}</option>
-                            <option value="1" ${prio === 1 ? 'selected' : ''}>${t('常规优先级')}</option>
-                            <option value="6" ${prio === 6 ? 'selected' : ''}>${t('高优先级')}</option>
-                            <option value="7" ${prio === 7 ? 'selected' : ''}>${t('最高优先级')}</option>
+                            <option value="0" ${prio === 0 ? 'selected' : ''}>${window.t('不下载')}</option>
+                            <option value="1" ${prio === 1 ? 'selected' : ''}>${window.t('常规优先级')}</option>
+                            <option value="6" ${prio === 6 ? 'selected' : ''}>${window.t('高优先级')}</option>
+                            <option value="7" ${prio === 7 ? 'selected' : ''}>${window.t('最高优先级')}</option>
                         </select>
                     </div>`;
                 });
@@ -1454,12 +1454,12 @@
         } else if (activeDetailSubTab === 'dt-trackers') {
             $.getJSON(`/api/v2/torrents/trackers?hash=${activeDetailHash}`, function(trackers) {
                 if (!trackers || trackers.length === 0) {
-                    $('#dt-trackers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无 Trackers')}</div>`);
+                    $('#dt-trackers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无 Trackers')}</div>`);
                     return;
                 }
                 let html = '<div style="margin-bottom:12px; display:flex; gap:8px;">';
-                html += `<input class="input-box" id="single-tracker-url" placeholder="${t('添加 Tracker URL (udp://...)')}" style="flex:1;">`;
-                html += `<button class="btn" onclick="submitAddTrackers(false)" style="padding:6px 12px; font-size:12px;">${t('+ 添加')}</button>`;
+                html += `<input class="input-box" id="single-tracker-url" placeholder="${window.t('添加 Tracker URL (udp://...)')}" style="flex:1;">`;
+                html += `<button class="btn" onclick="submitAddTrackers(false)" style="padding:6px 12px; font-size:12px;">${window.t('+ 添加')}</button>`;
                 html += '</div>';
 
                 trackers.forEach(t => {
@@ -1468,9 +1468,9 @@
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden; margin-right:8px;">
                             <div style="font-weight:600; font-size:12px; font-family:monospace; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(t.url)}">${escapeHtml(t.url)}</div>
-                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('状态: ')}${escapeHtml(t.msg || t('运行中'))} · ${t('做种: ')}${t.num_seeds || 0} · ${t('节点: ')}${t.num_peers || 0}</div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('状态: ')}${escapeHtml(t.msg || window.t('运行中'))} · ${window.t('做种: ')}${t.num_seeds || 0} · ${window.t('节点: ')}${t.num_peers || 0}</div>
                         </div>
-                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? t('工作正常') : t('已就绪')}</span>
+                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? window.t('工作正常') : window.t('已就绪')}</span>
                     </div>`;
                 });
                 $('#dt-trackers').html(html);
@@ -1478,12 +1478,12 @@
         } else if (activeDetailSubTab === 'dt-peers') {
             $.getJSON(`/api/v2/sync/torrentPeers?hash=${activeDetailHash}`, function(res) {
                 if (!res || !res.peers) {
-                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无连接节点')}</div>`);
+                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无连接节点')}</div>`);
                     return;
                 }
                 const peerKeys = Object.keys(res.peers);
                 if (peerKeys.length === 0) {
-                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无连接节点 (Peers: 0)')}</div>`);
+                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无连接节点 (Peers: 0)')}</div>`);
                     return;
                 }
 
@@ -1494,8 +1494,8 @@
                 const pageKeys = peerKeys.slice(startIndex, startIndex + pageSize);
 
                 let html = `<div style="font-size:12px; color:var(--text-sec); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>${t('当前在线 Peers 节点: ')}${peerKeys.length}${t(' 个')}</span>
-                    ${totalPages > 1 ? `<span>${t('第 ')}${peerCurrentPage} / ${totalPages}${t(' 页')}</span>` : ''}
+                    <span>${window.t('当前在线 Peers 节点: ')}${peerKeys.length}${window.t(' 个')}</span>
+                    ${totalPages > 1 ? `<span>${window.t('第 ')}${peerCurrentPage} / ${totalPages}${window.t(' 页')}</span>` : ''}
                 </div>`;
 
                 pageKeys.forEach(k => {
@@ -1503,18 +1503,18 @@
                     html += `
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden;">
-                            <div style="font-weight:600; font-family:monospace;">${escapeHtml(p.ip)}:${p.port} <span style="font-size:11px; color:var(--text-sec); font-weight:normal;">(${escapeHtml(p.client || t('未知客户端'))})</span></div>
-                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('进度: ')}${(p.progress * 100).toFixed(1)}% · ↓ ${formatBytes(p.dl_speed)}/s · ↑ ${formatBytes(p.up_speed)}/s</div>
+                            <div style="font-weight:600; font-family:monospace;">${escapeHtml(p.ip)}:${p.port} <span style="font-size:11px; color:var(--text-sec); font-weight:normal;">(${escapeHtml(p.client || window.t('未知客户端'))})</span></div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('进度: ')}${(p.progress * 100).toFixed(1)}% · ↓ ${formatBytes(p.dl_speed)}/s · ↑ ${formatBytes(p.up_speed)}/s</div>
                         </div>
-                        <span class="badge ${p.dl_speed > 0 || p.up_speed > 0 ? 'downloading' : 'paused'}">${p.dl_speed > 0 ? t('传输中') : t('连接空闲')}</span>
+                        <span class="badge ${p.dl_speed > 0 || p.up_speed > 0 ? 'downloading' : 'paused'}">${p.dl_speed > 0 ? window.t('传输中') : window.t('连接空闲')}</span>
                     </div>`;
                 });
 
                 if (totalPages > 1) {
                     html += `
                     <div style="display:flex; justify-content:center; gap:10px; margin-top:14px; padding-top:8px; border-top:1px solid var(--border-subtle);">
-                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(-1)" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${t('上一页')}</button>
-                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(1)" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${t('下一页')}</button>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(-1)" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${window.t('上一页')}</button>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(1)" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${window.t('下一页')}</button>
                     </div>`;
                 }
 
@@ -1530,7 +1530,7 @@
 
     function setFilePriority(fileId, prio) {
         $.post('/api/v2/torrents/filePrio', { hash: activeDetailHash, id: fileId, priority: prio }, function() {
-            showToast(t('已更新文件下载优先级'));
+            showToast(window.t('已更新文件下载优先级'));
             refreshActiveDetailSubTab();
         });
     }
@@ -1549,7 +1549,7 @@
         const total = pieces.length;
         let downloaded = 0;
         pieces.forEach(p => { if (p === 2) downloaded++; });
-        $('#pieces-stats-text').text(`${t('总区块: ')}${total}${t(' · 已下载: ')}${downloaded} (${((downloaded/total)*100).toFixed(1)}%)`);
+        $('#pieces-stats-text').text(`${window.t('总区块: ')}${total}${window.t(' · 已下载: ')}${downloaded} (${((downloaded/total)*100).toFixed(1)}%)`);
 
         const cols = Math.floor(Math.sqrt(total * (rect.width / rect.height))) || 30;
         const rows = Math.ceil(total / cols);
@@ -1578,9 +1578,9 @@
             const r = Math.floor((cy - 2) / cellH);
             const idx = r * cols + c;
             if (idx >= 0 && idx < total) {
-                const statusNames = [t('未下载'), t('下载中'), t('已完成')];
+                const statusNames = [window.t('未下载'), window.t('下载中'), window.t('已完成')];
                 const tip = $('#pieces-tooltip');
-                tip.text(`${t('区块 #')}${idx}: ${statusNames[pieces[idx]] || '?'}`);
+                tip.text(`${window.t('区块 #')}${idx}: ${statusNames[pieces[idx]] || '?'}`);
                 tip.css({ left: e.pageX + 10, top: e.pageY + 10 }).show();
             } else {
                 $('#pieces-tooltip').hide();
@@ -1598,20 +1598,20 @@
             urls = $('#single-tracker-url').val().trim();
         }
 
-        if (!urls) return showToast(t('请输入有效的 Tracker URL 列表！'), false);
+        if (!urls) return showToast(window.t('请输入有效的 Tracker URL 列表！'), false);
 
         if (isGlobal) {
-            if (allTorrents.length === 0) return showToast(t('当前没有运行中的任务！'), false);
+            if (allTorrents.length === 0) return showToast(window.t('当前没有运行中的任务！'), false);
             const allHashes = allTorrents.map(t => t.hash).join('|');
             $.post('/api/v2/torrents/addTrackers', { hashes: allHashes, urls: urls }, function() {
-                showToast(`${t('已成功为全部 ')}${allTorrents.length}${t(' 个任务批量追加 Tracker！')}`);
+                showToast(`${window.t('已成功为全部 ')}${allTorrents.length}${window.t(' 个任务批量追加 Tracker！')}`);
                 $('#global-tracker-urls').val('');
             }).fail(function() {
-                showToast(t('批量 Tracker 请求已发送！'));
+                showToast(window.t('批量 Tracker 请求已发送！'));
             });
         } else {
             $.post('/api/v2/torrents/addTrackers', { hash: activeDetailHash, urls: urls }, function() {
-                showToast(t('Tracker 追加成功！'));
+                showToast(window.t('Tracker 追加成功！'));
                 $('#single-tracker-url').val('');
                 refreshActiveDetailSubTab();
             });
@@ -1628,7 +1628,7 @@
         const savepath = $('#add-torrent-savepath').val().trim();
 
         if (fileInput.files.length === 0 && !urls) {
-            return showToast(t('请选择 .torrent 种子文件或填入 Magnet 磁力链接！'), false);
+            return showToast(window.t('请选择 .torrent 种子文件或填入 Magnet 磁力链接！'), false);
         }
 
         let formData = new FormData();
@@ -1656,11 +1656,11 @@
                 $('#torrent-urls').val('');
                 fileInput.value = '';
                 $('#add-torrent-savepath').val('');
-                showToast(t('任务已成功添加至 qBittorrent！'));
+                showToast(window.t('任务已成功添加至 qBittorrent！'));
                 pollFastData();
             },
             error: function() {
-                showToast(t('发送种子失败，请检查网络或重新登录！'), false);
+                showToast(window.t('发送种子失败，请检查网络或重新登录！'), false);
             }
         });
     }
@@ -1693,7 +1693,7 @@
     function renderInstalledPlugins() {
         const container = $('#installed-plugins-list');
         if (!installedPlugins || installedPlugins.length === 0) {
-            container.html(`<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">${t('暂未安装任何搜索插件。请从下方常用插件库一键安装。')}</div>`);
+            container.html(`<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">${window.t('暂未安装任何搜索插件。请从下方常用插件库一键安装。')}</div>`);
             return;
         }
 
@@ -1710,7 +1710,7 @@
                         <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="togglePluginEnabled('${escapeHtml(p.name)}', this.checked)">
                         <span class="slider"></span>
                     </label>
-                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="${t('卸载插件')}">
+                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="${window.t('卸载插件')}">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     </button>
                 </div>
@@ -1720,7 +1720,7 @@
     }
 
     function updateSearchPluginDropdown() {
-        let html = `<option value="all">${t('🌐 全部插件')}</option><option value="enabled" selected>${t('⚡ 已启用插件')}</option>`;
+        let html = `<option value="all">${window.t('🌐 全部插件')}</option><option value="enabled" selected>${window.t('⚡ 已启用插件')}</option>`;
         installedPlugins.forEach(p => {
             html += `<option value="${escapeHtml(p.name)}">${escapeHtml(p.fullName || p.name)}</option>`;
         });
@@ -1746,7 +1746,7 @@
                     <div style="font-size:11px; color:var(--text-sec); margin-bottom:10px; line-height:1.4;">${escapeHtml(preset.desc)}</div>
                 </div>
                 <button class="btn ${isInstalled ? 'secondary' : ''}" style="padding:6px 12px; font-size:11px;" onclick="installPresetPlugin('${preset.url}')" ${isInstalled ? 'disabled style="opacity:0.6;"' : ''}>
-                    ${isInstalled ? t('✓ 已安装') : t('+ 一键安装')}
+                    ${isInstalled ? window.t('✓ 已安装') : window.t('+ 一键安装')}
                 </button>
             </div>`;
         });
@@ -1754,12 +1754,12 @@
     }
 
     function installPresetPlugin(url) {
-        showToast(t('正在向 qBittorrent 发送插件安装指令...'));
+        showToast(window.t('正在向 qBittorrent 发送插件安装指令...'));
         $.post('/api/v2/search/installPlugin', { sources: url }, function() {
-            showToast(t('插件安装请求已发送，正在同步中'));
+            showToast(window.t('插件安装请求已发送，正在同步中'));
             setTimeout(fetchSearchPlugins, 2500);
         }).fail(function() {
-            showToast(t('安装失败，请确认服务器已安装 Python3'), false);
+            showToast(window.t('安装失败，请确认服务器已安装 Python3'), false);
         });
     }
 
@@ -1811,15 +1811,15 @@
 
     function togglePluginEnabled(pluginName, enable) {
         $.post('/api/v2/search/enablePlugin', { names: pluginName, enable: enable ? 'true' : 'false' }, function() {
-            showToast(`${enable ? t('已启用') : t('已禁用')}${pluginName}`);
+            showToast(`${enable ? window.t('已启用') : window.t('已禁用')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
 
     function uninstallSearchPlugin(pluginName) {
-        if (!confirm(`${t('确定要卸载搜索插件 ')}[${pluginName}]${t(' 吗？')}`)) return;
+        if (!confirm(`${window.t('确定要卸载搜索插件 ')}[${pluginName}]${window.t(' 吗？')}`)) return;
         $.post('/api/v2/search/uninstallPlugin', { names: pluginName }, function() {
-            showToast(`${t('已卸载插件: ')}${pluginName}`);
+            showToast(`${window.t('已卸载插件: ')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
@@ -1859,7 +1859,7 @@
         if (searchCurrentPage < 1) searchCurrentPage = 1;
 
         if (totalResults > 0) {
-            $('#search-count-label').text(`${t('检索结果: ')}${totalResults}${t(' 条')} (${t('第')} ${searchCurrentPage} / ${totalPages}${t(' 页')})`);
+            $('#search-count-label').text(`${window.t('检索结果: ')}${totalResults}${window.t(' 条')} (${window.t('第')} ${searchCurrentPage} / ${totalPages}${window.t(' 页')})`);
             $('#search-toolbar').css('display', 'flex');
         } else {
             $('#search-toolbar').hide();
@@ -1881,21 +1881,21 @@
                             <span style="display:inline-block; min-width:24px; color:var(--accent); font-weight:800; font-size:13px; margin-right:4px;">${itemIndex}.</span>${escapeHtml(item.fileName)}
                         </div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            📦 ${sizeFormatted} · 👤 ${t('做种: ')}<span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · ${t('吸血: ')}${item.nbLeechers} · ${t('来源: ')}${escapeHtml(item.siteUrl || '插件')}
+                            📦 ${sizeFormatted} · 👤 ${window.t('做种: ')}<span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · ${window.t('吸血: ')}${item.nbLeechers} · ${window.t('来源: ')}${escapeHtml(item.siteUrl || '插件')}
                         </div>
                     </div>
-                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">${t('下载')}</button>
+                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">${window.t('下载')}</button>
                 </div>
             </div>`;
         });
 
         if (totalResults === 0) {
-            html = `<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在检索全网结果，请稍候...')}</div>`;
+            html = `<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${window.t('正在检索全网结果，请稍候...')}</div>`;
         } else {
             // 分页控制器（始终展示统计与翻页器）
             let pageButtonsHtml = '';
             // 上一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="${t('上一页')}">‹</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="${window.t('上一页')}">‹</button>`;
 
             if (totalPages <= 1) {
                 pageButtonsHtml += `<button class="page-pill active" disabled>1</button>`;
@@ -1923,12 +1923,12 @@
             }
 
             // 下一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="${t('下一页')}">›</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="${window.t('下一页')}">›</button>`;
 
             html += `
             <div class="pagination-wrapper">
                 <div class="pagination-info">
-                    ${t('显示第 ')}<strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong>${t(' 条 / 共 ')}<strong>${totalResults}</strong>${t(' 条 (每页 20 条)')}
+                    ${window.t('显示第 ')}<strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong>${window.t(' 条 / 共 ')}<strong>${totalResults}</strong>${window.t(' 条 (每页 20 条)')}
                 </div>
                 <div class="pagination-controls">
                     ${pageButtonsHtml}
@@ -1954,7 +1954,7 @@
 
     function triggerSearch() {
         const pattern = $('#search-keyword').val().trim();
-        if (!pattern) return showToast(t('请输入搜索关键字！'), false);
+        if (!pattern) return showToast(window.t('请输入搜索关键字！'), false);
 
         stopCurrentSearch();
         cachedSearchResults = [];
@@ -1963,9 +1963,9 @@
         const plugin = $('#search-plugin').val();
         const category = $('#search-category').val();
 
-        $('#search-results-container').html(`<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在全网启动搜索，拉取检索结果中...')}</div>`);
+        $('#search-results-container').html(`<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${window.t('正在全网启动搜索，拉取检索结果中...')}</div>`);
         $('#search-status-bar').css('display', 'flex');
-        $('#search-status-text').text(`${t('正在为 ')}“${pattern}”${t(' 检索中...')}`);
+        $('#search-status-text').text(`${window.t('正在为 ')}“${pattern}”${window.t(' 检索中...')}`);
 
         $.post('/api/v2/search/start', { pattern: pattern, plugins: plugin, category: category }, function(res) {
             if (res && res.id) {
@@ -1973,7 +1973,7 @@
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = setInterval(pollSearchResults, 1500);
             } else {
-                $('#search-results-container').html(`<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">${t('启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。')}</div>`);
+                $('#search-results-container').html(`<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">${window.t('启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。')}</div>`);
             }
         });
     }
@@ -1988,7 +1988,7 @@
             scheduleSearchStateSave();
 
             if (res.status === 'Stopped') {
-                $('#search-status-text').text(`${t('搜索完成，共抓取 ')}${res.total || cachedSearchResults.length}${t(' 条资源')}`);
+                $('#search-status-text').text(`${window.t('搜索完成，共抓取 ')}${res.total || cachedSearchResults.length}${window.t(' 条资源')}`);
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = null;
             }
@@ -2016,7 +2016,7 @@
             data: { urls: url },
             dataType: 'text',
             success: function () {
-                showToast(isMagnet ? t('✅ 磁力链接已成功添加，开始下载！') : t('✅ 已发送下载指令'));
+                showToast(isMagnet ? window.t('✅ 磁力链接已成功添加，开始下载！') : window.t('✅ 已发送下载指令'));
                 if (typeof pollFastData === 'function') pollFastData();
                 // 稍后主动刷新任务列表，让新任务尽快出现
                 setTimeout(function () {
@@ -2024,7 +2024,7 @@
                 }, 2000);
             },
             error: function (xhr) {
-                showToast(t('❌ 添加失败: ') + (xhr.statusText || t('网络错误')), false);
+                showToast(window.t('❌ 添加失败: ') + (xhr.statusText || window.t('网络错误')), false);
             }
         });
     }
@@ -2032,7 +2032,7 @@
     function addMagnetFromSearch(rawUrl) {
         const url = (rawUrl || '').trim();
         if (!url) {
-            showToast(t('⚠️ 无效的下载链接'), false);
+            showToast(window.t('⚠️ 无效的下载链接'), false);
             return;
         }
         const isMagnet = /^magnet:\?/i.test(url);
@@ -2043,7 +2043,7 @@
         }
         // 下载页链接无法被 qBittorrent 直接解析（实测返回 200 但不创建任务）：
         // 先通过代理解析页面提取磁力 / .torrent 链接，再尝试添加。
-        showToast(t('正在解析下载页，提取磁力链接...'));
+        showToast(window.t('正在解析下载页，提取磁力链接...'));
         $.ajax({
             url: '/api/v2/abit/resolve',
             method: 'POST',
@@ -2056,12 +2056,12 @@
                 if (candidates.length) {
                     addTorrentUrl(candidates[0], /^magnet:\?/i.test(candidates[0]));
                 } else {
-                    showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                    showToast(window.t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
                     addTorrentUrl(url, false);
                 }
             },
             error: function () {
-                showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                showToast(window.t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
                 addTorrentUrl(url, false);
             }
         });
@@ -2105,7 +2105,7 @@
         renderSearchResultsUI();
         $('#search-toolbar').css('display', 'flex');
         $('#search-status-bar').css('display', 'flex');
-        $('#search-status-text').text(`${t('已恢复上次检索结果')} (${saved.results.length}${t(' 条)')}`);
+        $('#search-status-text').text(`${window.t('已恢复上次检索结果')} (${saved.results.length}${window.t(' 条)')}`);
         return true;
     }
 
@@ -2145,7 +2145,7 @@
     function renderRssFeeds(feeds) {
         const container = $('#rss-feed-list-container');
         if (!feeds || Object.keys(feeds).length === 0) {
-            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无订阅源，请点击上方按钮添加 RSS 订阅 URL')}</div>`);
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${window.t('暂无订阅源，请点击上方按钮添加 RSS 订阅 URL')}</div>`);
             return;
         }
 
@@ -2158,12 +2158,12 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <div>
                         <div style="font-weight:700; font-size:14px;">📡 ${escapeHtml(feed.title || key)}</div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('URL: ')}${escapeHtml(feed.url || key)} · ${t('文章数: ')}${articles.length}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('URL: ')}${escapeHtml(feed.url || key)} · ${window.t('文章数: ')}${articles.length}</div>
                     </div>
                     <div style="display:flex; gap:6px;">
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">${t('浏览文章')}</button>
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">${t('刷新')}</button>
-                        <button class="icon-btn danger" style="width:30px; height:30px;" title="${t('删除订阅源')}" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">${window.t('浏览文章')}</button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">${window.t('刷新')}</button>
+                        <button class="icon-btn danger" style="width:30px; height:30px;" title="${window.t('删除订阅源')}" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </div>
             </div>`;
@@ -2176,16 +2176,16 @@
             const feed = feeds[feedKey];
             if (!feed || !feed.articles) return;
 
-            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (${t('共 ')}${feed.articles.length}${t(' 篇)')}`);
+            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (${window.t('共 ')}${feed.articles.length}${window.t(' 篇)')}`);
             let html = '';
             feed.articles.forEach(art => {
                 html += `
                 <div class="list-row">
                     <div style="flex:1; overflow:hidden; margin-right:10px;">
                         <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(art.title)}">${escapeHtml(art.title)}</div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('发布时间: ')}${art.date ? formatTimestamp(art.date) : '--'}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('发布时间: ')}${art.date ? formatTimestamp(art.date) : '--'}</div>
                     </div>
-                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">${t('下载')}</button>
+                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">${window.t('下载')}</button>
                 </div>`;
             });
             $('#rss-articles-list').html(html);
@@ -2195,22 +2195,22 @@
 
     function refreshRssFeed(feedPath) {
         $.post('/api/v2/rss/refreshItem', { itemPath: feedPath }, function() {
-            showToast(t('已发起 RSS 订阅源刷新请求！'));
+            showToast(window.t('已发起 RSS 订阅源刷新请求！'));
             fetchRssData();
         });
     }
 
     function refreshAllRssFeeds() {
         $.post('/api/v2/rss/refreshItem', { itemPath: '' }, function() {
-            showToast(t('已发起全部 RSS 订阅刷新！'));
+            showToast(window.t('已发起全部 RSS 订阅刷新！'));
             fetchRssData();
         });
     }
 
     function deleteRssFeed(feedPath) {
-        if (!confirm(`${t('确定要删除 RSS 订阅源 ')}[${feedPath}]${t(' 吗？')}`)) return;
+        if (!confirm(`${window.t('确定要删除 RSS 订阅源 ')}[${feedPath}]${window.t(' 吗？')}`)) return;
         $.post('/api/v2/rss/removeItem', { path: feedPath }, function() {
-            showToast(t('已删除订阅源'));
+            showToast(window.t('已删除订阅源'));
             fetchRssData();
         });
     }
@@ -2218,13 +2218,13 @@
     function submitAddRssFeed() {
         const url = $('#feed-url').val().trim();
         const path = $('#feed-path').val().trim();
-        if (!url) return showToast(t('请输入有效的 RSS 订阅链接！'), false);
+        if (!url) return showToast(window.t('请输入有效的 RSS 订阅链接！'), false);
 
         $.post('/api/v2/rss/addFeed', { url: url, path: path }, function() {
             closeModal('add-rss-feed-modal');
             $('#feed-url').val('');
             $('#feed-path').val('');
-            showToast(t('已添加 RSS 订阅源'));
+            showToast(window.t('已添加 RSS 订阅源'));
             fetchRssData();
         });
     }
@@ -2232,7 +2232,7 @@
     function renderRssRules(rules) {
         const container = $('#rss-rules-container');
         if (!rules || Object.keys(rules).length === 0) {
-            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无自动下载规则')}</div>`);
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${window.t('暂无自动下载规则')}</div>`);
             return;
         }
 
@@ -2245,10 +2245,10 @@
                     <div>
                         <div style="font-weight:700; font-size:14px;">⚡ ${escapeHtml(name)}</div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            ${t('包含: ')}<code>${escapeHtml(r.mustContain || t('所有'))}</code> · ${t('排除: ')}<code>${escapeHtml(r.mustNotContain || t('无'))}</code> · ${t('· 分类: ')}${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : t('无')}
+                            ${window.t('包含: ')}<code>${escapeHtml(r.mustContain || window.t('所有'))}</code> · ${window.t('排除: ')}<code>${escapeHtml(r.mustNotContain || window.t('无'))}</code> · ${window.t('· 分类: ')}${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : window.t('无')}
                         </div>
                     </div>
-                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="${t('删除规则')}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="${window.t('删除规则')}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                 </div>
             </div>`;
         });
@@ -2256,7 +2256,7 @@
     }
 
     function openRssRuleModal() {
-        let optHtml = `<option value="">${t('(分配分类: 无)')}</option>`;
+        let optHtml = `<option value="">${window.t('(分配分类: 无)')}</option>`;
         Object.keys(allCategories).forEach(c => {
             optHtml += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
         });
@@ -2269,7 +2269,7 @@
         const must = $('#rule-must').val().trim();
         const not = $('#rule-not').val().trim();
         const cat = $('#rule-category').val();
-        if (!name) return showToast(t('请输入规则名称！'), false);
+        if (!name) return showToast(window.t('请输入规则名称！'), false);
 
         const ruleDef = {
             enabled: true,
@@ -2285,15 +2285,15 @@
             $('#rule-name').val('');
             $('#rule-must').val('');
             $('#rule-not').val('');
-            showToast(t('已保存自动下载规则'));
+            showToast(window.t('已保存自动下载规则'));
             fetchRssData();
         });
     }
 
     function deleteRssRule(name) {
-        if (!confirm(`${t('确定要删除规则 ')}[${name}]${t(' 吗？')}`)) return;
+        if (!confirm(`${window.t('确定要删除规则 ')}[${name}]${window.t(' 吗？')}`)) return;
         $.post('/api/v2/rss/removeRule', { ruleName: name }, function() {
-            showToast(t('已删除规则'));
+            showToast(window.t('已删除规则'));
             fetchRssData();
         });
     }
@@ -2301,7 +2301,7 @@
     function renderCategories() {
         const container = $('#categories-container');
         if (!allCategories || Object.keys(allCategories).length === 0) {
-            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无分类数据')}</div>`);
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${window.t('暂无分类数据')}</div>`);
             return;
         }
 
@@ -2316,20 +2316,20 @@
     function submitCreateCategory() {
         const name = $('#new-cat-name').val().trim();
         const path = $('#new-cat-path').val().trim();
-        if (!name) return showToast(t('请输入分类名称！'), false);
+        if (!name) return showToast(window.t('请输入分类名称！'), false);
 
         $.post('/api/v2/torrents/createCategory', { category: name, savePath: path }, function() {
             closeModal('add-category-modal');
             $('#new-cat-name').val('');
             $('#new-cat-path').val('');
-            showToast(t('已成功创建分类'));
+            showToast(window.t('已成功创建分类'));
             pollSlowData();
         });
     }
 
     function updateCategoryDropdowns() {
-        let filterHtml = `<option value="all">${t('📁 全部分类')}</option>`;
-        let addHtml = `<option value="">${t('(无分类)')}</option>`;
+        let filterHtml = `<option value="all">${window.t('📁 全部分类')}</option>`;
+        let addHtml = `<option value="">${window.t('(无分类)')}</option>`;
 
         Object.keys(allCategories).forEach(c => {
             filterHtml += `<option value="${escapeHtml(c)}" ${currentCategory === c ? 'selected' : ''}>${escapeHtml(c)}</option>`;
@@ -2433,7 +2433,7 @@
         const confirmPassword = $('#pref-webui-password-confirm').val();
 
         if (newPassword && newPassword !== confirmPassword) {
-            return showToast(t('❌ 两次输入的新密码不一致，请重新核对！'), false);
+            return showToast(window.t('❌ 两次输入的新密码不一致，请重新核对！'), false);
         }
 
         const prefs = {
@@ -2500,10 +2500,10 @@
         $.post('/api/v2/app/setPreferences', { json: JSON.stringify(prefs) }, function() {
             $('#pref-webui-password').val('');
             $('#pref-webui-password-confirm').val('');
-            showToast(t('✅ 系统配置与安全凭据已全量保存！'));
+            showToast(window.t('✅ 系统配置与安全凭据已全量保存！'));
             loadAllSystemPreferences();
         }).fail(function() {
-            showToast(t('保存配置失败，请检查网络或权限'), false);
+            showToast(window.t('保存配置失败，请检查网络或权限'), false);
         });
     }
 
@@ -2529,19 +2529,19 @@
     }
 
     function copySystemLogs() {
-        if (!rawLogs || rawLogs.length === 0) return showToast(t('暂无日志记录可复制'), false);
+        if (!rawLogs || rawLogs.length === 0) return showToast(window.t('暂无日志记录可复制'), false);
         const textLines = rawLogs.map(l => `[${formatTimestamp(l.timestamp)}] [${l.type}] ${l.message}`).join('\n');
         navigator.clipboard.writeText(textLines).then(() => {
-            showToast(t('✅ 已复制全部日志到剪贴板！'));
+            showToast(window.t('✅ 已复制全部日志到剪贴板！'));
         }).catch(() => {
-            showToast(t('复制失败，请手动选择复制'), false);
+            showToast(window.t('复制失败，请手动选择复制'), false);
         });
     }
 
     function renderSystemLogs(logs) {
         const container = $('#sys-logs-container');
         if (!logs || logs.length === 0) {
-            container.html(`<div style="color:var(--text-sec); text-align:center; padding:20px;">${t('暂无日志记录')}</div>`);
+            container.html(`<div style="color:var(--text-sec); text-align:center; padding:20px;">${window.t('暂无日志记录')}</div>`);
             return;
         }
 
@@ -2582,9 +2582,9 @@
         document.documentElement.setAttribute('data-theme', mode);
 
         const icons = { auto: '🌓', light: '☀️', dark: '🌙' };
-        const labels = { auto: t('自动'), light: t('浅色'), dark: t('深色') };
+        const labels = { auto: window.t('自动'), light: window.t('浅色'), dark: window.t('深色') };
         $('#theme-icon').text(icons[mode] || '🌓');
-        $('#theme-label').text(labels[mode] || t('自动'));
+        $('#theme-label').text(labels[mode] || window.t('自动'));
     }
 
     function cycleTheme() {
@@ -2605,11 +2605,11 @@
         if (isAltSpeedEnabled) {
             $('#btn-alt-speed').addClass('alt-speed-active');
             $('#alt-speed-icon').text('🐢');
-            $('#alt-speed-label').text(t('备用速率'));
+            $('#alt-speed-label').text(window.t('备用速率'));
         } else {
             $('#btn-alt-speed').removeClass('alt-speed-active');
             $('#alt-speed-icon').text('⚡');
-            $('#alt-speed-label').text(t('常规速率'));
+            $('#alt-speed-label').text(window.t('常规速率'));
         }
     }
 
@@ -2617,7 +2617,7 @@
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? t('已激活备用限速模式') : t('已恢复常规全局全速模式'));
+            showToast(isAltSpeedEnabled ? window.t('已激活备用限速模式') : window.t('已恢复常规全局全速模式'));
         });
     }
 
@@ -2710,7 +2710,7 @@
         const password = $('#login-pass').val();
 
         if (!username || !password) {
-            showToast(t('⚠️ 请输入完整的 WebUI 用户名与密码'), false);
+            showToast(window.t('⚠️ 请输入完整的 WebUI 用户名与密码'), false);
             if (!username) $('#login-user').focus();
             else $('#login-pass').focus();
             return;
@@ -2718,7 +2718,7 @@
 
         const loginBtn = $('#login-modal button.btn.w-full');
         const origText = loginBtn.text();
-        loginBtn.prop('disabled', true).text(t('正在核验中...'));
+        loginBtn.prop('disabled', true).text(window.t('正在核验中...'));
 
         $.ajax({
             url: '/api/v2/auth/login',
@@ -2731,21 +2731,21 @@
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
                     $('#login-pass').val('');
-                    showToast(t('✅ 身份验证通过，已成功登录！'));
+                    showToast(window.t('✅ 身份验证通过，已成功登录！'));
                     if (typeof checkAuthStatus === 'function') {
                         checkAuthStatus();
                     }
                 } else {
-                    showToast(t('❌ 用户名或密码错误，请核对后重试！'), false);
+                    showToast(window.t('❌ 用户名或密码错误，请核对后重试！'), false);
                     $('#login-pass').val('').focus();
                 }
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
                 if (xhr.status === 403 || xhr.status === 401) {
-                    showToast(t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
+                    showToast(window.t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
                 } else {
-            showToast(t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
+            showToast(window.t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
                 }
                 $('#login-pass').val('').focus();
             }
@@ -2756,9 +2756,9 @@
         if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
         if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
-            showToast(t('已退出登录'));
+            showToast(window.t('已退出登录'));
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
+            $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
             openLoginModal(true);
         }).fail(function() {
             openLoginModal(true);
@@ -2825,7 +2825,7 @@
         $.getJSON('/api/v2/transfer/info', function(info) {
             if (!info) return;
             $('#qbt-dot').removeClass('offline');
-            $('#qbt-status-text').text(t('已在线'));
+            $('#qbt-status-text').text(window.t('已在线'));
 
             const dlSpeed = formatBytes(info.dl_info_speed);
             const upSpeed = formatBytes(info.up_info_speed);
@@ -2833,9 +2833,9 @@
             $('#v-up-speed').text(upSpeed + '/s');
 
             const statusMap = {
-                "connected": t('🟢 连接就绪'),
-                "firewalled": t('🟡 处于防火墙后'),
-                "disconnected": t('🔴 未连接')
+                "connected": window.t('🟢 连接就绪'),
+                "firewalled": window.t('🟡 处于防火墙后'),
+                "disconnected": window.t('🔴 未连接')
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
@@ -2858,7 +2858,7 @@
             }
         }).fail(function() {
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(t('离线/未登入'));
+            $('#qbt-status-text').text(window.t('离线/未登入'));
         });
 
         // 2. Torrents List Sync
@@ -2926,7 +2926,7 @@
 
         // Set Date
         const now = new Date();
-        const days = [t('星期日'), t('星期一'), t('星期二'), t('星期三'), t('星期四'), t('星期五'), t('星期六')];
+        const days = [window.t('星期日'), window.t('星期一'), window.t('星期二'), window.t('星期三'), window.t('星期四'), window.t('星期五'), window.t('星期六')];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
         // Bootstrap authentication check (VueTorrent-style probe)
@@ -2958,7 +2958,7 @@
             if (fastPollTimer) clearInterval(fastPollTimer);
             if (slowPollTimer) clearInterval(slowPollTimer);
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
+            $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
             openLoginModal(true);
         });
     }

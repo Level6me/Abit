@@ -14,9 +14,9 @@
         document.documentElement.setAttribute('data-theme', mode);
 
         const icons = { auto: '🌓', light: '☀️', dark: '🌙' };
-        const labels = { auto: t('自动'), light: t('浅色'), dark: t('深色') };
+        const labels = { auto: window.t('自动'), light: window.t('浅色'), dark: window.t('深色') };
         $('#theme-icon').text(icons[mode] || '🌓');
-        $('#theme-label').text(labels[mode] || t('自动'));
+        $('#theme-label').text(labels[mode] || window.t('自动'));
     }
 
     function cycleTheme() {
@@ -37,11 +37,11 @@
         if (isAltSpeedEnabled) {
             $('#btn-alt-speed').addClass('alt-speed-active');
             $('#alt-speed-icon').text('🐢');
-            $('#alt-speed-label').text(t('备用速率'));
+            $('#alt-speed-label').text(window.t('备用速率'));
         } else {
             $('#btn-alt-speed').removeClass('alt-speed-active');
             $('#alt-speed-icon').text('⚡');
-            $('#alt-speed-label').text(t('常规速率'));
+            $('#alt-speed-label').text(window.t('常规速率'));
         }
     }
 
@@ -49,7 +49,7 @@
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? t('已激活备用限速模式') : t('已恢复常规全局全速模式'));
+            showToast(isAltSpeedEnabled ? window.t('已激活备用限速模式') : window.t('已恢复常规全局全速模式'));
         });
     }
 
@@ -142,7 +142,7 @@
         const password = $('#login-pass').val();
 
         if (!username || !password) {
-            showToast(t('⚠️ 请输入完整的 WebUI 用户名与密码'), false);
+            showToast(window.t('⚠️ 请输入完整的 WebUI 用户名与密码'), false);
             if (!username) $('#login-user').focus();
             else $('#login-pass').focus();
             return;
@@ -150,7 +150,7 @@
 
         const loginBtn = $('#login-modal button.btn.w-full');
         const origText = loginBtn.text();
-        loginBtn.prop('disabled', true).text(t('正在核验中...'));
+        loginBtn.prop('disabled', true).text(window.t('正在核验中...'));
 
         $.ajax({
             url: '/api/v2/auth/login',
@@ -163,21 +163,21 @@
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
                     $('#login-pass').val('');
-                    showToast(t('✅ 身份验证通过，已成功登录！'));
+                    showToast(window.t('✅ 身份验证通过，已成功登录！'));
                     if (typeof checkAuthStatus === 'function') {
                         checkAuthStatus();
                     }
                 } else {
-                    showToast(t('❌ 用户名或密码错误，请核对后重试！'), false);
+                    showToast(window.t('❌ 用户名或密码错误，请核对后重试！'), false);
                     $('#login-pass').val('').focus();
                 }
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
                 if (xhr.status === 403 || xhr.status === 401) {
-                    showToast(t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
+                    showToast(window.t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
                 } else {
-            showToast(t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
+            showToast(window.t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
                 }
                 $('#login-pass').val('').focus();
             }
@@ -188,9 +188,9 @@
         if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
         if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
-            showToast(t('已退出登录'));
+            showToast(window.t('已退出登录'));
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
+            $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
             openLoginModal(true);
         }).fail(function() {
             openLoginModal(true);

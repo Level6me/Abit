@@ -127,7 +127,7 @@
         const list = getFilteredAndSortedTorrents();
 
         if (list.length === 0) {
-            container.html(`<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">${t('当前筛选条件下无任务记录')}</div>`);
+            container.html(`<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">${window.t('当前筛选条件下无任务记录')}</div>`);
             return;
         }
 
@@ -167,8 +167,8 @@
 
             const progressVal = (t.progress * 100).toFixed(1);
             const ratioVal = (t.ratio || 0).toFixed(2);
-            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? t('做种中') : t('已完成')) : (status.isPaused ? t('已暂停') : formatEta(t.eta));
-            const seedsText = `${t('做种: ')}${t.num_seeds || 0} (${t.num_complete || 0}) · ${t('节点: ')}${t.num_leechs || 0} (${t.num_incomplete || 0})`;
+            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? window.t('做种中') : window.t('已完成')) : (status.isPaused ? window.t('已暂停') : formatEta(t.eta));
+            const seedsText = `${window.t('做种: ')}${t.num_seeds || 0} (${t.num_complete || 0}) · ${window.t('节点: ')}${t.num_leechs || 0} (${t.num_incomplete || 0})`;
 
             html += `
             <div class="torrent-card ${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
@@ -182,7 +182,7 @@
                 </div>
                 <div class="torrent-meta">
                     <span>${progressVal}% · ${formatBytes(t.completed)} / ${formatBytes(t.size)}</span>
-                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}${t('比率: ')}${ratioVal}</span>
+                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}${window.t('比率: ')}${ratioVal}</span>
                 </div>
                 <div class="torrent-meta">
                     <span>↓ ${formatBytes(t.dlspeed)}/s · ↑ ${formatBytes(t.upspeed)}/s</span>
@@ -193,20 +193,20 @@
                     <span style="font-family:monospace; font-size:10px; color:var(--text-ter);">${hash.substring(0, 8)}...</span>
                 </div>
                 <div class="torrent-ctrls">
-                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || t('默认路径'))}">
-                        📁 ${escapeHtml(t.save_path || t('默认路径'))}
+                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || window.t('默认路径'))}">
+                        📁 ${escapeHtml(t.save_path || window.t('默认路径'))}
                     </div>
                     <div class="torrent-btns">
-                        <button class="icon-btn" title="${t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
+                        <button class="icon-btn" title="${window.t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                         </button>
-                        <button class="icon-btn accent" title="${t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
+                        <button class="icon-btn accent" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                         </button>
-                        <button class="icon-btn" title="${status.isPaused ? t('恢复') : t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
+                        <button class="icon-btn" title="${status.isPaused ? window.t('恢复') : window.t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
                             <svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg>
                         </button>
-                        <button class="icon-btn danger" title="${t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
+                        <button class="icon-btn danger" title="${window.t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
                             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                         </button>
                     </div>
@@ -224,16 +224,16 @@
                 <thead>
                     <tr>
                         <th style="width:30px;"><input type="checkbox" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)"></th>
-                        <th>${t('名称')}</th>
-                        <th>${t('状态')}</th>
-                        <th>${t('大小')}</th>
-                        <th>${t('进度')}</th>
-                        <th>${t('下载速度')}</th>
-                        <th>${t('上传速度')}</th>
-                        <th>${t('做种/节点')}</th>
+                        <th>${window.t('名称')}</th>
+                        <th>${window.t('状态')}</th>
+                        <th>${window.t('大小')}</th>
+                        <th>${window.t('进度')}</th>
+                        <th>${window.t('下载速度')}</th>
+                        <th>${window.t('上传速度')}</th>
+                        <th>${window.t('做种/节点')}</th>
                         <th>ETA</th>
-                        <th>${t('分享率')}</th>
-                        <th style="text-align:right;">${t('操作')}</th>
+                        <th>${window.t('分享率')}</th>
+                        <th style="text-align:right;">${window.t('操作')}</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -244,7 +244,7 @@
             const status = getTorrentStatus(t);
 
             const progressVal = (t.progress * 100).toFixed(1);
-            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? t('做种中') : t('已完成')) : (status.isPaused ? t('已暂停') : formatEta(t.eta));
+            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? window.t('做种中') : window.t('已完成')) : (status.isPaused ? window.t('已暂停') : formatEta(t.eta));
             html += `
             <tr class="${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
                 <td><input type="checkbox" class="torrent-check" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectTorrent('${hash}', this.checked)"></td>
@@ -262,10 +262,10 @@
                 <td>${(t.ratio||0).toFixed(2)}</td>
                 <td style="text-align:right;">
                     <div style="display:inline-flex; gap:4px;">
-                        <button class="icon-btn" title="${t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
-                        <button class="icon-btn accent" title="${t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
-                        <button class="icon-btn" title="${status.isPaused ? t('恢复') : t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
-                        <button class="icon-btn danger" title="${t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="icon-btn" title="${window.t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
+                        <button class="icon-btn accent" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
+                        <button class="icon-btn" title="${status.isPaused ? window.t('恢复') : window.t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
+                        <button class="icon-btn danger" title="${window.t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </td>
             </tr>`;
@@ -328,7 +328,7 @@
     function recheckTorrent(hash) {
         $.post('/api/v2/torrents/recheck', { hashes: hash }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hash });
-            showToast(t('已发起重新校验并启动检查'));
+            showToast(window.t('已发起重新校验并启动检查'));
             pollFastData();
         });
     }
@@ -341,7 +341,7 @@
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             clearTorrentSelection();
-            showToast(`${t('已对 ')}${count}${t(' 个任务发起强制重新校验')}`);
+            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验')}`);
             pollFastData();
         });
     }
@@ -351,7 +351,7 @@
         const t = allTorrents.find(item => item.hash === hash);
         const name = t ? t.name : hash;
         pendingRedownloadHashes = [hash];
-        $('#redownload-confirm-msg').html(`${t('确定要清空已下载文件并从头重新下载 ')}<b>${escapeHtml(name)}</b>${t(' 吗？')}<br><span style="color:var(--warning); font-size:12px;">${t('系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
+        $('#redownload-confirm-msg').html(`${window.t('确定要清空已下载文件并从头重新下载 ')}<b>${escapeHtml(name)}</b>${window.t(' 吗？')}<br><span style="color:var(--warning); font-size:12px;">${window.t('系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
         openModal('redownload-confirm-modal');
     }
 
@@ -359,7 +359,7 @@
     function batchRedownload() {
         if (selectedTorrents.size === 0) return;
         pendingRedownloadHashes = Array.from(selectedTorrents);
-        $('#redownload-confirm-msg').html(`${t('确定要对选中的 ')}<b>${pendingRedownloadHashes.length}</b>${t(' 个任务进行从头重新下载吗？')}<br><span style="color:var(--warning); font-size:12px;">${t('系统将清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
+        $('#redownload-confirm-msg').html(`${window.t('确定要对选中的 ')}<b>${pendingRedownloadHashes.length}</b>${window.t(' 个任务进行从头重新下载吗？')}<br><span style="color:var(--warning); font-size:12px;">${window.t('系统将清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
         openModal('redownload-confirm-modal');
     }
 
@@ -371,7 +371,7 @@
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             closeModal('redownload-confirm-modal');
-            showToast(`${t('已对 ')}${count}${t(' 个任务发起强制重新校验')}`);
+            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验')}`);
             pendingRedownloadHashes = [];
             clearTorrentSelection();
             pollFastData();
@@ -382,7 +382,7 @@
     async function executeRedownloadTorrent() {
         if (pendingRedownloadHashes.length === 0) return;
         closeModal('redownload-confirm-modal');
-        showToast(t('正在准备重新下载任务...'));
+        showToast(window.t('正在准备重新下载任务...'));
 
         const targets = pendingRedownloadHashes.slice();
         pendingRedownloadHashes = [];
@@ -446,7 +446,7 @@
         }
 
         clearTorrentSelection();
-        showToast(`${t('✅ 已成功重置并从头重新下载 ')}${successCount}${t(' 个任务！')}`);
+        showToast(`${window.t('✅ 已成功重置并从头重新下载 ')}${successCount}${window.t(' 个任务！')}`);
         pollFastData();
     }
 
@@ -456,21 +456,21 @@
         $.post(`/api/v2/torrents/${action}`, { hashes: hashesStr }, function() {
             clearTorrentSelection();
             pollFastData();
-            showToast(t('批量操作已完成'));
+            showToast(window.t('批量操作已完成'));
         });
     }
 
     // --- Safe Delete Modal System ---
     function confirmSingleDelete(hash, name) {
         pendingDeleteHashes = [hash];
-        $('#delete-confirm-msg').html(`${t('确定要删除任务 ')}<b>${escapeHtml(name)}</b>${t(' 吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
+        $('#delete-confirm-msg').html(`${window.t('确定要删除任务 ')}<b>${escapeHtml(name)}</b>${window.t(' 吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
         openModal('delete-confirm-modal');
     }
 
     function confirmBatchDelete() {
         if (selectedTorrents.size === 0) return;
         pendingDeleteHashes = Array.from(selectedTorrents);
-        $('#delete-confirm-msg').html(`${t('确定要批量删除选中的 ')}<b>${pendingDeleteHashes.length}</b>${t(' 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
+        $('#delete-confirm-msg').html(`${window.t('确定要批量删除选中的 ')}<b>${pendingDeleteHashes.length}</b>${window.t(' 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
         openModal('delete-confirm-modal');
     }
 
@@ -481,7 +481,7 @@
             closeModal('delete-confirm-modal');
             selectedTorrents.clear();
             pendingDeleteHashes = [];
-            showToast(t('任务已成功删除'));
+            showToast(window.t('任务已成功删除'));
             pollFastData();
         });
     }
@@ -489,7 +489,7 @@
     // --- Batch Category Modal ---
     function openBatchCategoryModal() {
         if (selectedTorrents.size === 0) return;
-        let optHtml = `<option value="">${t('(清除分类)')}</option>`;
+        let optHtml = `<option value="">${window.t('(清除分类)')}</option>`;
         Object.keys(allCategories).forEach(cat => {
             optHtml += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
         });
@@ -503,7 +503,7 @@
         $.post('/api/v2/torrents/setCategory', { hashes: hashesStr, category: cat }, function() {
             closeModal('batch-category-modal');
             clearTorrentSelection();
-            showToast(t('已更新所选任务分类'));
+            showToast(window.t('已更新所选任务分类'));
             pollFastData();
         });
     }
@@ -516,7 +516,7 @@
         }
         activeDetailHash = hash;
         const torrent = allTorrents.find(t => t.hash === hash);
-        const name = torrent ? torrent.name : t('种子详情');
+        const name = torrent ? torrent.name : window.t('种子详情');
         $('#detail-title').text(name);
         $('#detail-hash').text(`Hash: ${hash}`);
         openModal('detail-modal');
@@ -549,7 +549,7 @@
         if (activeDetailSubTab === 'dt-files') {
             $.getJSON(`/api/v2/torrents/files?hash=${activeDetailHash}`, function(files) {
                 if (!files || files.length === 0) {
-                    $('#dt-files').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无文件树数据')}</div>`);
+                    $('#dt-files').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无文件树数据')}</div>`);
                     return;
                 }
                 let html = '';
@@ -565,10 +565,10 @@
                             <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${sizeFormatted} · ${progressPercent}%</div>
                         </div>
                         <select class="select-custom" style="padding:4px 8px; font-size:12px;" onchange="setFilePriority(${idx}, this.value)">
-                            <option value="0" ${prio === 0 ? 'selected' : ''}>${t('不下载')}</option>
-                            <option value="1" ${prio === 1 ? 'selected' : ''}>${t('常规优先级')}</option>
-                            <option value="6" ${prio === 6 ? 'selected' : ''}>${t('高优先级')}</option>
-                            <option value="7" ${prio === 7 ? 'selected' : ''}>${t('最高优先级')}</option>
+                            <option value="0" ${prio === 0 ? 'selected' : ''}>${window.t('不下载')}</option>
+                            <option value="1" ${prio === 1 ? 'selected' : ''}>${window.t('常规优先级')}</option>
+                            <option value="6" ${prio === 6 ? 'selected' : ''}>${window.t('高优先级')}</option>
+                            <option value="7" ${prio === 7 ? 'selected' : ''}>${window.t('最高优先级')}</option>
                         </select>
                     </div>`;
                 });
@@ -583,12 +583,12 @@
         } else if (activeDetailSubTab === 'dt-trackers') {
             $.getJSON(`/api/v2/torrents/trackers?hash=${activeDetailHash}`, function(trackers) {
                 if (!trackers || trackers.length === 0) {
-                    $('#dt-trackers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无 Trackers')}</div>`);
+                    $('#dt-trackers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无 Trackers')}</div>`);
                     return;
                 }
                 let html = '<div style="margin-bottom:12px; display:flex; gap:8px;">';
-                html += `<input class="input-box" id="single-tracker-url" placeholder="${t('添加 Tracker URL (udp://...)')}" style="flex:1;">`;
-                html += `<button class="btn" onclick="submitAddTrackers(false)" style="padding:6px 12px; font-size:12px;">${t('+ 添加')}</button>`;
+                html += `<input class="input-box" id="single-tracker-url" placeholder="${window.t('添加 Tracker URL (udp://...)')}" style="flex:1;">`;
+                html += `<button class="btn" onclick="submitAddTrackers(false)" style="padding:6px 12px; font-size:12px;">${window.t('+ 添加')}</button>`;
                 html += '</div>';
 
                 trackers.forEach(t => {
@@ -597,9 +597,9 @@
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden; margin-right:8px;">
                             <div style="font-weight:600; font-size:12px; font-family:monospace; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(t.url)}">${escapeHtml(t.url)}</div>
-                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('状态: ')}${escapeHtml(t.msg || t('运行中'))} · ${t('做种: ')}${t.num_seeds || 0} · ${t('节点: ')}${t.num_peers || 0}</div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('状态: ')}${escapeHtml(t.msg || window.t('运行中'))} · ${window.t('做种: ')}${t.num_seeds || 0} · ${window.t('节点: ')}${t.num_peers || 0}</div>
                         </div>
-                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? t('工作正常') : t('已就绪')}</span>
+                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? window.t('工作正常') : window.t('已就绪')}</span>
                     </div>`;
                 });
                 $('#dt-trackers').html(html);
@@ -607,12 +607,12 @@
         } else if (activeDetailSubTab === 'dt-peers') {
             $.getJSON(`/api/v2/sync/torrentPeers?hash=${activeDetailHash}`, function(res) {
                 if (!res || !res.peers) {
-                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无连接节点')}</div>`);
+                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无连接节点')}</div>`);
                     return;
                 }
                 const peerKeys = Object.keys(res.peers);
                 if (peerKeys.length === 0) {
-                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无连接节点 (Peers: 0)')}</div>`);
+                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${window.t('暂无连接节点 (Peers: 0)')}</div>`);
                     return;
                 }
 
@@ -623,8 +623,8 @@
                 const pageKeys = peerKeys.slice(startIndex, startIndex + pageSize);
 
                 let html = `<div style="font-size:12px; color:var(--text-sec); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>${t('当前在线 Peers 节点: ')}${peerKeys.length}${t(' 个')}</span>
-                    ${totalPages > 1 ? `<span>${t('第 ')}${peerCurrentPage} / ${totalPages}${t(' 页')}</span>` : ''}
+                    <span>${window.t('当前在线 Peers 节点: ')}${peerKeys.length}${window.t(' 个')}</span>
+                    ${totalPages > 1 ? `<span>${window.t('第 ')}${peerCurrentPage} / ${totalPages}${window.t(' 页')}</span>` : ''}
                 </div>`;
 
                 pageKeys.forEach(k => {
@@ -632,18 +632,18 @@
                     html += `
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden;">
-                            <div style="font-weight:600; font-family:monospace;">${escapeHtml(p.ip)}:${p.port} <span style="font-size:11px; color:var(--text-sec); font-weight:normal;">(${escapeHtml(p.client || t('未知客户端'))})</span></div>
-                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('进度: ')}${(p.progress * 100).toFixed(1)}% · ↓ ${formatBytes(p.dl_speed)}/s · ↑ ${formatBytes(p.up_speed)}/s</div>
+                            <div style="font-weight:600; font-family:monospace;">${escapeHtml(p.ip)}:${p.port} <span style="font-size:11px; color:var(--text-sec); font-weight:normal;">(${escapeHtml(p.client || window.t('未知客户端'))})</span></div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('进度: ')}${(p.progress * 100).toFixed(1)}% · ↓ ${formatBytes(p.dl_speed)}/s · ↑ ${formatBytes(p.up_speed)}/s</div>
                         </div>
-                        <span class="badge ${p.dl_speed > 0 || p.up_speed > 0 ? 'downloading' : 'paused'}">${p.dl_speed > 0 ? t('传输中') : t('连接空闲')}</span>
+                        <span class="badge ${p.dl_speed > 0 || p.up_speed > 0 ? 'downloading' : 'paused'}">${p.dl_speed > 0 ? window.t('传输中') : window.t('连接空闲')}</span>
                     </div>`;
                 });
 
                 if (totalPages > 1) {
                     html += `
                     <div style="display:flex; justify-content:center; gap:10px; margin-top:14px; padding-top:8px; border-top:1px solid var(--border-subtle);">
-                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(-1)" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${t('上一页')}</button>
-                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(1)" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${t('下一页')}</button>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(-1)" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${window.t('上一页')}</button>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(1)" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${window.t('下一页')}</button>
                     </div>`;
                 }
 
@@ -659,7 +659,7 @@
 
     function setFilePriority(fileId, prio) {
         $.post('/api/v2/torrents/filePrio', { hash: activeDetailHash, id: fileId, priority: prio }, function() {
-            showToast(t('已更新文件下载优先级'));
+            showToast(window.t('已更新文件下载优先级'));
             refreshActiveDetailSubTab();
         });
     }
@@ -678,7 +678,7 @@
         const total = pieces.length;
         let downloaded = 0;
         pieces.forEach(p => { if (p === 2) downloaded++; });
-        $('#pieces-stats-text').text(`${t('总区块: ')}${total}${t(' · 已下载: ')}${downloaded} (${((downloaded/total)*100).toFixed(1)}%)`);
+        $('#pieces-stats-text').text(`${window.t('总区块: ')}${total}${window.t(' · 已下载: ')}${downloaded} (${((downloaded/total)*100).toFixed(1)}%)`);
 
         const cols = Math.floor(Math.sqrt(total * (rect.width / rect.height))) || 30;
         const rows = Math.ceil(total / cols);
@@ -707,9 +707,9 @@
             const r = Math.floor((cy - 2) / cellH);
             const idx = r * cols + c;
             if (idx >= 0 && idx < total) {
-                const statusNames = [t('未下载'), t('下载中'), t('已完成')];
+                const statusNames = [window.t('未下载'), window.t('下载中'), window.t('已完成')];
                 const tip = $('#pieces-tooltip');
-                tip.text(`${t('区块 #')}${idx}: ${statusNames[pieces[idx]] || '?'}`);
+                tip.text(`${window.t('区块 #')}${idx}: ${statusNames[pieces[idx]] || '?'}`);
                 tip.css({ left: e.pageX + 10, top: e.pageY + 10 }).show();
             } else {
                 $('#pieces-tooltip').hide();
@@ -727,20 +727,20 @@
             urls = $('#single-tracker-url').val().trim();
         }
 
-        if (!urls) return showToast(t('请输入有效的 Tracker URL 列表！'), false);
+        if (!urls) return showToast(window.t('请输入有效的 Tracker URL 列表！'), false);
 
         if (isGlobal) {
-            if (allTorrents.length === 0) return showToast(t('当前没有运行中的任务！'), false);
+            if (allTorrents.length === 0) return showToast(window.t('当前没有运行中的任务！'), false);
             const allHashes = allTorrents.map(t => t.hash).join('|');
             $.post('/api/v2/torrents/addTrackers', { hashes: allHashes, urls: urls }, function() {
-                showToast(`${t('已成功为全部 ')}${allTorrents.length}${t(' 个任务批量追加 Tracker！')}`);
+                showToast(`${window.t('已成功为全部 ')}${allTorrents.length}${window.t(' 个任务批量追加 Tracker！')}`);
                 $('#global-tracker-urls').val('');
             }).fail(function() {
-                showToast(t('批量 Tracker 请求已发送！'));
+                showToast(window.t('批量 Tracker 请求已发送！'));
             });
         } else {
             $.post('/api/v2/torrents/addTrackers', { hash: activeDetailHash, urls: urls }, function() {
-                showToast(t('Tracker 追加成功！'));
+                showToast(window.t('Tracker 追加成功！'));
                 $('#single-tracker-url').val('');
                 refreshActiveDetailSubTab();
             });
@@ -757,7 +757,7 @@
         const savepath = $('#add-torrent-savepath').val().trim();
 
         if (fileInput.files.length === 0 && !urls) {
-            return showToast(t('请选择 .torrent 种子文件或填入 Magnet 磁力链接！'), false);
+            return showToast(window.t('请选择 .torrent 种子文件或填入 Magnet 磁力链接！'), false);
         }
 
         let formData = new FormData();
@@ -785,11 +785,11 @@
                 $('#torrent-urls').val('');
                 fileInput.value = '';
                 $('#add-torrent-savepath').val('');
-                showToast(t('任务已成功添加至 qBittorrent！'));
+                showToast(window.t('任务已成功添加至 qBittorrent！'));
                 pollFastData();
             },
             error: function() {
-                showToast(t('发送种子失败，请检查网络或重新登录！'), false);
+                showToast(window.t('发送种子失败，请检查网络或重新登录！'), false);
             }
         });
     }

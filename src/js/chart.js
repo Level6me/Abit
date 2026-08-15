@@ -12,7 +12,7 @@
                 labels: Array(20).fill(''),
                 datasets: [
                     {
-                        label: t('下载 (KB/s)'),
+                        label: window.t('下载 (KB/s)'),
                         data: Array(20).fill(0),
                         borderColor: '#34c759',
                         backgroundColor: 'rgba(52,199,89,0.08)',
@@ -22,7 +22,7 @@
                         pointRadius: 0
                     },
                     {
-                        label: t('上传 (KB/s)'),
+                        label: window.t('上传 (KB/s)'),
                         data: Array(20).fill(0),
                         borderColor: '#007aff',
                         backgroundColor: 'rgba(0,122,255,0.08)',

@@ -9,7 +9,7 @@
         $.getJSON('/api/v2/transfer/info', function(info) {
             if (!info) return;
             $('#qbt-dot').removeClass('offline');
-            $('#qbt-status-text').text(t('已在线'));
+            $('#qbt-status-text').text(window.t('已在线'));
 
             const dlSpeed = formatBytes(info.dl_info_speed);
             const upSpeed = formatBytes(info.up_info_speed);
@@ -17,9 +17,9 @@
             $('#v-up-speed').text(upSpeed + '/s');
 
             const statusMap = {
-                "connected": t('🟢 连接就绪'),
-                "firewalled": t('🟡 处于防火墙后'),
-                "disconnected": t('🔴 未连接')
+                "connected": window.t('🟢 连接就绪'),
+                "firewalled": window.t('🟡 处于防火墙后'),
+                "disconnected": window.t('🔴 未连接')
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
@@ -42,7 +42,7 @@
             }
         }).fail(function() {
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(t('离线/未登入'));
+            $('#qbt-status-text').text(window.t('离线/未登入'));
         });
 
         // 2. Torrents List Sync
@@ -110,7 +110,7 @@
 
         // Set Date
         const now = new Date();
-        const days = [t('星期日'), t('星期一'), t('星期二'), t('星期三'), t('星期四'), t('星期五'), t('星期六')];
+        const days = [window.t('星期日'), window.t('星期一'), window.t('星期二'), window.t('星期三'), window.t('星期四'), window.t('星期五'), window.t('星期六')];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
         // Bootstrap authentication check (VueTorrent-style probe)
@@ -142,7 +142,7 @@
             if (fastPollTimer) clearInterval(fastPollTimer);
             if (slowPollTimer) clearInterval(slowPollTimer);
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
+            $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
             openLoginModal(true);
         });
     }

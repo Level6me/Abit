@@ -25,7 +25,7 @@
     function renderInstalledPlugins() {
         const container = $('#installed-plugins-list');
         if (!installedPlugins || installedPlugins.length === 0) {
-            container.html(`<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">${t('暂未安装任何搜索插件。请从下方常用插件库一键安装。')}</div>`);
+            container.html(`<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">${window.t('暂未安装任何搜索插件。请从下方常用插件库一键安装。')}</div>`);
             return;
         }
 
@@ -42,7 +42,7 @@
                         <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="togglePluginEnabled('${escapeHtml(p.name)}', this.checked)">
                         <span class="slider"></span>
                     </label>
-                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="${t('卸载插件')}">
+                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="${window.t('卸载插件')}">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     </button>
                 </div>
@@ -52,7 +52,7 @@
     }
 
     function updateSearchPluginDropdown() {
-        let html = `<option value="all">${t('🌐 全部插件')}</option><option value="enabled" selected>${t('⚡ 已启用插件')}</option>`;
+        let html = `<option value="all">${window.t('🌐 全部插件')}</option><option value="enabled" selected>${window.t('⚡ 已启用插件')}</option>`;
         installedPlugins.forEach(p => {
             html += `<option value="${escapeHtml(p.name)}">${escapeHtml(p.fullName || p.name)}</option>`;
         });
@@ -78,7 +78,7 @@
                     <div style="font-size:11px; color:var(--text-sec); margin-bottom:10px; line-height:1.4;">${escapeHtml(preset.desc)}</div>
                 </div>
                 <button class="btn ${isInstalled ? 'secondary' : ''}" style="padding:6px 12px; font-size:11px;" onclick="installPresetPlugin('${preset.url}')" ${isInstalled ? 'disabled style="opacity:0.6;"' : ''}>
-                    ${isInstalled ? t('✓ 已安装') : t('+ 一键安装')}
+                    ${isInstalled ? window.t('✓ 已安装') : window.t('+ 一键安装')}
                 </button>
             </div>`;
         });
@@ -86,12 +86,12 @@
     }
 
     function installPresetPlugin(url) {
-        showToast(t('正在向 qBittorrent 发送插件安装指令...'));
+        showToast(window.t('正在向 qBittorrent 发送插件安装指令...'));
         $.post('/api/v2/search/installPlugin', { sources: url }, function() {
-            showToast(t('插件安装请求已发送，正在同步中'));
+            showToast(window.t('插件安装请求已发送，正在同步中'));
             setTimeout(fetchSearchPlugins, 2500);
         }).fail(function() {
-            showToast(t('安装失败，请确认服务器已安装 Python3'), false);
+            showToast(window.t('安装失败，请确认服务器已安装 Python3'), false);
         });
     }
 
@@ -143,15 +143,15 @@
 
     function togglePluginEnabled(pluginName, enable) {
         $.post('/api/v2/search/enablePlugin', { names: pluginName, enable: enable ? 'true' : 'false' }, function() {
-            showToast(`${enable ? t('已启用') : t('已禁用')}${pluginName}`);
+            showToast(`${enable ? window.t('已启用') : window.t('已禁用')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
 
     function uninstallSearchPlugin(pluginName) {
-        if (!confirm(`${t('确定要卸载搜索插件 ')}[${pluginName}]${t(' 吗？')}`)) return;
+        if (!confirm(`${window.t('确定要卸载搜索插件 ')}[${pluginName}]${window.t(' 吗？')}`)) return;
         $.post('/api/v2/search/uninstallPlugin', { names: pluginName }, function() {
-            showToast(`${t('已卸载插件: ')}${pluginName}`);
+            showToast(`${window.t('已卸载插件: ')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
@@ -191,7 +191,7 @@
         if (searchCurrentPage < 1) searchCurrentPage = 1;
 
         if (totalResults > 0) {
-            $('#search-count-label').text(`${t('检索结果: ')}${totalResults}${t(' 条')} (${t('第')} ${searchCurrentPage} / ${totalPages}${t(' 页')})`);
+            $('#search-count-label').text(`${window.t('检索结果: ')}${totalResults}${window.t(' 条')} (${window.t('第')} ${searchCurrentPage} / ${totalPages}${window.t(' 页')})`);
             $('#search-toolbar').css('display', 'flex');
         } else {
             $('#search-toolbar').hide();
@@ -213,21 +213,21 @@
                             <span style="display:inline-block; min-width:24px; color:var(--accent); font-weight:800; font-size:13px; margin-right:4px;">${itemIndex}.</span>${escapeHtml(item.fileName)}
                         </div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            📦 ${sizeFormatted} · 👤 ${t('做种: ')}<span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · ${t('吸血: ')}${item.nbLeechers} · ${t('来源: ')}${escapeHtml(item.siteUrl || '插件')}
+                            📦 ${sizeFormatted} · 👤 ${window.t('做种: ')}<span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · ${window.t('吸血: ')}${item.nbLeechers} · ${window.t('来源: ')}${escapeHtml(item.siteUrl || '插件')}
                         </div>
                     </div>
-                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">${t('下载')}</button>
+                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">${window.t('下载')}</button>
                 </div>
             </div>`;
         });
 
         if (totalResults === 0) {
-            html = `<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在检索全网结果，请稍候...')}</div>`;
+            html = `<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${window.t('正在检索全网结果，请稍候...')}</div>`;
         } else {
             // 分页控制器（始终展示统计与翻页器）
             let pageButtonsHtml = '';
             // 上一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="${t('上一页')}">‹</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="${window.t('上一页')}">‹</button>`;
 
             if (totalPages <= 1) {
                 pageButtonsHtml += `<button class="page-pill active" disabled>1</button>`;
@@ -255,12 +255,12 @@
             }
 
             // 下一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="${t('下一页')}">›</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="${window.t('下一页')}">›</button>`;
 
             html += `
             <div class="pagination-wrapper">
                 <div class="pagination-info">
-                    ${t('显示第 ')}<strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong>${t(' 条 / 共 ')}<strong>${totalResults}</strong>${t(' 条 (每页 20 条)')}
+                    ${window.t('显示第 ')}<strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong>${window.t(' 条 / 共 ')}<strong>${totalResults}</strong>${window.t(' 条 (每页 20 条)')}
                 </div>
                 <div class="pagination-controls">
                     ${pageButtonsHtml}
@@ -286,7 +286,7 @@
 
     function triggerSearch() {
         const pattern = $('#search-keyword').val().trim();
-        if (!pattern) return showToast(t('请输入搜索关键字！'), false);
+        if (!pattern) return showToast(window.t('请输入搜索关键字！'), false);
 
         stopCurrentSearch();
         cachedSearchResults = [];
@@ -295,9 +295,9 @@
         const plugin = $('#search-plugin').val();
         const category = $('#search-category').val();
 
-        $('#search-results-container').html(`<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在全网启动搜索，拉取检索结果中...')}</div>`);
+        $('#search-results-container').html(`<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${window.t('正在全网启动搜索，拉取检索结果中...')}</div>`);
         $('#search-status-bar').css('display', 'flex');
-        $('#search-status-text').text(`${t('正在为 ')}“${pattern}”${t(' 检索中...')}`);
+        $('#search-status-text').text(`${window.t('正在为 ')}“${pattern}”${window.t(' 检索中...')}`);
 
         $.post('/api/v2/search/start', { pattern: pattern, plugins: plugin, category: category }, function(res) {
             if (res && res.id) {
@@ -305,7 +305,7 @@
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = setInterval(pollSearchResults, 1500);
             } else {
-                $('#search-results-container').html(`<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">${t('启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。')}</div>`);
+                $('#search-results-container').html(`<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">${window.t('启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。')}</div>`);
             }
         });
     }
@@ -320,7 +320,7 @@
             scheduleSearchStateSave();
 
             if (res.status === 'Stopped') {
-                $('#search-status-text').text(`${t('搜索完成，共抓取 ')}${res.total || cachedSearchResults.length}${t(' 条资源')}`);
+                $('#search-status-text').text(`${window.t('搜索完成，共抓取 ')}${res.total || cachedSearchResults.length}${window.t(' 条资源')}`);
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = null;
             }
@@ -348,7 +348,7 @@
             data: { urls: url },
             dataType: 'text',
             success: function () {
-                showToast(isMagnet ? t('✅ 磁力链接已成功添加，开始下载！') : t('✅ 已发送下载指令'));
+                showToast(isMagnet ? window.t('✅ 磁力链接已成功添加，开始下载！') : window.t('✅ 已发送下载指令'));
                 if (typeof pollFastData === 'function') pollFastData();
                 // 稍后主动刷新任务列表，让新任务尽快出现
                 setTimeout(function () {
@@ -356,7 +356,7 @@
                 }, 2000);
             },
             error: function (xhr) {
-                showToast(t('❌ 添加失败: ') + (xhr.statusText || t('网络错误')), false);
+                showToast(window.t('❌ 添加失败: ') + (xhr.statusText || window.t('网络错误')), false);
             }
         });
     }
@@ -364,7 +364,7 @@
     function addMagnetFromSearch(rawUrl) {
         const url = (rawUrl || '').trim();
         if (!url) {
-            showToast(t('⚠️ 无效的下载链接'), false);
+            showToast(window.t('⚠️ 无效的下载链接'), false);
             return;
         }
         const isMagnet = /^magnet:\?/i.test(url);
@@ -375,7 +375,7 @@
         }
         // 下载页链接无法被 qBittorrent 直接解析（实测返回 200 但不创建任务）：
         // 先通过代理解析页面提取磁力 / .torrent 链接，再尝试添加。
-        showToast(t('正在解析下载页，提取磁力链接...'));
+        showToast(window.t('正在解析下载页，提取磁力链接...'));
         $.ajax({
             url: '/api/v2/abit/resolve',
             method: 'POST',
@@ -388,12 +388,12 @@
                 if (candidates.length) {
                     addTorrentUrl(candidates[0], /^magnet:\?/i.test(candidates[0]));
                 } else {
-                    showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                    showToast(window.t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
                     addTorrentUrl(url, false);
                 }
             },
             error: function () {
-                showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                showToast(window.t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
                 addTorrentUrl(url, false);
             }
         });
@@ -437,7 +437,7 @@
         renderSearchResultsUI();
         $('#search-toolbar').css('display', 'flex');
         $('#search-status-bar').css('display', 'flex');
-        $('#search-status-text').text(`${t('已恢复上次检索结果')} (${saved.results.length}${t(' 条)')}`);
+        $('#search-status-text').text(`${window.t('已恢复上次检索结果')} (${saved.results.length}${window.t(' 条)')}`);
         return true;
     }
 
