@@ -9,6 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const zlib = require('zlib');
 
 let PORT = parseInt(process.env.PORT || '3000', 10);
 const ROOT_DIR = path.resolve(__dirname, '..');
@@ -322,9 +323,34 @@ const server = http.createServer((req, res) => {
 
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+        const isCompressible = /^(text\/|application\/(javascript|json|xml))/i.test(contentType);
+        const acceptsGzip = (req.headers['accept-encoding'] || '').includes('gzip');
 
-        res.writeHead(200, { 'Content-Type': contentType });
-        fs.createReadStream(filePath).pipe(res);
+        // Read + gzip compress text assets (big single-file build loads much faster over slow links)
+        fs.readFile(filePath, (readErr, data) => {
+            if (readErr) {
+                res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+                return res.end('500 Internal Error');
+            }
+            if (acceptsGzip && isCompressible) {
+                zlib.gzip(data, (gzErr, gz) => {
+                    if (gzErr) {
+                        res.writeHead(200, { 'Content-Type': contentType, 'Content-Length': data.length });
+                        return res.end(data);
+                    }
+                    res.writeHead(200, {
+                        'Content-Type': contentType,
+                        'Content-Encoding': 'gzip',
+                        'Content-Length': gz.length,
+                        'Vary': 'Accept-Encoding'
+                    });
+                    res.end(gz);
+                });
+            } else {
+                res.writeHead(200, { 'Content-Type': contentType, 'Content-Length': data.length });
+                res.end(data);
+            }
+        });
     });
 });
 
