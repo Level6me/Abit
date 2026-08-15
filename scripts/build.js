@@ -103,7 +103,9 @@ function build() {
     const modularScriptTagsRegex = /(?:[ \t]*<script\s+src="js\/[a-zA-Z0-9_\.-]+\.js"><\/script>\s*\n?)+/gi;
     const inlineJs = `<script>\n${combinedJs.trim()}\n</script>`;
     
-    let standaloneHtml = srcHtml.replace(modularScriptTagsRegex, inlineJs + '\n');
+    // Use a function replacer: a string replacer would interpret "$&"/"$1" inside the
+    // bundled vendor code (jQuery/Chart.js) as replacement patterns and corrupt the bundle.
+    let standaloneHtml = srcHtml.replace(modularScriptTagsRegex, () => inlineJs + '\n');
     if (!standaloneHtml.includes('<script>\n/**\n * Apple Torrent Dashboard')) {
         // Fallback injection before </body>
         standaloneHtml = standaloneHtml.replace('</body>', `${inlineJs}\n</body>`);
