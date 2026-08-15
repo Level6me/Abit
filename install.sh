@@ -327,6 +327,13 @@ configure_services() {
     # Stop qBittorrent first so config writes are not overwritten on shutdown
     stop_qbittorrent_precisely
 
+    # Stop any existing Abit front-end first (update scenario releases ports)
+    if command -v pm2 >/dev/null 2>&1; then
+        pm2 delete abit-webui >/dev/null 2>&1 || true
+    fi
+    pkill -f "$INSTALL_DIR/scripts/dev.js" 2>/dev/null || true
+    sleep 1
+
     # Port occupancy checks
     if port_in_use "$EXT_PORT"; then
         log_error "外部端口 ${EXT_PORT} 已被占用。请换端口重试，例如: ABIT_EXT_PORT=8090 bash install.sh"
