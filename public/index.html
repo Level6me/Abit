@@ -3518,13 +3518,16 @@ input:checked + .slider:before { transform: translateX(20px); }
         const pageItems = list.slice(startIndex, endIndex);
 
         let html = '';
-        pageItems.forEach(item => {
+        pageItems.forEach((item, index) => {
+            const itemIndex = startIndex + index + 1;
             const sizeFormatted = formatBytes(item.fileSize);
             html += `
             <div class="card" style="padding:14px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
                     <div style="flex:1; overflow:hidden;">
-                        <div style="font-weight:700; font-size:14px; line-height:1.35; word-break:break-all;" title="${escapeHtml(item.fileName)}">${escapeHtml(item.fileName)}</div>
+                        <div style="font-weight:700; font-size:14px; line-height:1.4; word-break:break-all;" title="${escapeHtml(item.fileName)}">
+                            <span style="display:inline-block; min-width:24px; color:var(--accent); font-weight:800; font-size:13px; margin-right:4px;">${itemIndex}.</span>${escapeHtml(item.fileName)}
+                        </div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
                             📦 ${sizeFormatted} · 👤 做种: <span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · 吸血: ${item.nbLeechers} · 来源: ${escapeHtml(item.siteUrl || '插件')}
                         </div>
@@ -3536,32 +3539,35 @@ input:checked + .slider:before { transform: translateX(20px); }
 
         if (totalResults === 0) {
             html = '<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在检索全网结果，请稍候...</div>';
-        } else if (totalPages > 1) {
-            // 分页控制器
+        } else {
+            // 分页控制器（始终展示统计与翻页器）
             let pageButtonsHtml = '';
             // 上一页
             pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="上一页">‹</button>`;
 
-            // 智能计算页码范围
-            const maxVisible = 5;
-            let startPage = Math.max(1, searchCurrentPage - 2);
-            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-            if (endPage - startPage < maxVisible - 1) {
-                startPage = Math.max(1, endPage - maxVisible + 1);
-            }
+            if (totalPages <= 1) {
+                pageButtonsHtml += `<button class="page-pill active" disabled>1</button>`;
+            } else {
+                const maxVisible = 5;
+                let startPage = Math.max(1, searchCurrentPage - 2);
+                let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                if (endPage - startPage < maxVisible - 1) {
+                    startPage = Math.max(1, endPage - maxVisible + 1);
+                }
 
-            if (startPage > 1) {
-                pageButtonsHtml += `<button class="page-pill" onclick="goToSearchPage(1)">1</button>`;
-                if (startPage > 2) pageButtonsHtml += `<span class="page-ellipsis">…</span>`;
-            }
+                if (startPage > 1) {
+                    pageButtonsHtml += `<button class="page-pill" onclick="goToSearchPage(1)">1</button>`;
+                    if (startPage > 2) pageButtonsHtml += `<span class="page-ellipsis">…</span>`;
+                }
 
-            for (let p = startPage; p <= endPage; p++) {
-                pageButtonsHtml += `<button class="page-pill ${p === searchCurrentPage ? 'active' : ''}" onclick="goToSearchPage(${p})">${p}</button>`;
-            }
+                for (let p = startPage; p <= endPage; p++) {
+                    pageButtonsHtml += `<button class="page-pill ${p === searchCurrentPage ? 'active' : ''}" onclick="goToSearchPage(${p})">${p}</button>`;
+                }
 
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) pageButtonsHtml += `<span class="page-ellipsis">…</span>`;
-                pageButtonsHtml += `<button class="page-pill" onclick="goToSearchPage(${totalPages})">${totalPages}</button>`;
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) pageButtonsHtml += `<span class="page-ellipsis">…</span>`;
+                    pageButtonsHtml += `<button class="page-pill" onclick="goToSearchPage(${totalPages})">${totalPages}</button>`;
+                }
             }
 
             // 下一页
