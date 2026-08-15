@@ -14,9 +14,9 @@
         document.documentElement.setAttribute('data-theme', mode);
 
         const icons = { auto: '🌓', light: '☀️', dark: '🌙' };
-        const labels = { auto: '自动', light: '浅色', dark: '深色' };
+        const labels = { auto: t('自动'), light: t('浅色'), dark: t('深色') };
         $('#theme-icon').text(icons[mode] || '🌓');
-        $('#theme-label').text(labels[mode] || '自动');
+        $('#theme-label').text(labels[mode] || t('自动'));
     }
 
     function cycleTheme() {
@@ -37,11 +37,11 @@
         if (isAltSpeedEnabled) {
             $('#btn-alt-speed').addClass('alt-speed-active');
             $('#alt-speed-icon').text('🐢');
-            $('#alt-speed-label').text('限速中');
+            $('#alt-speed-label').text(t('备用速率'));
         } else {
             $('#btn-alt-speed').removeClass('alt-speed-active');
             $('#alt-speed-icon').text('⚡');
-            $('#alt-speed-label').text('全速');
+            $('#alt-speed-label').text(t('常规速率'));
         }
     }
 
@@ -49,7 +49,7 @@
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? '已激活备用限速模式' : '已恢复常规全局全速模式');
+            showToast(isAltSpeedEnabled ? t('已激活备用限速模式') : t('已恢复常规全局全速模式'));
         });
     }
 
@@ -59,7 +59,7 @@
         $(`#${pageId}`).addClass('active');
         $('.dock-btn').removeClass('active');
         $(btn).addClass('active');
-        $('#page-title').text(title);
+        $('#page-title').text(window.t(title, title));
 
         window.scrollTo(0, 0);
 
@@ -70,6 +70,17 @@
             fetchSystemLogs();
         }
     }
+
+    // Re-apply dynamic labels when language changes
+    window.onLanguageChanged = function () {
+        if (typeof updateAltSpeedUI === 'function') updateAltSpeedUI();
+        if (typeof setTheme === 'function') setTheme(themeMode);
+        const activeBtn = document.querySelector('.dock-btn.active');
+        if (activeBtn) {
+            const span = activeBtn.querySelector('span[data-i18n]');
+            $('#page-title').text(window.t(span ? span.getAttribute('data-i18n') : activeBtn.textContent.trim()));
+        }
+    };
 
     function switchSearchSubTab(tabId, btn) {
         $('.search-sub-content').hide();

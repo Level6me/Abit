@@ -2,6 +2,232 @@
  * Apple Torrent Dashboard (Torrent Omni) — Bundled Application Logic
  */
 
+// --- [Module: i18n.js] ---
+/**
+ * @file i18n.js
+ * @description Lightweight bilingual (zh/en) internationalization with localStorage persistence.
+ *              Keys are the original Chinese strings; the en dictionary maps them to English.
+ *              Language persists via localStorage 'abit_lang' and the header toggle button.
+ */
+
+(function () {
+    const STORAGE_KEY = 'abit_lang';
+
+    const EN_DICT = {
+        // Header
+        '总览': 'Overview',
+        '常规速率': 'Normal',
+        '备用速率': 'Alt Speed',
+        '切换备用速度限制模式': 'Toggle alternative speed limits',
+        '自动': 'Auto',
+        '浅色': 'Light',
+        '深色': 'Dark',
+        '切换明暗主题': 'Toggle theme',
+        '语言切换 / Language': 'Language',
+
+        // Dashboard
+        '↓ 实时下载速度': '↓ Download speed',
+        '活跃下载: ': 'Active downloads: ',
+        '↑ 实时上传速度': '↑ Upload speed',
+        '活跃做种: ': 'Active seeds: ',
+        '网络连接与 DHT': 'Connection & DHT',
+        '连接中...': 'Connecting...',
+        'DHT 节点: ': 'DHT nodes: ',
+        '下载磁盘剩余': 'Free disk space',
+        '累计传输: ↓ ': 'Total: ↓ ',
+        '实时网络传输走势': 'Live transfer chart',
+        '● 下载速率': '● Download',
+        '● 上传速率': '● Upload',
+        '📊 任务状态汇总': '📊 Task summary',
+        '(点击快速跳转筛选)': '(click to filter)',
+        '点击查看全部任务': 'View all tasks',
+        '全部任务': 'All',
+        '点击查看下载中任务': 'View downloading',
+        '下载中': 'Downloading',
+        '点击查看做种中任务': 'View seeding',
+        '做种中': 'Seeding',
+        '点击查看已完成任务': 'View completed',
+        '已完成': 'Completed',
+        '点击查看已暂停任务': 'View paused',
+        '已暂停': 'Paused',
+
+        // Torrents page
+        '实时过滤名称 / Hash...': 'Filter by name / hash...',
+        '📁 全部分类': '📁 All categories',
+        '🕒 添加时间 (最新)': '🕒 Added (newest)',
+        '🕒 添加时间 (最早)': '🕒 Added (oldest)',
+        '🔤 任务名称 (A-Z)': '🔤 Name (A-Z)',
+        '📦 文件体积 (大到小)': '📦 Size (large to small)',
+        '📈 下载进度 (高到低)': '📈 Progress (high to low)',
+        '⚡ 下载速度 (快到慢)': '⚡ Download speed',
+        '⚡ 上传速度 (快到慢)': '⚡ Upload speed',
+        '⏳ 剩余时间 (ETA)': '⏳ ETA',
+        '🔄 分享率 (高到低)': '🔄 Ratio (high to low)',
+        '切换卡片 / 表格视图': 'Toggle card / table view',
+        '全部': 'All',
+        '活动中': 'Active',
+        '排队中': 'Queued',
+        '错误': 'Error',
+        '已选中 ': 'Selected ',
+        ' 项': '',
+        '▶ 恢复': '▶ Resume',
+        '⏸ 暂停': '⏸ Pause',
+        '🔍 重新校验': '🔍 Recheck',
+        '🔄 重新下载': '🔄 Redownload',
+        '🏷 分类': '🏷 Category',
+        '🗑 删除': '🗑 Delete',
+        '取消选择': 'Clear selection',
+        '正在与 qBittorrent 通信加载任务中...': 'Loading torrents from qBittorrent...',
+        '新建任务': 'New torrent',
+
+        // Search page
+        '🔍 资源全网检索': '🔍 Search',
+        '🧩 搜索插件管理': '🧩 Search plugins',
+        '输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)...': 'Enter keywords (e.g. Ubuntu, Debian, Linux, Movie)...',
+        '🌐 全部已安装插件': '🌐 All installed plugins',
+        '⚡ 已启用插件': '⚡ Enabled plugins',
+        '全部类型': 'All categories',
+        '电影': 'Movies',
+        '剧集': 'TV',
+        '音乐': 'Music',
+        '软件': 'Software',
+        '游戏': 'Games',
+        '动漫': 'Anime',
+        '搜索进行中...': 'Searching...',
+        '停止搜索': 'Stop',
+        '为什么搜索不到资源？': 'Why no results?',
+        '🔍 搜索插件管理': '🔍 Search plugins',
+        '检索结果: 0 条': 'Results: 0',
+        '排序:': 'Sort:',
+        '👥 做种数': '👥 Seeds',
+        '📦 体积': '📦 Size',
+        '下载': 'Download',
+        '做种: ': 'Seeds: ',
+        '吸血: ': 'Leeches: ',
+        '来源: ': 'Source: ',
+        '正在检索全网结果，请稍候...': 'Searching the web, please wait...',
+        '上一页': 'Previous page',
+        '下一页': 'Next page',
+        '正在全网启动搜索，拉取检索结果中...': 'Starting search, fetching results...',
+        '启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。': 'Failed to start search. Please enable Python search plugins in qBittorrent.',
+        '请输入搜索关键字！': 'Please enter a search keyword!',
+        '✅ 磁力链接已成功添加，开始下载！': '✅ Magnet link added, download started!',
+        '⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。': '⚠️ This result links to a download page. Tried to add it anyway; if no task appears, add the magnet link manually.',
+        '⚠️ 无效的下载链接': '⚠️ Invalid download link',
+        '❌ 添加失败: ': '❌ Add failed: ',
+        '✅ 已发送下载指令': '✅ Download command sent',
+        '暂未安装任何搜索插件。请从下方常用插件库一键安装。': 'No search plugins installed. Install one from the presets below.',
+        '卸载插件': 'Uninstall plugin',
+        '🌐 全部插件': '🌐 All plugins',
+        '网络错误': 'Network error',
+        '第': 'page ',
+        ' 条': '',
+        ' 页': '',
+        '显示第 ': 'Showing ',
+        ' 条 / 共 ': ' of ',
+        ' 条 (每页 20 条)': ' (20 per page)',
+        '正在为 ': 'Searching for ',
+        ' 检索中...': ' ...',
+        '搜索完成，共抓取 ': 'Search complete, ',
+        ' 条资源': ' results',
+        '已恢复上次检索结果': 'Restored previous search results',
+        '✓ 已安装': '✓ Installed',
+        '+ 一键安装': '+ Install',
+        '插件安装请求已发送，正在同步中': 'Plugin install request sent, syncing...',
+        '安装失败，请确认服务器已安装 Python3': 'Install failed. Make sure Python3 is installed on the server',
+        '所有推荐插件均已安装完毕！': 'All recommended plugins are installed!',
+        '正在批量安装 ': 'Installing ',
+        ' 个优质检索插件...': ' search plugins...',
+        '批量插件安装指令已发出，正在同步...': 'Batch install command sent, syncing...',
+        '批量安装请求失败，请检查网络连接': 'Batch install failed, check network',
+        '正在检查并更新搜索插件...': 'Checking for plugin updates...',
+        '插件更新指令已发送，正在拉取最新版本': 'Update command sent, fetching latest versions',
+        '更新指令发送失败': 'Update command failed',
+        '请输入有效的插件 URL': 'Please enter a valid plugin URL',
+        '自定义插件安装指令已发出': 'Custom plugin install command sent',
+        '已启用': 'Enabled',
+        '已禁用': 'Disabled',
+        '已卸载插件: ': 'Uninstalled plugin: ',
+        '启用插件': 'Enable plugin',
+        '卸载': 'Uninstall',
+        '已激活备用限速模式': 'Alternative speed limit activated',
+        '已恢复常规全局全速模式': 'Global full speed restored',
+        '已在线': 'Online',
+        '离线/未登入': 'Offline / Not logged in',
+        '🟢 连接就绪': '🟢 Connected',
+        '🟡 处于防火墙后': '🟡 Firewalled',
+        '🔴 未连接': '🔴 Disconnected',
+        '名称': 'Name',
+        '输入关键字开始全网检索种子资源': 'Enter keywords to search torrents',
+        '正在解析下载页，提取磁力链接...': 'Resolving download page, extracting magnet link...',
+        '系统': 'System',
+        '搜索': 'Search',
+        '任务': 'Torrents',
+        'RSS': 'RSS',
+    };
+
+    let currentLang = 'zh';
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved === 'en' || saved === 'zh') currentLang = saved;
+    } catch (e) { /* storage unavailable */ }
+
+    window.t = function (key, fallback) {
+        if (currentLang === 'en' && EN_DICT[key] !== undefined) return EN_DICT[key];
+        return fallback !== undefined ? fallback : key;
+    };
+
+    window.currentLang = function () { return currentLang; };
+
+    function applyI18n() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n');
+            el.textContent = window.t(key, el.textContent);
+        });
+        document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-ph');
+            el.setAttribute('placeholder', window.t(key, el.getAttribute('placeholder') || key));
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-title');
+            el.setAttribute('title', window.t(key, el.getAttribute('title') || key));
+        });
+        document.querySelectorAll('[data-i18n-opt]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-opt');
+            el.textContent = window.t(key, el.textContent);
+        });
+    }
+
+    window.setLang = function (lang) {
+        currentLang = (lang === 'en') ? 'en' : 'zh';
+        try { localStorage.setItem(STORAGE_KEY, currentLang); } catch (e) { /* ignore */ }
+        const html = document.documentElement;
+        if (html) html.setAttribute('lang', currentLang === 'en' ? 'en' : 'zh-CN');
+        const label = document.getElementById('lang-label');
+        if (label) label.textContent = currentLang === 'en' ? 'EN / 中' : '中 / EN';
+        applyI18n();
+        if (window.onLanguageChanged) window.onLanguageChanged(currentLang);
+    };
+
+    // Toggle between zh <-> en and persist the chosen language immediately.
+    window.toggleLang = function () {
+        const next = (currentLang === 'en') ? 'zh' : 'en';
+        window.setLang(next);
+        const name = next === 'en' ? 'English' : '简体中文';
+        if (window.showToast) {
+            window.showToast('🌐 Language: ' + name + ' / 语言: ' + name);
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            window.setLang(currentLang);
+        });
+    } else {
+        window.setLang(currentLang);
+    }
+})();
+
 // --- [Module: constants.js] ---
 /**
  * @file constants.js
@@ -1138,7 +1364,7 @@
                     <div style="font-size:11px; color:var(--text-sec); margin-bottom:10px; line-height:1.4;">${escapeHtml(preset.desc)}</div>
                 </div>
                 <button class="btn ${isInstalled ? 'secondary' : ''}" style="padding:6px 12px; font-size:11px;" onclick="installPresetPlugin('${preset.url}')" ${isInstalled ? 'disabled style="opacity:0.6;"' : ''}>
-                    ${isInstalled ? '✓ 已安装' : '+ 一键安装'}
+                    ${isInstalled ? t('✓ 已安装') : t('+ 一键安装')}
                 </button>
             </div>`;
         });
@@ -1146,12 +1372,12 @@
     }
 
     function installPresetPlugin(url) {
-        showToast('正在向 qBittorrent 发送插件安装指令...');
+        showToast(t('正在向 qBittorrent 发送插件安装指令...'));
         $.post('/api/v2/search/installPlugin', { sources: url }, function() {
-            showToast('插件安装请求已发送，正在同步中');
+            showToast(t('插件安装请求已发送，正在同步中'));
             setTimeout(fetchSearchPlugins, 2500);
         }).fail(function() {
-            showToast('安装失败，请确认服务器已安装 Python3', false);
+            showToast(t('安装失败，请确认服务器已安装 Python3'), false);
         });
     }
 
@@ -1203,7 +1429,7 @@
 
     function togglePluginEnabled(pluginName, enable) {
         $.post('/api/v2/search/enablePlugin', { names: pluginName, enable: enable ? 'true' : 'false' }, function() {
-            showToast(`已${enable ? '启用' : '禁用'}插件: ${pluginName}`);
+            showToast(`${enable ? t('已启用') : t('已禁用')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
@@ -1211,7 +1437,7 @@
     function uninstallSearchPlugin(pluginName) {
         if (!confirm(`确定要卸载搜索插件 [${pluginName}] 吗？`)) return;
         $.post('/api/v2/search/uninstallPlugin', { names: pluginName }, function() {
-            showToast(`已卸载插件: ${pluginName}`);
+            showToast(`${t('已卸载插件: ')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
@@ -1251,7 +1477,7 @@
         if (searchCurrentPage < 1) searchCurrentPage = 1;
 
         if (totalResults > 0) {
-            $('#search-count-label').text(`检索结果: ${totalResults} 条 (第 ${searchCurrentPage} / ${totalPages} 页)`);
+            $('#search-count-label').text(`${t('检索结果: ')}${totalResults}${t(' 条')} (${t('第')} ${searchCurrentPage} / ${totalPages}${t(' 页')})`);
             $('#search-toolbar').css('display', 'flex');
         } else {
             $('#search-toolbar').hide();
@@ -1273,21 +1499,21 @@
                             <span style="display:inline-block; min-width:24px; color:var(--accent); font-weight:800; font-size:13px; margin-right:4px;">${itemIndex}.</span>${escapeHtml(item.fileName)}
                         </div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            📦 ${sizeFormatted} · 👤 做种: <span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · 吸血: ${item.nbLeechers} · 来源: ${escapeHtml(item.siteUrl || '插件')}
+                            📦 ${sizeFormatted} · 👤 ${t('做种: ')}<span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · ${t('吸血: ')}${item.nbLeechers} · ${t('来源: ')}${escapeHtml(item.siteUrl || '插件')}
                         </div>
                     </div>
-                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">下载</button>
+                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">${t('下载')}</button>
                 </div>
             </div>`;
         });
 
         if (totalResults === 0) {
-            html = '<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在检索全网结果，请稍候...</div>';
+            html = `<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在检索全网结果，请稍候...')}</div>`;
         } else {
             // 分页控制器（始终展示统计与翻页器）
             let pageButtonsHtml = '';
             // 上一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="上一页">‹</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="${t('上一页')}">‹</button>`;
 
             if (totalPages <= 1) {
                 pageButtonsHtml += `<button class="page-pill active" disabled>1</button>`;
@@ -1315,12 +1541,12 @@
             }
 
             // 下一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="下一页">›</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="${t('下一页')}">›</button>`;
 
             html += `
             <div class="pagination-wrapper">
                 <div class="pagination-info">
-                    显示第 <strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong> 条 / 共 <strong>${totalResults}</strong> 条 (每页 20 条)
+                    ${t('显示第 ')}<strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong>${t(' 条 / 共 ')}<strong>${totalResults}</strong>${t(' 条 (每页 20 条)')}
                 </div>
                 <div class="pagination-controls">
                     ${pageButtonsHtml}
@@ -1346,7 +1572,7 @@
 
     function triggerSearch() {
         const pattern = $('#search-keyword').val().trim();
-        if (!pattern) return showToast('请输入搜索关键字！', false);
+        if (!pattern) return showToast(t('请输入搜索关键字！'), false);
 
         stopCurrentSearch();
         cachedSearchResults = [];
@@ -1355,9 +1581,9 @@
         const plugin = $('#search-plugin').val();
         const category = $('#search-category').val();
 
-        $('#search-results-container').html('<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在全网启动搜索，拉取检索结果中...</div>');
+        $('#search-results-container').html(`<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在全网启动搜索，拉取检索结果中...')}</div>`);
         $('#search-status-bar').css('display', 'flex');
-        $('#search-status-text').text(`正在为 “${pattern}” 检索中...`);
+        $('#search-status-text').text(`${t('正在为 ')}“${pattern}”${t(' 检索中...')}`);
 
         $.post('/api/v2/search/start', { pattern: pattern, plugins: plugin, category: category }, function(res) {
             if (res && res.id) {
@@ -1365,7 +1591,7 @@
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = setInterval(pollSearchResults, 1500);
             } else {
-                $('#search-results-container').html('<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。</div>');
+                $('#search-results-container').html(`<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">${t('启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。')}</div>`);
             }
         });
     }
@@ -1377,9 +1603,10 @@
 
             cachedSearchResults = res.results || [];
             renderSearchResultsUI();
+            scheduleSearchStateSave();
 
             if (res.status === 'Stopped') {
-                $('#search-status-text').text(`搜索完成，共抓取 ${res.total || cachedSearchResults.length} 条资源`);
+                $('#search-status-text').text(`${t('搜索完成，共抓取 ')}${res.total || cachedSearchResults.length}${t(' 条资源')}`);
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = null;
             }
@@ -1397,14 +1624,116 @@
             searchRefreshTimer = null;
         }
         $('#search-status-bar').hide();
+        scheduleSearchStateSave();
     }
 
-    function addMagnetFromSearch(magnetUrl) {
-        $.post('/api/v2/torrents/add', { urls: magnetUrl }, function() {
-            showToast('✅ 磁力链接已成功添加，开始下载！');
-            pollFastData();
+    function addTorrentUrl(url, isMagnet) {
+        $.ajax({
+            url: '/api/v2/torrents/add',
+            method: 'POST',
+            data: { urls: url },
+            dataType: 'text',
+            success: function () {
+                showToast(isMagnet ? t('✅ 磁力链接已成功添加，开始下载！') : t('✅ 已发送下载指令'));
+                if (typeof pollFastData === 'function') pollFastData();
+                // 稍后主动刷新任务列表，让新任务尽快出现
+                setTimeout(function () {
+                    if (typeof pollFastData === 'function') pollFastData();
+                }, 2000);
+            },
+            error: function (xhr) {
+                showToast(t('❌ 添加失败: ') + (xhr.statusText || t('网络错误')), false);
+            }
         });
     }
+
+    function addMagnetFromSearch(rawUrl) {
+        const url = (rawUrl || '').trim();
+        if (!url) {
+            showToast(t('⚠️ 无效的下载链接'), false);
+            return;
+        }
+        const isMagnet = /^magnet:\?/i.test(url);
+        const isTorrentFile = /^https?:\/\/.+/i.test(url) && /\.torrent($|\?)/i.test(url);
+        if (isMagnet || isTorrentFile) {
+            addTorrentUrl(url, isMagnet);
+            return;
+        }
+        // 下载页链接无法被 qBittorrent 直接解析（实测返回 200 但不创建任务）：
+        // 先通过代理解析页面提取磁力 / .torrent 链接，再尝试添加。
+        showToast(t('正在解析下载页，提取磁力链接...'));
+        $.ajax({
+            url: '/api/v2/abit/resolve',
+            method: 'POST',
+            data: { url: url },
+            dataType: 'json',
+            success: function (res) {
+                const candidates = (res && res.magnets && res.magnets.length)
+                    ? res.magnets
+                    : (res && res.torrents && res.torrents.length) ? res.torrents : [];
+                if (candidates.length) {
+                    addTorrentUrl(candidates[0], /^magnet:\?/i.test(candidates[0]));
+                } else {
+                    showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                    addTorrentUrl(url, false);
+                }
+            },
+            error: function () {
+                showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                addTorrentUrl(url, false);
+            }
+        });
+    }
+
+    // ---- Search results persistence (survives page refresh) ----
+    const SEARCH_STATE_KEY = 'abit_search_state';
+    let searchStateSaveTimer = null;
+
+    function scheduleSearchStateSave() {
+        if (searchStateSaveTimer) clearTimeout(searchStateSaveTimer);
+        searchStateSaveTimer = setTimeout(saveSearchState, 600);
+    }
+
+    function saveSearchState() {
+        try {
+            const payload = {
+                keyword: $('#search-keyword').val() || '',
+                plugin: $('#search-plugin').val() || 'all',
+                category: $('#search-category').val() || 'all',
+                results: (cachedSearchResults || []).slice(0, 300),
+                page: searchCurrentPage || 1,
+                savedAt: Date.now()
+            };
+            localStorage.setItem(SEARCH_STATE_KEY, JSON.stringify(payload));
+        } catch (e) { /* storage full or unavailable */ }
+    }
+
+    function restoreSearchState() {
+        let saved = null;
+        try {
+            saved = JSON.parse(localStorage.getItem(SEARCH_STATE_KEY) || 'null');
+        } catch (e) { return false; }
+        if (!saved || !Array.isArray(saved.results) || saved.results.length === 0) return false;
+
+        $('#search-keyword').val(saved.keyword || '');
+        $('#search-plugin').val(saved.plugin || 'all');
+        $('#search-category').val(saved.category || 'all');
+        cachedSearchResults = saved.results;
+        searchCurrentPage = saved.page || 1;
+        renderSearchResultsUI();
+        $('#search-toolbar').css('display', 'flex');
+        $('#search-status-bar').css('display', 'flex');
+        $('#search-status-text').text(`${t('已恢复上次检索结果')} (${saved.results.length}${t(' 条)')}`);
+        return true;
+    }
+
+    // Restore previous search results once DOM is ready
+    $(function () {
+        restoreSearchState();
+    });
+
+    // Persist state when the page is about to be refreshed
+    window.addEventListener('beforeunload', saveSearchState);
 
 // --- [Module: rss.js] ---
 /**
@@ -1871,9 +2200,9 @@
         document.documentElement.setAttribute('data-theme', mode);
 
         const icons = { auto: '🌓', light: '☀️', dark: '🌙' };
-        const labels = { auto: '自动', light: '浅色', dark: '深色' };
+        const labels = { auto: t('自动'), light: t('浅色'), dark: t('深色') };
         $('#theme-icon').text(icons[mode] || '🌓');
-        $('#theme-label').text(labels[mode] || '自动');
+        $('#theme-label').text(labels[mode] || t('自动'));
     }
 
     function cycleTheme() {
@@ -1894,11 +2223,11 @@
         if (isAltSpeedEnabled) {
             $('#btn-alt-speed').addClass('alt-speed-active');
             $('#alt-speed-icon').text('🐢');
-            $('#alt-speed-label').text('限速中');
+            $('#alt-speed-label').text(t('备用速率'));
         } else {
             $('#btn-alt-speed').removeClass('alt-speed-active');
             $('#alt-speed-icon').text('⚡');
-            $('#alt-speed-label').text('全速');
+            $('#alt-speed-label').text(t('常规速率'));
         }
     }
 
@@ -1906,7 +2235,7 @@
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? '已激活备用限速模式' : '已恢复常规全局全速模式');
+            showToast(isAltSpeedEnabled ? t('已激活备用限速模式') : t('已恢复常规全局全速模式'));
         });
     }
 
@@ -1916,7 +2245,7 @@
         $(`#${pageId}`).addClass('active');
         $('.dock-btn').removeClass('active');
         $(btn).addClass('active');
-        $('#page-title').text(title);
+        $('#page-title').text(window.t(title, title));
 
         window.scrollTo(0, 0);
 
@@ -1927,6 +2256,17 @@
             fetchSystemLogs();
         }
     }
+
+    // Re-apply dynamic labels when language changes
+    window.onLanguageChanged = function () {
+        if (typeof updateAltSpeedUI === 'function') updateAltSpeedUI();
+        if (typeof setTheme === 'function') setTheme(themeMode);
+        const activeBtn = document.querySelector('.dock-btn.active');
+        if (activeBtn) {
+            const span = activeBtn.querySelector('span[data-i18n]');
+            $('#page-title').text(window.t(span ? span.getAttribute('data-i18n') : activeBtn.textContent.trim()));
+        }
+    };
 
     function switchSearchSubTab(tabId, btn) {
         $('.search-sub-content').hide();
@@ -2103,7 +2443,7 @@
         $.getJSON('/api/v2/transfer/info', function(info) {
             if (!info) return;
             $('#qbt-dot').removeClass('offline');
-            $('#qbt-status-text').text('已在线');
+            $('#qbt-status-text').text(t('已在线'));
 
             const dlSpeed = formatBytes(info.dl_info_speed);
             const upSpeed = formatBytes(info.up_info_speed);
@@ -2111,9 +2451,9 @@
             $('#v-up-speed').text(upSpeed + '/s');
 
             const statusMap = {
-                "connected": "🟢 连接就绪",
-                "firewalled": "🟡 处于防火墙后",
-                "disconnected": "🔴 未连接"
+                "connected": t('🟢 连接就绪'),
+                "firewalled": t('🟡 处于防火墙后'),
+                "disconnected": t('🔴 未连接')
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
@@ -2136,7 +2476,7 @@
             }
         }).fail(function() {
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('离线/未登入');
+            $('#qbt-status-text').text(t('离线/未登入'));
         });
 
         // 2. Torrents List Sync

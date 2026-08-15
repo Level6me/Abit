@@ -24,6 +24,7 @@ const CSS_ORDER = [
 ];
 
 const JS_ORDER = [
+    'i18n.js',
     'constants.js',
     'state.js',
     'utils.js',

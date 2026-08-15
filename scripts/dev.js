@@ -230,6 +230,53 @@ function proxyRequest(req, res, targetUrl) {
     req.pipe(proxyReq);
 }
 
+// Resolve a web page URL by fetching it and extracting magnet / .torrent links.
+// Used by the search page when a plugin returns a download-page URL instead of a
+// direct magnet link (qBittorrent silently ignores such URLs).
+function handleResolveRequest(req, res) {
+    let body = '';
+    req.on('data', chunk => { body += chunk; if (body.length > 65536) req.destroy(); });
+    req.on('end', () => {
+        let target = '';
+        try {
+            const params = new URLSearchParams(body);
+            target = params.get('url') || '';
+        } catch (e) { /* ignore */ }
+        if (!/^https?:\/\//i.test(target)) {
+            res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+            return res.end(JSON.stringify({ error: 'bad url', magnets: [], torrents: [] }));
+        }
+
+        const client = (target.startsWith('https:') ? require('https') : http);
+        const reqOut = client.get(target, { timeout: 8000, headers: { 'User-Agent': 'Mozilla/5.0 (Abit Bot)' } }, outRes => {
+            let html = '';
+            outRes.on('data', d => {
+                html += d;
+                if (html.length > 2097152) { outRes.destroy(); }  // 2MB cap
+            });
+            outRes.on('end', () => {
+                const magnets = (html.match(/magnet:\?[^"'<>\s]+/gi) || [])
+                    .filter((v, i, a) => a.indexOf(v) === i)
+                    .slice(0, 20);
+                const torrents = (html.match(/https?:\/\/[^"'<>\s]+\.torrent[^"'<>\s]*/gi) || [])
+                    .filter((v, i, a) => a.indexOf(v) === i)
+                    .slice(0, 20);
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ url: target, magnets: magnets, torrents: torrents }));
+            });
+        });
+        reqOut.on('error', () => {
+            res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ error: 'fetch failed', magnets: [], torrents: [] }));
+        });
+        reqOut.on('timeout', () => {
+            reqOut.destroy();
+            res.writeHead(504, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ error: 'timeout', magnets: [], torrents: [] }));
+        });
+    });
+}
+
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url);
     let pathname = parsedUrl.pathname;
@@ -245,6 +292,9 @@ const server = http.createServer((req, res) => {
     }
 
     // 1. Handle API requests
+    if (pathname === '/api/v2/abit/resolve') {
+        return handleResolveRequest(req, res);
+    }
     if (pathname.startsWith('/api/v2/')) {
         if (qbtTarget) {
             return proxyRequest(req, res, qbtTarget);

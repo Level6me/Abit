@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Torrent Omni — qBittorrent Apple UI Alternative WebUI</title>
+    <title>Abit — qBittorrent Apple UI Alternative WebUI</title>
     <!-- Third-party CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -19,7 +19,7 @@
 
 <!-- Drag and drop full window overlay -->
 <div class="drag-overlay" id="drag-overlay">
-    <div>📥 松开鼠标以添加 Torrent 种子文件</div>
+    <div data-i18n="📥 松开鼠标以添加 Torrent 种子文件">📥 松开鼠标以添加 Torrent 种子文件</div>
 </div>
 
 <div class="container">
@@ -27,23 +27,23 @@
     <div class="header">
         <div class="header-left">
             <div class="date-badge" id="date-now">TORRENT OMNI</div>
-            <div class="title" id="page-title">总览</div>
+            <div class="title" id="page-title" data-i18n="总览">总览</div>
         </div>
         <div class="header-actions">
             <!-- Alt Speed Mode Button (Turtle 🐢) -->
-            <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" title="切换备用速度限制模式">
+            <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" data-i18n-title="切换备用速度限制模式" title="切换备用速度限制模式">
                 <span id="alt-speed-icon">⚡</span>
-                <span id="alt-speed-label">常规速率</span>
+                <span id="alt-speed-label" data-i18n="常规速率">常规速率</span>
             </button>
 
             <!-- Theme Toggle Button -->
-            <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" title="切换明暗主题">
+            <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" data-i18n-title="切换明暗主题" title="切换明暗主题">
                 <span id="theme-icon">🌓</span>
-                <span id="theme-label">自动</span>
+                <span id="theme-label" data-i18n="自动">自动</span>
             </button>
 
             <!-- Language Toggle Button -->
-            <button class="pill-btn" id="btn-lang-toggle" onclick="showToast('🌐 语言切换 (EN) 即将推出，当前默认简体中文')" title="语言切换 / Language">
+            <button class="pill-btn" id="btn-lang-toggle" onclick="toggleLang()" data-i18n-title="语言切换 / Language" title="语言切换 / Language">
                 <span>🌐</span>
                 <span id="lang-label">中 / EN</span>
             </button>
@@ -54,36 +54,36 @@
     <div id="p-dash" class="page active">
         <div class="grid-4">
             <div class="card">
-                <div class="val-sub" style="color:var(--success);">↓ 实时下载速度</div>
+                <div class="val-sub" style="color:var(--success);" data-i18n="↓ 实时下载速度">↓ 实时下载速度</div>
                 <div class="val-big" id="v-dl-speed" style="color:var(--success);">0 B/s</div>
-                <div class="val-sub" id="v-dl-count" style="margin-top:4px;">活跃下载: 0</div>
+                <div class="val-sub" id="v-dl-count" style="margin-top:4px;" data-i18n="活跃下载: ">活跃下载: 0</div>
             </div>
             <div class="card">
-                <div class="val-sub" style="color:var(--accent);">↑ 实时上传速度</div>
+                <div class="val-sub" style="color:var(--accent);" data-i18n="↑ 实时上传速度">↑ 实时上传速度</div>
                 <div class="val-big" id="v-up-speed" style="color:var(--accent);">0 B/s</div>
-                <div class="val-sub" id="v-up-count" style="margin-top:4px;">活跃做种: 0</div>
+                <div class="val-sub" id="v-up-count" style="margin-top:4px;" data-i18n="活跃做种: ">活跃做种: 0</div>
             </div>
             <div class="card">
-                <div class="val-sub">网络连接与 DHT</div>
-                <div class="val-big" id="v-conn-status" style="font-size:20px;">连接中...</div>
-                <div class="val-sub" id="v-dht-nodes" style="margin-top:4px;">DHT 节点: --</div>
+                <div class="val-sub" data-i18n="网络连接与 DHT">网络连接与 DHT</div>
+                <div class="val-big" id="v-conn-status" style="font-size:20px;" data-i18n="连接中...">连接中...</div>
+                <div class="val-sub" id="v-dht-nodes" style="margin-top:4px;" data-i18n="DHT 节点: ">DHT 节点: --</div>
             </div>
             <div class="card">
-                <div class="val-sub">下载磁盘剩余</div>
+                <div class="val-sub" data-i18n="下载磁盘剩余">下载磁盘剩余</div>
                 <div class="val-big" id="v-disk-free" style="font-size:20px;">--</div>
-                <div class="val-sub" id="v-total-transferred" style="margin-top:4px;">累计传输: ↓ 0 B | ↑ 0 B</div>
+                <div class="val-sub" id="v-total-transferred" style="margin-top:4px;" data-i18n="累计传输: ↓ ">累计传输: ↓ 0 B | ↑ 0 B</div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <div>
-                    <span style="font-weight:700; font-size:15px;">实时网络传输走势</span>
+                    <span style="font-weight:700; font-size:15px;" data-i18n="实时网络传输走势">实时网络传输走势</span>
                     <span class="val-sub" style="margin-left:8px;">(KB/s)</span>
                 </div>
                 <div style="font-size:12px; display:flex; gap:12px;">
-                    <span style="color:var(--success); font-weight:600;">● 下载速率</span>
-                    <span style="color:var(--accent); font-weight:600;">● 上传速率</span>
+                    <span style="color:var(--success); font-weight:600;" data-i18n="● 下载速率">● 下载速率</span>
+                    <span style="color:var(--accent); font-weight:600;" data-i18n="● 上传速率">● 上传速率</span>
                 </div>
             </div>
             <div class="chart-mini"><canvas id="netChart"></canvas></div>
@@ -92,27 +92,27 @@
         <!-- Quick Summary Grid -->
         <!-- Task Status Summary Card -->
         <div class="card">
-            <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📊 任务状态汇总 <span class="val-sub" style="font-weight:normal; margin-left:4px;">(点击快速跳转筛选)</span></div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:12px;"><span data-i18n="📊 任务状态汇总">📊 任务状态汇总</span> <span class="val-sub" style="font-weight:normal; margin-left:4px;" data-i18n="(点击快速跳转筛选)">(点击快速跳转筛选)</span></div>
             <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" title="点击查看全部任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" data-i18n-title="点击查看全部任务" title="点击查看全部任务">
                     <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
-                    <div class="val-sub">全部任务</div>
+                    <div class="val-sub" data-i18n="全部任务">全部任务</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" title="点击查看下载中任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" data-i18n-title="点击查看下载中任务" title="点击查看下载中任务">
                     <div class="val-big" id="sum-dl" style="color:var(--success);">0</div>
-                    <div class="val-sub">下载中</div>
+                    <div class="val-sub" data-i18n="下载中">下载中</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" title="点击查看做种中任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" data-i18n-title="点击查看做种中任务" title="点击查看做种中任务">
                     <div class="val-big" id="sum-seed" style="color:var(--purple);">0</div>
-                    <div class="val-sub">做种中</div>
+                    <div class="val-sub" data-i18n="做种中">做种中</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" title="点击查看已完成任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" data-i18n-title="点击查看已完成任务" title="点击查看已完成任务">
                     <div class="val-big" id="sum-completed" style="color:var(--text);">0</div>
-                    <div class="val-sub">已完成</div>
+                    <div class="val-sub" data-i18n="已完成">已完成</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" title="点击查看已暂停任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" data-i18n-title="点击查看已暂停任务" title="点击查看已暂停任务">
                     <div class="val-big" id="sum-pause" style="color:var(--text-sec);">0</div>
-                    <div class="val-sub">已暂停</div>
+                    <div class="val-sub" data-i18n="已暂停">已暂停</div>
                 </div>
             </div>
         </div>
@@ -144,26 +144,26 @@
                         <option value="eta_asc">⏳ 剩余时间 (ETA)</option>
                         <option value="ratio_desc">🔄 分享率 (高到低)</option>
                     </select>
-                    <button class="icon-btn" id="btn-view-mode" onclick="toggleViewMode()" title="切换卡片 / 表格视图">
+                    <button class="icon-btn" id="btn-view-mode" onclick="toggleViewMode()" data-i18n-title="切换卡片 / 表格视图" title="切换卡片 / 表格视图">
                         <svg id="view-icon-cards" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
                         <svg id="view-icon-table" viewBox="0 0 24 24" style="display:none;"><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg>
                     </button>
                     <button class="btn" onclick="openAddModal()" style="padding:8px 14px; font-size:13px;">
-                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> 新建任务
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="新建任务">新建任务</span>
                     </button>
                 </div>
             </div>
 
             <!-- Status Filter Segmented Control -->
             <div class="segmented-control">
-                <button class="segment-btn active" onclick="filterTorrents('all', this)">全部 (<span id="cnt-all">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('downloading', this)">下载中 (<span id="cnt-dl">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('seeding', this)">做种中 (<span id="cnt-seed">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('completed', this)">已完成 (<span id="cnt-completed">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('paused', this)">已暂停 (<span id="cnt-pause">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('active', this)">活动中 (<span id="cnt-active">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('queued', this)">排队中 (<span id="cnt-queue">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('error', this)">错误 (<span id="cnt-err">0</span>)</button>
+                <button class="segment-btn active" onclick="filterTorrents('all', this)"><span data-i18n="全部">全部</span> (<span id="cnt-all">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('downloading', this)"><span data-i18n="下载中">下载中</span> (<span id="cnt-dl">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('seeding', this)"><span data-i18n="做种中">做种中</span> (<span id="cnt-seed">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('completed', this)"><span data-i18n="已完成">已完成</span> (<span id="cnt-completed">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('paused', this)"><span data-i18n="已暂停">已暂停</span> (<span id="cnt-pause">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('active', this)"><span data-i18n="活动中">活动中</span> (<span id="cnt-active">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('queued', this)"><span data-i18n="排队中">排队中</span> (<span id="cnt-queue">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('error', this)"><span data-i18n="错误">错误</span> (<span id="cnt-err">0</span>)</button>
             </div>
         </div>
 
@@ -171,23 +171,23 @@
         <div class="batch-bar" id="batch-bar">
             <div class="batch-left">
                 <input type="checkbox" id="select-all-check" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)">
-                <span>已选中 <span id="batch-count">0</span> 项</span>
+                <span><span data-i18n="已选中 ">已选中 </span><span id="batch-count">0</span><span data-i18n=" 项"> 项</span></span>
             </div>
             <div class="batch-actions">
-                <button class="batch-btn" onclick="batchTorrentAction('resume')">▶ 恢复</button>
-                <button class="batch-btn" onclick="batchTorrentAction('pause')">⏸ 暂停</button>
-                <button class="batch-btn" onclick="batchForceRecheck()">🔍 重新校验</button>
-                <button class="batch-btn" onclick="batchRedownload()">🔄 重新下载</button>
-                <button class="batch-btn" onclick="openBatchCategoryModal()">🏷 分类</button>
-                <button class="batch-btn danger" onclick="confirmBatchDelete()">🗑 删除</button>
-                <button class="icon-btn" onclick="clearTorrentSelection()" title="取消选择" style="width:28px; height:28px;">✖</button>
+                <button class="batch-btn" onclick="batchTorrentAction('resume')"><span data-i18n="▶ 恢复">▶ 恢复</span></button>
+                <button class="batch-btn" onclick="batchTorrentAction('pause')"><span data-i18n="⏸ 暂停">⏸ 暂停</span></button>
+                <button class="batch-btn" onclick="batchForceRecheck()"><span data-i18n="🔍 重新校验">🔍 重新校验</span></button>
+                <button class="batch-btn" onclick="batchRedownload()"><span data-i18n="🔄 重新下载">🔄 重新下载</span></button>
+                <button class="batch-btn" onclick="openBatchCategoryModal()"><span data-i18n="🏷 分类">🏷 分类</span></button>
+                <button class="batch-btn danger" onclick="confirmBatchDelete()"><span data-i18n="🗑 删除">🗑 删除</span></button>
+                <button class="icon-btn" onclick="clearTorrentSelection()" data-i18n-title="取消选择" title="取消选择" style="width:28px; height:28px;">✖</button>
             </div>
         </div>
 
         <!-- Main Torrents List Container -->
         <div id="torrent-list-container">
             <div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">
-                正在与 qBittorrent 通信加载任务中...
+                <span data-i18n="正在与 qBittorrent 通信加载任务中...">正在与 qBittorrent 通信加载任务中...</span>
             </div>
         </div>
         <div class="bottom-spacer"></div>
@@ -207,27 +207,27 @@
         <div id="search-sub-query" class="search-sub-content">
             <div class="card">
                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
-                    <input class="input-box" id="search-keyword" placeholder="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." style="flex:2; min-width:200px;" onkeydown="if(event.key==='Enter') triggerSearch();">
+                    <input class="input-box" id="search-keyword" placeholder="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." data-i18n-ph="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." style="flex:2; min-width:200px;" onkeydown="if(event.key==='Enter') triggerSearch();">
                     <select class="select-custom" id="search-plugin" style="flex:1; min-width:130px;">
-                        <option value="all">🌐 全部已安装插件</option>
-                        <option value="enabled">⚡ 已启用插件</option>
+                        <option value="all" data-i18n-opt="🌐 全部已安装插件">🌐 全部已安装插件</option>
+                        <option value="enabled" data-i18n-opt="⚡ 已启用插件">⚡ 已启用插件</option>
                     </select>
                     <select class="select-custom" id="search-category" style="flex:1; min-width:110px;">
-                        <option value="all">全部类型</option>
-                        <option value="movies">电影</option>
-                        <option value="tv">剧集</option>
-                        <option value="music">音乐</option>
-                        <option value="software">软件</option>
-                        <option value="games">游戏</option>
-                        <option value="anime">动漫</option>
+                        <option value="all" data-i18n-opt="全部类型">全部类型</option>
+                        <option value="movies" data-i18n-opt="电影">电影</option>
+                        <option value="tv" data-i18n-opt="剧集">剧集</option>
+                        <option value="music" data-i18n-opt="音乐">音乐</option>
+                        <option value="software" data-i18n-opt="软件">软件</option>
+                        <option value="games" data-i18n-opt="游戏">游戏</option>
+                        <option value="anime" data-i18n-opt="动漫">动漫</option>
                     </select>
                     <button class="btn" style="padding:10px 20px;" onclick="triggerSearch()">
-                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> 搜索
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="搜索">搜索</span>
                     </button>
                 </div>
                 <div id="search-status-bar" style="font-size:12px; color:var(--text-sec); display:none; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:8px;">
-                    <span id="search-status-text">搜索进行中...</span>
-                    <button class="pill-btn" onclick="stopCurrentSearch()" style="padding:3px 10px; font-size:11px;">停止搜索</button>
+                    <span id="search-status-text" data-i18n="搜索进行中...">搜索进行中...</span>
+                    <button class="pill-btn" onclick="stopCurrentSearch()" style="padding:3px 10px; font-size:11px;"><span data-i18n="停止搜索">停止搜索</span></button>
                 </div>
             </div>
 
@@ -236,7 +236,7 @@
                 <div style="display:flex; gap:12px; align-items:flex-start;">
                     <span style="font-size:24px;">💡</span>
                     <div style="flex:1;">
-                        <div style="font-weight:700; font-size:14px; margin-bottom:4px;">为什么搜索不到资源？</div>
+                        <div style="font-weight:700; font-size:14px; margin-bottom:4px;" data-i18n="为什么搜索不到资源？">为什么搜索不到资源？</div>
                         <div style="font-size:12px; color:var(--text-sec); line-height:1.6;">
                             qBittorrent 资源检索依靠服务器内置的 <b>Python 搜索插件 (Search Plugins)</b>。如果您的服务器刚安装 qBt 或未开启插件，将无法获取任何检索结果。请切换至上方<b>「🧩 搜索插件管理」</b>标签页一键安装或启用常用公开索引插件（需确保服务器已安装 Python3）。
                         </div>
@@ -248,16 +248,16 @@
             <div id="search-toolbar" style="display:none; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                 <div style="font-size:12px; color:var(--text-sec); font-weight:600;" id="search-count-label">检索结果: 0 条</div>
                 <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                    <span style="font-size:11px; color:var(--text-sec); font-weight:600;">排序:</span>
-                    <button class="sort-pill active" id="sort-btn-seeds" onclick="changeSearchSort('seeds')">👥 做种数</button>
-                    <button class="sort-pill" id="sort-btn-size" onclick="changeSearchSort('size')">📦 体积</button>
-                    <button class="sort-pill" id="sort-btn-name" onclick="changeSearchSort('name')">🔤 名称</button>
+                    <span style="font-size:11px; color:var(--text-sec); font-weight:600;" data-i18n="排序:">排序:</span>
+                    <button class="sort-pill active" id="sort-btn-seeds" onclick="changeSearchSort('seeds')"><span data-i18n="👥 做种数">👥 做种数</span></button>
+                    <button class="sort-pill" id="sort-btn-size" onclick="changeSearchSort('size')"><span data-i18n="📦 体积">📦 体积</span></button>
+                    <button class="sort-pill" id="sort-btn-name" onclick="changeSearchSort('name')">🔤 <span data-i18n="名称">名称</span></button>
                 </div>
             </div>
 
             <div id="search-results-container">
                 <div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">
-                    输入关键字开始全网检索种子资源
+                    <span data-i18n="输入关键字开始全网检索种子资源">输入关键字开始全网检索种子资源</span>
                 </div>
             </div>
         </div>
@@ -1043,27 +1043,28 @@
 <div class="dock">
     <button class="dock-btn active" onclick="switchTab('p-dash', '总览', this)">
         <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-10h-8v10zm0-18v6h8V3h-8z"/></svg>
-        <span>总览</span>
+        <span data-i18n="总览">总览</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-torrents', '任务', this)">
         <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-        <span>任务</span>
+        <span data-i18n="任务">任务</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-search', '搜索', this)">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <span>搜索</span>
+        <span data-i18n="搜索">搜索</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-rss', 'RSS', this)">
         <svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20 5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
-        <span>RSS</span>
+        <span data-i18n="RSS">RSS</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-system', '系统', this)">
         <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
-        <span>系统</span>
+        <span data-i18n="系统">系统</span>
     </button>
 </div>
 
     <!-- Modular Application Scripts -->
+    <script src="js/i18n.js"></script>
     <script src="js/constants.js"></script>
     <script src="js/state.js"></script>
     <script src="js/utils.js"></script>

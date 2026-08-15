@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Torrent Omni — qBittorrent Apple UI Alternative WebUI</title>
+    <title>Abit — qBittorrent Apple UI Alternative WebUI</title>
     <!-- Third-party CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1208,7 +1208,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <!-- Drag and drop full window overlay -->
 <div class="drag-overlay" id="drag-overlay">
-    <div>📥 松开鼠标以添加 Torrent 种子文件</div>
+    <div data-i18n="📥 松开鼠标以添加 Torrent 种子文件">📥 松开鼠标以添加 Torrent 种子文件</div>
 </div>
 
 <div class="container">
@@ -1216,23 +1216,23 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div class="header">
         <div class="header-left">
             <div class="date-badge" id="date-now">TORRENT OMNI</div>
-            <div class="title" id="page-title">总览</div>
+            <div class="title" id="page-title" data-i18n="总览">总览</div>
         </div>
         <div class="header-actions">
             <!-- Alt Speed Mode Button (Turtle 🐢) -->
-            <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" title="切换备用速度限制模式">
+            <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" data-i18n-title="切换备用速度限制模式" title="切换备用速度限制模式">
                 <span id="alt-speed-icon">⚡</span>
-                <span id="alt-speed-label">常规速率</span>
+                <span id="alt-speed-label" data-i18n="常规速率">常规速率</span>
             </button>
 
             <!-- Theme Toggle Button -->
-            <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" title="切换明暗主题">
+            <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" data-i18n-title="切换明暗主题" title="切换明暗主题">
                 <span id="theme-icon">🌓</span>
-                <span id="theme-label">自动</span>
+                <span id="theme-label" data-i18n="自动">自动</span>
             </button>
 
             <!-- Language Toggle Button -->
-            <button class="pill-btn" id="btn-lang-toggle" onclick="showToast('🌐 语言切换 (EN) 即将推出，当前默认简体中文')" title="语言切换 / Language">
+            <button class="pill-btn" id="btn-lang-toggle" onclick="toggleLang()" data-i18n-title="语言切换 / Language" title="语言切换 / Language">
                 <span>🌐</span>
                 <span id="lang-label">中 / EN</span>
             </button>
@@ -1243,36 +1243,36 @@ input:checked + .slider:before { transform: translateX(20px); }
     <div id="p-dash" class="page active">
         <div class="grid-4">
             <div class="card">
-                <div class="val-sub" style="color:var(--success);">↓ 实时下载速度</div>
+                <div class="val-sub" style="color:var(--success);" data-i18n="↓ 实时下载速度">↓ 实时下载速度</div>
                 <div class="val-big" id="v-dl-speed" style="color:var(--success);">0 B/s</div>
-                <div class="val-sub" id="v-dl-count" style="margin-top:4px;">活跃下载: 0</div>
+                <div class="val-sub" id="v-dl-count" style="margin-top:4px;" data-i18n="活跃下载: ">活跃下载: 0</div>
             </div>
             <div class="card">
-                <div class="val-sub" style="color:var(--accent);">↑ 实时上传速度</div>
+                <div class="val-sub" style="color:var(--accent);" data-i18n="↑ 实时上传速度">↑ 实时上传速度</div>
                 <div class="val-big" id="v-up-speed" style="color:var(--accent);">0 B/s</div>
-                <div class="val-sub" id="v-up-count" style="margin-top:4px;">活跃做种: 0</div>
+                <div class="val-sub" id="v-up-count" style="margin-top:4px;" data-i18n="活跃做种: ">活跃做种: 0</div>
             </div>
             <div class="card">
-                <div class="val-sub">网络连接与 DHT</div>
-                <div class="val-big" id="v-conn-status" style="font-size:20px;">连接中...</div>
-                <div class="val-sub" id="v-dht-nodes" style="margin-top:4px;">DHT 节点: --</div>
+                <div class="val-sub" data-i18n="网络连接与 DHT">网络连接与 DHT</div>
+                <div class="val-big" id="v-conn-status" style="font-size:20px;" data-i18n="连接中...">连接中...</div>
+                <div class="val-sub" id="v-dht-nodes" style="margin-top:4px;" data-i18n="DHT 节点: ">DHT 节点: --</div>
             </div>
             <div class="card">
-                <div class="val-sub">下载磁盘剩余</div>
+                <div class="val-sub" data-i18n="下载磁盘剩余">下载磁盘剩余</div>
                 <div class="val-big" id="v-disk-free" style="font-size:20px;">--</div>
-                <div class="val-sub" id="v-total-transferred" style="margin-top:4px;">累计传输: ↓ 0 B | ↑ 0 B</div>
+                <div class="val-sub" id="v-total-transferred" style="margin-top:4px;" data-i18n="累计传输: ↓ ">累计传输: ↓ 0 B | ↑ 0 B</div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <div>
-                    <span style="font-weight:700; font-size:15px;">实时网络传输走势</span>
+                    <span style="font-weight:700; font-size:15px;" data-i18n="实时网络传输走势">实时网络传输走势</span>
                     <span class="val-sub" style="margin-left:8px;">(KB/s)</span>
                 </div>
                 <div style="font-size:12px; display:flex; gap:12px;">
-                    <span style="color:var(--success); font-weight:600;">● 下载速率</span>
-                    <span style="color:var(--accent); font-weight:600;">● 上传速率</span>
+                    <span style="color:var(--success); font-weight:600;" data-i18n="● 下载速率">● 下载速率</span>
+                    <span style="color:var(--accent); font-weight:600;" data-i18n="● 上传速率">● 上传速率</span>
                 </div>
             </div>
             <div class="chart-mini"><canvas id="netChart"></canvas></div>
@@ -1281,27 +1281,27 @@ input:checked + .slider:before { transform: translateX(20px); }
         <!-- Quick Summary Grid -->
         <!-- Task Status Summary Card -->
         <div class="card">
-            <div style="font-weight:700; font-size:15px; margin-bottom:12px;">📊 任务状态汇总 <span class="val-sub" style="font-weight:normal; margin-left:4px;">(点击快速跳转筛选)</span></div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:12px;"><span data-i18n="📊 任务状态汇总">📊 任务状态汇总</span> <span class="val-sub" style="font-weight:normal; margin-left:4px;" data-i18n="(点击快速跳转筛选)">(点击快速跳转筛选)</span></div>
             <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" title="点击查看全部任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" data-i18n-title="点击查看全部任务" title="点击查看全部任务">
                     <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
-                    <div class="val-sub">全部任务</div>
+                    <div class="val-sub" data-i18n="全部任务">全部任务</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" title="点击查看下载中任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" data-i18n-title="点击查看下载中任务" title="点击查看下载中任务">
                     <div class="val-big" id="sum-dl" style="color:var(--success);">0</div>
-                    <div class="val-sub">下载中</div>
+                    <div class="val-sub" data-i18n="下载中">下载中</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" title="点击查看做种中任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" data-i18n-title="点击查看做种中任务" title="点击查看做种中任务">
                     <div class="val-big" id="sum-seed" style="color:var(--purple);">0</div>
-                    <div class="val-sub">做种中</div>
+                    <div class="val-sub" data-i18n="做种中">做种中</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" title="点击查看已完成任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" data-i18n-title="点击查看已完成任务" title="点击查看已完成任务">
                     <div class="val-big" id="sum-completed" style="color:var(--text);">0</div>
-                    <div class="val-sub">已完成</div>
+                    <div class="val-sub" data-i18n="已完成">已完成</div>
                 </div>
-                <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" title="点击查看已暂停任务">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" data-i18n-title="点击查看已暂停任务" title="点击查看已暂停任务">
                     <div class="val-big" id="sum-pause" style="color:var(--text-sec);">0</div>
-                    <div class="val-sub">已暂停</div>
+                    <div class="val-sub" data-i18n="已暂停">已暂停</div>
                 </div>
             </div>
         </div>
@@ -1333,26 +1333,26 @@ input:checked + .slider:before { transform: translateX(20px); }
                         <option value="eta_asc">⏳ 剩余时间 (ETA)</option>
                         <option value="ratio_desc">🔄 分享率 (高到低)</option>
                     </select>
-                    <button class="icon-btn" id="btn-view-mode" onclick="toggleViewMode()" title="切换卡片 / 表格视图">
+                    <button class="icon-btn" id="btn-view-mode" onclick="toggleViewMode()" data-i18n-title="切换卡片 / 表格视图" title="切换卡片 / 表格视图">
                         <svg id="view-icon-cards" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
                         <svg id="view-icon-table" viewBox="0 0 24 24" style="display:none;"><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg>
                     </button>
                     <button class="btn" onclick="openAddModal()" style="padding:8px 14px; font-size:13px;">
-                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> 新建任务
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="新建任务">新建任务</span>
                     </button>
                 </div>
             </div>
 
             <!-- Status Filter Segmented Control -->
             <div class="segmented-control">
-                <button class="segment-btn active" onclick="filterTorrents('all', this)">全部 (<span id="cnt-all">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('downloading', this)">下载中 (<span id="cnt-dl">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('seeding', this)">做种中 (<span id="cnt-seed">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('completed', this)">已完成 (<span id="cnt-completed">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('paused', this)">已暂停 (<span id="cnt-pause">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('active', this)">活动中 (<span id="cnt-active">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('queued', this)">排队中 (<span id="cnt-queue">0</span>)</button>
-                <button class="segment-btn" onclick="filterTorrents('error', this)">错误 (<span id="cnt-err">0</span>)</button>
+                <button class="segment-btn active" onclick="filterTorrents('all', this)"><span data-i18n="全部">全部</span> (<span id="cnt-all">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('downloading', this)"><span data-i18n="下载中">下载中</span> (<span id="cnt-dl">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('seeding', this)"><span data-i18n="做种中">做种中</span> (<span id="cnt-seed">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('completed', this)"><span data-i18n="已完成">已完成</span> (<span id="cnt-completed">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('paused', this)"><span data-i18n="已暂停">已暂停</span> (<span id="cnt-pause">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('active', this)"><span data-i18n="活动中">活动中</span> (<span id="cnt-active">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('queued', this)"><span data-i18n="排队中">排队中</span> (<span id="cnt-queue">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('error', this)"><span data-i18n="错误">错误</span> (<span id="cnt-err">0</span>)</button>
             </div>
         </div>
 
@@ -1360,23 +1360,23 @@ input:checked + .slider:before { transform: translateX(20px); }
         <div class="batch-bar" id="batch-bar">
             <div class="batch-left">
                 <input type="checkbox" id="select-all-check" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)">
-                <span>已选中 <span id="batch-count">0</span> 项</span>
+                <span><span data-i18n="已选中 ">已选中 </span><span id="batch-count">0</span><span data-i18n=" 项"> 项</span></span>
             </div>
             <div class="batch-actions">
-                <button class="batch-btn" onclick="batchTorrentAction('resume')">▶ 恢复</button>
-                <button class="batch-btn" onclick="batchTorrentAction('pause')">⏸ 暂停</button>
-                <button class="batch-btn" onclick="batchForceRecheck()">🔍 重新校验</button>
-                <button class="batch-btn" onclick="batchRedownload()">🔄 重新下载</button>
-                <button class="batch-btn" onclick="openBatchCategoryModal()">🏷 分类</button>
-                <button class="batch-btn danger" onclick="confirmBatchDelete()">🗑 删除</button>
-                <button class="icon-btn" onclick="clearTorrentSelection()" title="取消选择" style="width:28px; height:28px;">✖</button>
+                <button class="batch-btn" onclick="batchTorrentAction('resume')"><span data-i18n="▶ 恢复">▶ 恢复</span></button>
+                <button class="batch-btn" onclick="batchTorrentAction('pause')"><span data-i18n="⏸ 暂停">⏸ 暂停</span></button>
+                <button class="batch-btn" onclick="batchForceRecheck()"><span data-i18n="🔍 重新校验">🔍 重新校验</span></button>
+                <button class="batch-btn" onclick="batchRedownload()"><span data-i18n="🔄 重新下载">🔄 重新下载</span></button>
+                <button class="batch-btn" onclick="openBatchCategoryModal()"><span data-i18n="🏷 分类">🏷 分类</span></button>
+                <button class="batch-btn danger" onclick="confirmBatchDelete()"><span data-i18n="🗑 删除">🗑 删除</span></button>
+                <button class="icon-btn" onclick="clearTorrentSelection()" data-i18n-title="取消选择" title="取消选择" style="width:28px; height:28px;">✖</button>
             </div>
         </div>
 
         <!-- Main Torrents List Container -->
         <div id="torrent-list-container">
             <div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">
-                正在与 qBittorrent 通信加载任务中...
+                <span data-i18n="正在与 qBittorrent 通信加载任务中...">正在与 qBittorrent 通信加载任务中...</span>
             </div>
         </div>
         <div class="bottom-spacer"></div>
@@ -1396,27 +1396,27 @@ input:checked + .slider:before { transform: translateX(20px); }
         <div id="search-sub-query" class="search-sub-content">
             <div class="card">
                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
-                    <input class="input-box" id="search-keyword" placeholder="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." style="flex:2; min-width:200px;" onkeydown="if(event.key==='Enter') triggerSearch();">
+                    <input class="input-box" id="search-keyword" placeholder="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." data-i18n-ph="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." style="flex:2; min-width:200px;" onkeydown="if(event.key==='Enter') triggerSearch();">
                     <select class="select-custom" id="search-plugin" style="flex:1; min-width:130px;">
-                        <option value="all">🌐 全部已安装插件</option>
-                        <option value="enabled">⚡ 已启用插件</option>
+                        <option value="all" data-i18n-opt="🌐 全部已安装插件">🌐 全部已安装插件</option>
+                        <option value="enabled" data-i18n-opt="⚡ 已启用插件">⚡ 已启用插件</option>
                     </select>
                     <select class="select-custom" id="search-category" style="flex:1; min-width:110px;">
-                        <option value="all">全部类型</option>
-                        <option value="movies">电影</option>
-                        <option value="tv">剧集</option>
-                        <option value="music">音乐</option>
-                        <option value="software">软件</option>
-                        <option value="games">游戏</option>
-                        <option value="anime">动漫</option>
+                        <option value="all" data-i18n-opt="全部类型">全部类型</option>
+                        <option value="movies" data-i18n-opt="电影">电影</option>
+                        <option value="tv" data-i18n-opt="剧集">剧集</option>
+                        <option value="music" data-i18n-opt="音乐">音乐</option>
+                        <option value="software" data-i18n-opt="软件">软件</option>
+                        <option value="games" data-i18n-opt="游戏">游戏</option>
+                        <option value="anime" data-i18n-opt="动漫">动漫</option>
                     </select>
                     <button class="btn" style="padding:10px 20px;" onclick="triggerSearch()">
-                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> 搜索
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="搜索">搜索</span>
                     </button>
                 </div>
                 <div id="search-status-bar" style="font-size:12px; color:var(--text-sec); display:none; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:8px;">
-                    <span id="search-status-text">搜索进行中...</span>
-                    <button class="pill-btn" onclick="stopCurrentSearch()" style="padding:3px 10px; font-size:11px;">停止搜索</button>
+                    <span id="search-status-text" data-i18n="搜索进行中...">搜索进行中...</span>
+                    <button class="pill-btn" onclick="stopCurrentSearch()" style="padding:3px 10px; font-size:11px;"><span data-i18n="停止搜索">停止搜索</span></button>
                 </div>
             </div>
 
@@ -1425,7 +1425,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <div style="display:flex; gap:12px; align-items:flex-start;">
                     <span style="font-size:24px;">💡</span>
                     <div style="flex:1;">
-                        <div style="font-weight:700; font-size:14px; margin-bottom:4px;">为什么搜索不到资源？</div>
+                        <div style="font-weight:700; font-size:14px; margin-bottom:4px;" data-i18n="为什么搜索不到资源？">为什么搜索不到资源？</div>
                         <div style="font-size:12px; color:var(--text-sec); line-height:1.6;">
                             qBittorrent 资源检索依靠服务器内置的 <b>Python 搜索插件 (Search Plugins)</b>。如果您的服务器刚安装 qBt 或未开启插件，将无法获取任何检索结果。请切换至上方<b>「🧩 搜索插件管理」</b>标签页一键安装或启用常用公开索引插件（需确保服务器已安装 Python3）。
                         </div>
@@ -1437,16 +1437,16 @@ input:checked + .slider:before { transform: translateX(20px); }
             <div id="search-toolbar" style="display:none; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                 <div style="font-size:12px; color:var(--text-sec); font-weight:600;" id="search-count-label">检索结果: 0 条</div>
                 <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                    <span style="font-size:11px; color:var(--text-sec); font-weight:600;">排序:</span>
-                    <button class="sort-pill active" id="sort-btn-seeds" onclick="changeSearchSort('seeds')">👥 做种数</button>
-                    <button class="sort-pill" id="sort-btn-size" onclick="changeSearchSort('size')">📦 体积</button>
-                    <button class="sort-pill" id="sort-btn-name" onclick="changeSearchSort('name')">🔤 名称</button>
+                    <span style="font-size:11px; color:var(--text-sec); font-weight:600;" data-i18n="排序:">排序:</span>
+                    <button class="sort-pill active" id="sort-btn-seeds" onclick="changeSearchSort('seeds')"><span data-i18n="👥 做种数">👥 做种数</span></button>
+                    <button class="sort-pill" id="sort-btn-size" onclick="changeSearchSort('size')"><span data-i18n="📦 体积">📦 体积</span></button>
+                    <button class="sort-pill" id="sort-btn-name" onclick="changeSearchSort('name')">🔤 <span data-i18n="名称">名称</span></button>
                 </div>
             </div>
 
             <div id="search-results-container">
                 <div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">
-                    输入关键字开始全网检索种子资源
+                    <span data-i18n="输入关键字开始全网检索种子资源">输入关键字开始全网检索种子资源</span>
                 </div>
             </div>
         </div>
@@ -2232,23 +2232,23 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div class="dock">
     <button class="dock-btn active" onclick="switchTab('p-dash', '总览', this)">
         <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-10h-8v10zm0-18v6h8V3h-8z"/></svg>
-        <span>总览</span>
+        <span data-i18n="总览">总览</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-torrents', '任务', this)">
         <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-        <span>任务</span>
+        <span data-i18n="任务">任务</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-search', '搜索', this)">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <span>搜索</span>
+        <span data-i18n="搜索">搜索</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-rss', 'RSS', this)">
         <svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20 5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
-        <span>RSS</span>
+        <span data-i18n="RSS">RSS</span>
     </button>
     <button class="dock-btn" onclick="switchTab('p-system', '系统', this)">
         <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
-        <span>系统</span>
+        <span data-i18n="系统">系统</span>
     </button>
 </div>
 
@@ -2257,6 +2257,232 @@ input:checked + .slider:before { transform: translateX(20px); }
 /**
  * Apple Torrent Dashboard (Torrent Omni) — Bundled Application Logic
  */
+
+// --- [Module: i18n.js] ---
+/**
+ * @file i18n.js
+ * @description Lightweight bilingual (zh/en) internationalization with localStorage persistence.
+ *              Keys are the original Chinese strings; the en dictionary maps them to English.
+ *              Language persists via localStorage 'abit_lang' and the header toggle button.
+ */
+
+(function () {
+    const STORAGE_KEY = 'abit_lang';
+
+    const EN_DICT = {
+        // Header
+        '总览': 'Overview',
+        '常规速率': 'Normal',
+        '备用速率': 'Alt Speed',
+        '切换备用速度限制模式': 'Toggle alternative speed limits',
+        '自动': 'Auto',
+        '浅色': 'Light',
+        '深色': 'Dark',
+        '切换明暗主题': 'Toggle theme',
+        '语言切换 / Language': 'Language',
+
+        // Dashboard
+        '↓ 实时下载速度': '↓ Download speed',
+        '活跃下载: ': 'Active downloads: ',
+        '↑ 实时上传速度': '↑ Upload speed',
+        '活跃做种: ': 'Active seeds: ',
+        '网络连接与 DHT': 'Connection & DHT',
+        '连接中...': 'Connecting...',
+        'DHT 节点: ': 'DHT nodes: ',
+        '下载磁盘剩余': 'Free disk space',
+        '累计传输: ↓ ': 'Total: ↓ ',
+        '实时网络传输走势': 'Live transfer chart',
+        '● 下载速率': '● Download',
+        '● 上传速率': '● Upload',
+        '📊 任务状态汇总': '📊 Task summary',
+        '(点击快速跳转筛选)': '(click to filter)',
+        '点击查看全部任务': 'View all tasks',
+        '全部任务': 'All',
+        '点击查看下载中任务': 'View downloading',
+        '下载中': 'Downloading',
+        '点击查看做种中任务': 'View seeding',
+        '做种中': 'Seeding',
+        '点击查看已完成任务': 'View completed',
+        '已完成': 'Completed',
+        '点击查看已暂停任务': 'View paused',
+        '已暂停': 'Paused',
+
+        // Torrents page
+        '实时过滤名称 / Hash...': 'Filter by name / hash...',
+        '📁 全部分类': '📁 All categories',
+        '🕒 添加时间 (最新)': '🕒 Added (newest)',
+        '🕒 添加时间 (最早)': '🕒 Added (oldest)',
+        '🔤 任务名称 (A-Z)': '🔤 Name (A-Z)',
+        '📦 文件体积 (大到小)': '📦 Size (large to small)',
+        '📈 下载进度 (高到低)': '📈 Progress (high to low)',
+        '⚡ 下载速度 (快到慢)': '⚡ Download speed',
+        '⚡ 上传速度 (快到慢)': '⚡ Upload speed',
+        '⏳ 剩余时间 (ETA)': '⏳ ETA',
+        '🔄 分享率 (高到低)': '🔄 Ratio (high to low)',
+        '切换卡片 / 表格视图': 'Toggle card / table view',
+        '全部': 'All',
+        '活动中': 'Active',
+        '排队中': 'Queued',
+        '错误': 'Error',
+        '已选中 ': 'Selected ',
+        ' 项': '',
+        '▶ 恢复': '▶ Resume',
+        '⏸ 暂停': '⏸ Pause',
+        '🔍 重新校验': '🔍 Recheck',
+        '🔄 重新下载': '🔄 Redownload',
+        '🏷 分类': '🏷 Category',
+        '🗑 删除': '🗑 Delete',
+        '取消选择': 'Clear selection',
+        '正在与 qBittorrent 通信加载任务中...': 'Loading torrents from qBittorrent...',
+        '新建任务': 'New torrent',
+
+        // Search page
+        '🔍 资源全网检索': '🔍 Search',
+        '🧩 搜索插件管理': '🧩 Search plugins',
+        '输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)...': 'Enter keywords (e.g. Ubuntu, Debian, Linux, Movie)...',
+        '🌐 全部已安装插件': '🌐 All installed plugins',
+        '⚡ 已启用插件': '⚡ Enabled plugins',
+        '全部类型': 'All categories',
+        '电影': 'Movies',
+        '剧集': 'TV',
+        '音乐': 'Music',
+        '软件': 'Software',
+        '游戏': 'Games',
+        '动漫': 'Anime',
+        '搜索进行中...': 'Searching...',
+        '停止搜索': 'Stop',
+        '为什么搜索不到资源？': 'Why no results?',
+        '🔍 搜索插件管理': '🔍 Search plugins',
+        '检索结果: 0 条': 'Results: 0',
+        '排序:': 'Sort:',
+        '👥 做种数': '👥 Seeds',
+        '📦 体积': '📦 Size',
+        '下载': 'Download',
+        '做种: ': 'Seeds: ',
+        '吸血: ': 'Leeches: ',
+        '来源: ': 'Source: ',
+        '正在检索全网结果，请稍候...': 'Searching the web, please wait...',
+        '上一页': 'Previous page',
+        '下一页': 'Next page',
+        '正在全网启动搜索，拉取检索结果中...': 'Starting search, fetching results...',
+        '启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。': 'Failed to start search. Please enable Python search plugins in qBittorrent.',
+        '请输入搜索关键字！': 'Please enter a search keyword!',
+        '✅ 磁力链接已成功添加，开始下载！': '✅ Magnet link added, download started!',
+        '⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。': '⚠️ This result links to a download page. Tried to add it anyway; if no task appears, add the magnet link manually.',
+        '⚠️ 无效的下载链接': '⚠️ Invalid download link',
+        '❌ 添加失败: ': '❌ Add failed: ',
+        '✅ 已发送下载指令': '✅ Download command sent',
+        '暂未安装任何搜索插件。请从下方常用插件库一键安装。': 'No search plugins installed. Install one from the presets below.',
+        '卸载插件': 'Uninstall plugin',
+        '🌐 全部插件': '🌐 All plugins',
+        '网络错误': 'Network error',
+        '第': 'page ',
+        ' 条': '',
+        ' 页': '',
+        '显示第 ': 'Showing ',
+        ' 条 / 共 ': ' of ',
+        ' 条 (每页 20 条)': ' (20 per page)',
+        '正在为 ': 'Searching for ',
+        ' 检索中...': ' ...',
+        '搜索完成，共抓取 ': 'Search complete, ',
+        ' 条资源': ' results',
+        '已恢复上次检索结果': 'Restored previous search results',
+        '✓ 已安装': '✓ Installed',
+        '+ 一键安装': '+ Install',
+        '插件安装请求已发送，正在同步中': 'Plugin install request sent, syncing...',
+        '安装失败，请确认服务器已安装 Python3': 'Install failed. Make sure Python3 is installed on the server',
+        '所有推荐插件均已安装完毕！': 'All recommended plugins are installed!',
+        '正在批量安装 ': 'Installing ',
+        ' 个优质检索插件...': ' search plugins...',
+        '批量插件安装指令已发出，正在同步...': 'Batch install command sent, syncing...',
+        '批量安装请求失败，请检查网络连接': 'Batch install failed, check network',
+        '正在检查并更新搜索插件...': 'Checking for plugin updates...',
+        '插件更新指令已发送，正在拉取最新版本': 'Update command sent, fetching latest versions',
+        '更新指令发送失败': 'Update command failed',
+        '请输入有效的插件 URL': 'Please enter a valid plugin URL',
+        '自定义插件安装指令已发出': 'Custom plugin install command sent',
+        '已启用': 'Enabled',
+        '已禁用': 'Disabled',
+        '已卸载插件: ': 'Uninstalled plugin: ',
+        '启用插件': 'Enable plugin',
+        '卸载': 'Uninstall',
+        '已激活备用限速模式': 'Alternative speed limit activated',
+        '已恢复常规全局全速模式': 'Global full speed restored',
+        '已在线': 'Online',
+        '离线/未登入': 'Offline / Not logged in',
+        '🟢 连接就绪': '🟢 Connected',
+        '🟡 处于防火墙后': '🟡 Firewalled',
+        '🔴 未连接': '🔴 Disconnected',
+        '名称': 'Name',
+        '输入关键字开始全网检索种子资源': 'Enter keywords to search torrents',
+        '正在解析下载页，提取磁力链接...': 'Resolving download page, extracting magnet link...',
+        '系统': 'System',
+        '搜索': 'Search',
+        '任务': 'Torrents',
+        'RSS': 'RSS',
+    };
+
+    let currentLang = 'zh';
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved === 'en' || saved === 'zh') currentLang = saved;
+    } catch (e) { /* storage unavailable */ }
+
+    window.t = function (key, fallback) {
+        if (currentLang === 'en' && EN_DICT[key] !== undefined) return EN_DICT[key];
+        return fallback !== undefined ? fallback : key;
+    };
+
+    window.currentLang = function () { return currentLang; };
+
+    function applyI18n() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n');
+            el.textContent = window.t(key, el.textContent);
+        });
+        document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-ph');
+            el.setAttribute('placeholder', window.t(key, el.getAttribute('placeholder') || key));
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-title');
+            el.setAttribute('title', window.t(key, el.getAttribute('title') || key));
+        });
+        document.querySelectorAll('[data-i18n-opt]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-opt');
+            el.textContent = window.t(key, el.textContent);
+        });
+    }
+
+    window.setLang = function (lang) {
+        currentLang = (lang === 'en') ? 'en' : 'zh';
+        try { localStorage.setItem(STORAGE_KEY, currentLang); } catch (e) { /* ignore */ }
+        const html = document.documentElement;
+        if (html) html.setAttribute('lang', currentLang === 'en' ? 'en' : 'zh-CN');
+        const label = document.getElementById('lang-label');
+        if (label) label.textContent = currentLang === 'en' ? 'EN / 中' : '中 / EN';
+        applyI18n();
+        if (window.onLanguageChanged) window.onLanguageChanged(currentLang);
+    };
+
+    // Toggle between zh <-> en and persist the chosen language immediately.
+    window.toggleLang = function () {
+        const next = (currentLang === 'en') ? 'zh' : 'en';
+        window.setLang(next);
+        const name = next === 'en' ? 'English' : '简体中文';
+        if (window.showToast) {
+            window.showToast('🌐 Language: ' + name + ' / 语言: ' + name);
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            window.setLang(currentLang);
+        });
+    } else {
+        window.setLang(currentLang);
+    }
+})();
 
 // --- [Module: constants.js] ---
 /**
@@ -3394,7 +3620,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                     <div style="font-size:11px; color:var(--text-sec); margin-bottom:10px; line-height:1.4;">${escapeHtml(preset.desc)}</div>
                 </div>
                 <button class="btn ${isInstalled ? 'secondary' : ''}" style="padding:6px 12px; font-size:11px;" onclick="installPresetPlugin('${preset.url}')" ${isInstalled ? 'disabled style="opacity:0.6;"' : ''}>
-                    ${isInstalled ? '✓ 已安装' : '+ 一键安装'}
+                    ${isInstalled ? t('✓ 已安装') : t('+ 一键安装')}
                 </button>
             </div>`;
         });
@@ -3402,12 +3628,12 @@ input:checked + .slider:before { transform: translateX(20px); }
     }
 
     function installPresetPlugin(url) {
-        showToast('正在向 qBittorrent 发送插件安装指令...');
+        showToast(t('正在向 qBittorrent 发送插件安装指令...'));
         $.post('/api/v2/search/installPlugin', { sources: url }, function() {
-            showToast('插件安装请求已发送，正在同步中');
+            showToast(t('插件安装请求已发送，正在同步中'));
             setTimeout(fetchSearchPlugins, 2500);
         }).fail(function() {
-            showToast('安装失败，请确认服务器已安装 Python3', false);
+            showToast(t('安装失败，请确认服务器已安装 Python3'), false);
         });
     }
 
@@ -3459,7 +3685,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
     function togglePluginEnabled(pluginName, enable) {
         $.post('/api/v2/search/enablePlugin', { names: pluginName, enable: enable ? 'true' : 'false' }, function() {
-            showToast(`已${enable ? '启用' : '禁用'}插件: ${pluginName}`);
+            showToast(`${enable ? t('已启用') : t('已禁用')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
@@ -3467,7 +3693,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     function uninstallSearchPlugin(pluginName) {
         if (!confirm(`确定要卸载搜索插件 [${pluginName}] 吗？`)) return;
         $.post('/api/v2/search/uninstallPlugin', { names: pluginName }, function() {
-            showToast(`已卸载插件: ${pluginName}`);
+            showToast(`${t('已卸载插件: ')}${pluginName}`);
             fetchSearchPlugins();
         });
     }
@@ -3507,7 +3733,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         if (searchCurrentPage < 1) searchCurrentPage = 1;
 
         if (totalResults > 0) {
-            $('#search-count-label').text(`检索结果: ${totalResults} 条 (第 ${searchCurrentPage} / ${totalPages} 页)`);
+            $('#search-count-label').text(`${t('检索结果: ')}${totalResults}${t(' 条')} (${t('第')} ${searchCurrentPage} / ${totalPages}${t(' 页')})`);
             $('#search-toolbar').css('display', 'flex');
         } else {
             $('#search-toolbar').hide();
@@ -3529,21 +3755,21 @@ input:checked + .slider:before { transform: translateX(20px); }
                             <span style="display:inline-block; min-width:24px; color:var(--accent); font-weight:800; font-size:13px; margin-right:4px;">${itemIndex}.</span>${escapeHtml(item.fileName)}
                         </div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            📦 ${sizeFormatted} · 👤 做种: <span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · 吸血: ${item.nbLeechers} · 来源: ${escapeHtml(item.siteUrl || '插件')}
+                            📦 ${sizeFormatted} · 👤 ${t('做种: ')}<span style="color:var(--success); font-weight:700;">${item.nbSeeders}</span> · ${t('吸血: ')}${item.nbLeechers} · ${t('来源: ')}${escapeHtml(item.siteUrl || '插件')}
                         </div>
                     </div>
-                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">下载</button>
+                    <button class="btn" style="padding:8px 16px; font-size:12px; flex-shrink:0;" onclick="addMagnetFromSearch('${escapeHtml(item.fileUrl)}')">${t('下载')}</button>
                 </div>
             </div>`;
         });
 
         if (totalResults === 0) {
-            html = '<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在检索全网结果，请稍候...</div>';
+            html = `<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在检索全网结果，请稍候...')}</div>`;
         } else {
             // 分页控制器（始终展示统计与翻页器）
             let pageButtonsHtml = '';
             // 上一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="上一页">‹</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="${t('上一页')}">‹</button>`;
 
             if (totalPages <= 1) {
                 pageButtonsHtml += `<button class="page-pill active" disabled>1</button>`;
@@ -3571,12 +3797,12 @@ input:checked + .slider:before { transform: translateX(20px); }
             }
 
             // 下一页
-            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="下一页">›</button>`;
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="${t('下一页')}">›</button>`;
 
             html += `
             <div class="pagination-wrapper">
                 <div class="pagination-info">
-                    显示第 <strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong> 条 / 共 <strong>${totalResults}</strong> 条 (每页 20 条)
+                    ${t('显示第 ')}<strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong>${t(' 条 / 共 ')}<strong>${totalResults}</strong>${t(' 条 (每页 20 条)')}
                 </div>
                 <div class="pagination-controls">
                     ${pageButtonsHtml}
@@ -3602,7 +3828,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
     function triggerSearch() {
         const pattern = $('#search-keyword').val().trim();
-        if (!pattern) return showToast('请输入搜索关键字！', false);
+        if (!pattern) return showToast(t('请输入搜索关键字！'), false);
 
         stopCurrentSearch();
         cachedSearchResults = [];
@@ -3611,9 +3837,9 @@ input:checked + .slider:before { transform: translateX(20px); }
         const plugin = $('#search-plugin').val();
         const category = $('#search-category').val();
 
-        $('#search-results-container').html('<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在全网启动搜索，拉取检索结果中...</div>');
+        $('#search-results-container').html(`<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">${t('正在全网启动搜索，拉取检索结果中...')}</div>`);
         $('#search-status-bar').css('display', 'flex');
-        $('#search-status-text').text(`正在为 “${pattern}” 检索中...`);
+        $('#search-status-text').text(`${t('正在为 ')}“${pattern}”${t(' 检索中...')}`);
 
         $.post('/api/v2/search/start', { pattern: pattern, plugins: plugin, category: category }, function(res) {
             if (res && res.id) {
@@ -3621,7 +3847,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = setInterval(pollSearchResults, 1500);
             } else {
-                $('#search-results-container').html('<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。</div>');
+                $('#search-results-container').html(`<div style="text-align:center; padding:40px; color:var(--danger); font-size:14px;">${t('启动搜索失败，请确认 qBittorrent 中已启用 Python 搜索插件。')}</div>`);
             }
         });
     }
@@ -3633,9 +3859,10 @@ input:checked + .slider:before { transform: translateX(20px); }
 
             cachedSearchResults = res.results || [];
             renderSearchResultsUI();
+            scheduleSearchStateSave();
 
             if (res.status === 'Stopped') {
-                $('#search-status-text').text(`搜索完成，共抓取 ${res.total || cachedSearchResults.length} 条资源`);
+                $('#search-status-text').text(`${t('搜索完成，共抓取 ')}${res.total || cachedSearchResults.length}${t(' 条资源')}`);
                 if (searchRefreshTimer) clearInterval(searchRefreshTimer);
                 searchRefreshTimer = null;
             }
@@ -3653,14 +3880,116 @@ input:checked + .slider:before { transform: translateX(20px); }
             searchRefreshTimer = null;
         }
         $('#search-status-bar').hide();
+        scheduleSearchStateSave();
     }
 
-    function addMagnetFromSearch(magnetUrl) {
-        $.post('/api/v2/torrents/add', { urls: magnetUrl }, function() {
-            showToast('✅ 磁力链接已成功添加，开始下载！');
-            pollFastData();
+    function addTorrentUrl(url, isMagnet) {
+        $.ajax({
+            url: '/api/v2/torrents/add',
+            method: 'POST',
+            data: { urls: url },
+            dataType: 'text',
+            success: function () {
+                showToast(isMagnet ? t('✅ 磁力链接已成功添加，开始下载！') : t('✅ 已发送下载指令'));
+                if (typeof pollFastData === 'function') pollFastData();
+                // 稍后主动刷新任务列表，让新任务尽快出现
+                setTimeout(function () {
+                    if (typeof pollFastData === 'function') pollFastData();
+                }, 2000);
+            },
+            error: function (xhr) {
+                showToast(t('❌ 添加失败: ') + (xhr.statusText || t('网络错误')), false);
+            }
         });
     }
+
+    function addMagnetFromSearch(rawUrl) {
+        const url = (rawUrl || '').trim();
+        if (!url) {
+            showToast(t('⚠️ 无效的下载链接'), false);
+            return;
+        }
+        const isMagnet = /^magnet:\?/i.test(url);
+        const isTorrentFile = /^https?:\/\/.+/i.test(url) && /\.torrent($|\?)/i.test(url);
+        if (isMagnet || isTorrentFile) {
+            addTorrentUrl(url, isMagnet);
+            return;
+        }
+        // 下载页链接无法被 qBittorrent 直接解析（实测返回 200 但不创建任务）：
+        // 先通过代理解析页面提取磁力 / .torrent 链接，再尝试添加。
+        showToast(t('正在解析下载页，提取磁力链接...'));
+        $.ajax({
+            url: '/api/v2/abit/resolve',
+            method: 'POST',
+            data: { url: url },
+            dataType: 'json',
+            success: function (res) {
+                const candidates = (res && res.magnets && res.magnets.length)
+                    ? res.magnets
+                    : (res && res.torrents && res.torrents.length) ? res.torrents : [];
+                if (candidates.length) {
+                    addTorrentUrl(candidates[0], /^magnet:\?/i.test(candidates[0]));
+                } else {
+                    showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                    addTorrentUrl(url, false);
+                }
+            },
+            error: function () {
+                showToast(t('⚠️ 该资源为下载页链接，可能无法自动添加。已尝试添加，若任务未出现请用磁力链接手动添加。'), false);
+                addTorrentUrl(url, false);
+            }
+        });
+    }
+
+    // ---- Search results persistence (survives page refresh) ----
+    const SEARCH_STATE_KEY = 'abit_search_state';
+    let searchStateSaveTimer = null;
+
+    function scheduleSearchStateSave() {
+        if (searchStateSaveTimer) clearTimeout(searchStateSaveTimer);
+        searchStateSaveTimer = setTimeout(saveSearchState, 600);
+    }
+
+    function saveSearchState() {
+        try {
+            const payload = {
+                keyword: $('#search-keyword').val() || '',
+                plugin: $('#search-plugin').val() || 'all',
+                category: $('#search-category').val() || 'all',
+                results: (cachedSearchResults || []).slice(0, 300),
+                page: searchCurrentPage || 1,
+                savedAt: Date.now()
+            };
+            localStorage.setItem(SEARCH_STATE_KEY, JSON.stringify(payload));
+        } catch (e) { /* storage full or unavailable */ }
+    }
+
+    function restoreSearchState() {
+        let saved = null;
+        try {
+            saved = JSON.parse(localStorage.getItem(SEARCH_STATE_KEY) || 'null');
+        } catch (e) { return false; }
+        if (!saved || !Array.isArray(saved.results) || saved.results.length === 0) return false;
+
+        $('#search-keyword').val(saved.keyword || '');
+        $('#search-plugin').val(saved.plugin || 'all');
+        $('#search-category').val(saved.category || 'all');
+        cachedSearchResults = saved.results;
+        searchCurrentPage = saved.page || 1;
+        renderSearchResultsUI();
+        $('#search-toolbar').css('display', 'flex');
+        $('#search-status-bar').css('display', 'flex');
+        $('#search-status-text').text(`${t('已恢复上次检索结果')} (${saved.results.length}${t(' 条)')}`);
+        return true;
+    }
+
+    // Restore previous search results once DOM is ready
+    $(function () {
+        restoreSearchState();
+    });
+
+    // Persist state when the page is about to be refreshed
+    window.addEventListener('beforeunload', saveSearchState);
 
 // --- [Module: rss.js] ---
 /**
@@ -4127,9 +4456,9 @@ input:checked + .slider:before { transform: translateX(20px); }
         document.documentElement.setAttribute('data-theme', mode);
 
         const icons = { auto: '🌓', light: '☀️', dark: '🌙' };
-        const labels = { auto: '自动', light: '浅色', dark: '深色' };
+        const labels = { auto: t('自动'), light: t('浅色'), dark: t('深色') };
         $('#theme-icon').text(icons[mode] || '🌓');
-        $('#theme-label').text(labels[mode] || '自动');
+        $('#theme-label').text(labels[mode] || t('自动'));
     }
 
     function cycleTheme() {
@@ -4150,11 +4479,11 @@ input:checked + .slider:before { transform: translateX(20px); }
         if (isAltSpeedEnabled) {
             $('#btn-alt-speed').addClass('alt-speed-active');
             $('#alt-speed-icon').text('🐢');
-            $('#alt-speed-label').text('限速中');
+            $('#alt-speed-label').text(t('备用速率'));
         } else {
             $('#btn-alt-speed').removeClass('alt-speed-active');
             $('#alt-speed-icon').text('⚡');
-            $('#alt-speed-label').text('全速');
+            $('#alt-speed-label').text(t('常规速率'));
         }
     }
 
@@ -4162,7 +4491,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         $.post('/api/v2/transfer/toggleSpeedLimitsMode', function() {
             isAltSpeedEnabled = !isAltSpeedEnabled;
             updateAltSpeedUI();
-            showToast(isAltSpeedEnabled ? '已激活备用限速模式' : '已恢复常规全局全速模式');
+            showToast(isAltSpeedEnabled ? t('已激活备用限速模式') : t('已恢复常规全局全速模式'));
         });
     }
 
@@ -4172,7 +4501,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         $(`#${pageId}`).addClass('active');
         $('.dock-btn').removeClass('active');
         $(btn).addClass('active');
-        $('#page-title').text(title);
+        $('#page-title').text(window.t(title, title));
 
         window.scrollTo(0, 0);
 
@@ -4183,6 +4512,17 @@ input:checked + .slider:before { transform: translateX(20px); }
             fetchSystemLogs();
         }
     }
+
+    // Re-apply dynamic labels when language changes
+    window.onLanguageChanged = function () {
+        if (typeof updateAltSpeedUI === 'function') updateAltSpeedUI();
+        if (typeof setTheme === 'function') setTheme(themeMode);
+        const activeBtn = document.querySelector('.dock-btn.active');
+        if (activeBtn) {
+            const span = activeBtn.querySelector('span[data-i18n]');
+            $('#page-title').text(window.t(span ? span.getAttribute('data-i18n') : activeBtn.textContent.trim()));
+        }
+    };
 
     function switchSearchSubTab(tabId, btn) {
         $('.search-sub-content').hide();
@@ -4359,7 +4699,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         $.getJSON('/api/v2/transfer/info', function(info) {
             if (!info) return;
             $('#qbt-dot').removeClass('offline');
-            $('#qbt-status-text').text('已在线');
+            $('#qbt-status-text').text(t('已在线'));
 
             const dlSpeed = formatBytes(info.dl_info_speed);
             const upSpeed = formatBytes(info.up_info_speed);
@@ -4367,9 +4707,9 @@ input:checked + .slider:before { transform: translateX(20px); }
             $('#v-up-speed').text(upSpeed + '/s');
 
             const statusMap = {
-                "connected": "🟢 连接就绪",
-                "firewalled": "🟡 处于防火墙后",
-                "disconnected": "🔴 未连接"
+                "connected": t('🟢 连接就绪'),
+                "firewalled": t('🟡 处于防火墙后'),
+                "disconnected": t('🔴 未连接')
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
@@ -4392,7 +4732,7 @@ input:checked + .slider:before { transform: translateX(20px); }
             }
         }).fail(function() {
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('离线/未登入');
+            $('#qbt-status-text').text(t('离线/未登入'));
         });
 
         // 2. Torrents List Sync
