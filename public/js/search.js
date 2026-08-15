@@ -63,7 +63,14 @@
         const container = $('#preset-plugins-grid');
         let html = '';
         PRESET_PLUGINS.forEach(preset => {
-            const isInstalled = installedPlugins.some(p => p.name.toLowerCase() === preset.name.toLowerCase() || (p.fullName && p.fullName.toLowerCase().includes(preset.name.toLowerCase())));
+            const cleanName = preset.name.toLowerCase().replace(/[\s\-_]/g, '');
+            const urlName = preset.url.split('/').pop().replace('.py', '').toLowerCase();
+            const isInstalled = installedPlugins.some(p => {
+                const pName = (p.name || '').toLowerCase().replace(/[\s\-_]/g, '');
+                const pFull = (p.fullName || '').toLowerCase().replace(/[\s\-_]/g, '');
+                return pName === cleanName || pName === urlName || pFull.includes(cleanName) || cleanName.includes(pName);
+            });
+
             html += `
             <div class="card" style="padding:12px; margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
@@ -82,9 +89,44 @@
         showToast('正在向 qBittorrent 发送插件安装指令...');
         $.post('/api/v2/search/installPlugin', { sources: url }, function() {
             showToast('插件安装请求已发送，正在同步中');
-            setTimeout(fetchSearchPlugins, 2000);
+            setTimeout(fetchSearchPlugins, 2500);
         }).fail(function() {
             showToast('安装失败，请确认服务器已安装 Python3', false);
+        });
+    }
+
+    function installAllPresetPlugins() {
+        const uninstalled = PRESET_PLUGINS.filter(preset => {
+            const cleanName = preset.name.toLowerCase().replace(/[\s\-_]/g, '');
+            const urlName = preset.url.split('/').pop().replace('.py', '').toLowerCase();
+            return !installedPlugins.some(p => {
+                const pName = (p.name || '').toLowerCase().replace(/[\s\-_]/g, '');
+                const pFull = (p.fullName || '').toLowerCase().replace(/[\s\-_]/g, '');
+                return pName === cleanName || pName === urlName || pFull.includes(cleanName) || cleanName.includes(pName);
+            });
+        });
+
+        if (uninstalled.length === 0) {
+            return showToast('所有推荐插件均已安装完毕！');
+        }
+
+        showToast(`正在批量安装 ${uninstalled.length} 个优质检索插件...`);
+        const sources = uninstalled.map(p => p.url).join('|');
+        $.post('/api/v2/search/installPlugin', { sources: sources }, function() {
+            showToast('批量插件安装指令已发出，正在同步...');
+            setTimeout(fetchSearchPlugins, 3000);
+        }).fail(function() {
+            showToast('批量安装请求失败，请检查网络连接', false);
+        });
+    }
+
+    function updateSearchPlugins() {
+        showToast('正在检查并更新搜索插件...');
+        $.post('/api/v2/search/updatePlugins', function() {
+            showToast('插件更新指令已发送，正在拉取最新版本');
+            setTimeout(fetchSearchPlugins, 2500);
+        }).fail(function() {
+            showToast('更新指令发送失败', false);
         });
     }
 
