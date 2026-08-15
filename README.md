@@ -2,6 +2,8 @@
 
 > **Language:** English (this file) · **中文** ([README.zh-CN.md](README.zh-CN.md))
 
+> *An Apple-style alternative Web UI for qBittorrent — beautiful, lightweight, frosted-glass design.*
+
 A polished, lightweight, high-fidelity **alternative Web UI for qBittorrent**, designed with a modern Apple iOS / macOS frosted-glass aesthetic.
 
 It talks directly to the qBittorrent native Web API and runs entirely in the browser sandbox — no Python/Node backend service required. Open it and it just works.
