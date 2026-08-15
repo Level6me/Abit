@@ -25,7 +25,7 @@
     function renderRssFeeds(feeds) {
         const container = $('#rss-feed-list-container');
         if (!feeds || Object.keys(feeds).length === 0) {
-            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无订阅源，请点击上方按钮添加 RSS 订阅 URL</div>');
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无订阅源，请点击上方按钮添加 RSS 订阅 URL')}</div>`);
             return;
         }
 
@@ -38,12 +38,12 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <div>
                         <div style="font-weight:700; font-size:14px;">📡 ${escapeHtml(feed.title || key)}</div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">URL: ${escapeHtml(feed.url || key)} · 文章数: ${articles.length}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('URL: ')}${escapeHtml(feed.url || key)} · ${t('文章数: ')}${articles.length}</div>
                     </div>
                     <div style="display:flex; gap:6px;">
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">浏览文章</button>
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">刷新</button>
-                        <button class="icon-btn danger" style="width:30px; height:30px;" title="删除订阅源" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">${t('浏览文章')}</button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">${t('刷新')}</button>
+                        <button class="icon-btn danger" style="width:30px; height:30px;" title="${t('删除订阅源')}" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </div>
             </div>`;
@@ -56,16 +56,16 @@
             const feed = feeds[feedKey];
             if (!feed || !feed.articles) return;
 
-            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (共 ${feed.articles.length} 篇)`);
+            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (${t('共 ')}${feed.articles.length}${t(' 篇)')}`);
             let html = '';
             feed.articles.forEach(art => {
                 html += `
                 <div class="list-row">
                     <div style="flex:1; overflow:hidden; margin-right:10px;">
                         <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(art.title)}">${escapeHtml(art.title)}</div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">发布时间: ${art.date ? formatTimestamp(art.date) : '--'}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('发布时间: ')}${art.date ? formatTimestamp(art.date) : '--'}</div>
                     </div>
-                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">下载</button>
+                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">${t('下载')}</button>
                 </div>`;
             });
             $('#rss-articles-list').html(html);
@@ -75,22 +75,22 @@
 
     function refreshRssFeed(feedPath) {
         $.post('/api/v2/rss/refreshItem', { itemPath: feedPath }, function() {
-            showToast('已发起 RSS 订阅源刷新请求！');
+            showToast(t('已发起 RSS 订阅源刷新请求！'));
             fetchRssData();
         });
     }
 
     function refreshAllRssFeeds() {
         $.post('/api/v2/rss/refreshItem', { itemPath: '' }, function() {
-            showToast('已发起全部 RSS 订阅刷新！');
+            showToast(t('已发起全部 RSS 订阅刷新！'));
             fetchRssData();
         });
     }
 
     function deleteRssFeed(feedPath) {
-        if (!confirm(`确定要删除 RSS 订阅源 [${feedPath}] 吗？`)) return;
+        if (!confirm(`${t('确定要删除 RSS 订阅源 ')}[${feedPath}]${t(' 吗？')}`)) return;
         $.post('/api/v2/rss/removeItem', { path: feedPath }, function() {
-            showToast('已删除订阅源');
+            showToast(t('已删除订阅源'));
             fetchRssData();
         });
     }
@@ -98,13 +98,13 @@
     function submitAddRssFeed() {
         const url = $('#feed-url').val().trim();
         const path = $('#feed-path').val().trim();
-        if (!url) return showToast('请输入有效的 RSS 订阅链接！', false);
+        if (!url) return showToast(t('请输入有效的 RSS 订阅链接！'), false);
 
         $.post('/api/v2/rss/addFeed', { url: url, path: path }, function() {
             closeModal('add-rss-feed-modal');
             $('#feed-url').val('');
             $('#feed-path').val('');
-            showToast('已添加 RSS 订阅源');
+            showToast(t('已添加 RSS 订阅源'));
             fetchRssData();
         });
     }
@@ -112,7 +112,7 @@
     function renderRssRules(rules) {
         const container = $('#rss-rules-container');
         if (!rules || Object.keys(rules).length === 0) {
-            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无自动下载规则</div>');
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无自动下载规则')}</div>`);
             return;
         }
 
@@ -125,10 +125,10 @@
                     <div>
                         <div style="font-weight:700; font-size:14px;">⚡ ${escapeHtml(name)}</div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            包含: <code>${escapeHtml(r.mustContain || '所有')}</code> · 排除: <code>${escapeHtml(r.mustNotContain || '无')}</code> · 分类: ${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : '无'}
+                            ${t('包含: ')}<code>${escapeHtml(r.mustContain || t('所有'))}</code> · ${t('排除: ')}<code>${escapeHtml(r.mustNotContain || t('无'))}</code> · ${t('· 分类: ')}${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : t('无')}
                         </div>
                     </div>
-                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="删除规则"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="${t('删除规则')}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                 </div>
             </div>`;
         });
@@ -136,7 +136,7 @@
     }
 
     function openRssRuleModal() {
-        let optHtml = '<option value="">(分配分类: 无)</option>';
+        let optHtml = `<option value="">${t('(分配分类: 无)')}</option>`;
         Object.keys(allCategories).forEach(c => {
             optHtml += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
         });
@@ -149,7 +149,7 @@
         const must = $('#rule-must').val().trim();
         const not = $('#rule-not').val().trim();
         const cat = $('#rule-category').val();
-        if (!name) return showToast('请输入规则名称！', false);
+        if (!name) return showToast(t('请输入规则名称！'), false);
 
         const ruleDef = {
             enabled: true,
@@ -165,15 +165,15 @@
             $('#rule-name').val('');
             $('#rule-must').val('');
             $('#rule-not').val('');
-            showToast('已保存自动下载规则');
+            showToast(t('已保存自动下载规则'));
             fetchRssData();
         });
     }
 
     function deleteRssRule(name) {
-        if (!confirm(`确定要删除规则 [${name}] 吗？`)) return;
+        if (!confirm(`${t('确定要删除规则 ')}[${name}]${t(' 吗？')}`)) return;
         $.post('/api/v2/rss/removeRule', { ruleName: name }, function() {
-            showToast('已删除规则');
+            showToast(t('已删除规则'));
             fetchRssData();
         });
     }
@@ -181,7 +181,7 @@
     function renderCategories() {
         const container = $('#categories-container');
         if (!allCategories || Object.keys(allCategories).length === 0) {
-            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无分类数据</div>');
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无分类数据')}</div>`);
             return;
         }
 
@@ -196,20 +196,20 @@
     function submitCreateCategory() {
         const name = $('#new-cat-name').val().trim();
         const path = $('#new-cat-path').val().trim();
-        if (!name) return showToast('请输入分类名称！', false);
+        if (!name) return showToast(t('请输入分类名称！'), false);
 
         $.post('/api/v2/torrents/createCategory', { category: name, savePath: path }, function() {
             closeModal('add-category-modal');
             $('#new-cat-name').val('');
             $('#new-cat-path').val('');
-            showToast('已成功创建分类');
+            showToast(t('已成功创建分类'));
             pollSlowData();
         });
     }
 
     function updateCategoryDropdowns() {
-        let filterHtml = '<option value="all">📁 全部分类</option>';
-        let addHtml = '<option value="">(无分类)</option>';
+        let filterHtml = `<option value="all">${t('📁 全部分类')}</option>`;
+        let addHtml = `<option value="">${t('(无分类)')}</option>`;
 
         Object.keys(allCategories).forEach(c => {
             filterHtml += `<option value="${escapeHtml(c)}" ${currentCategory === c ? 'selected' : ''}>${escapeHtml(c)}</option>`;

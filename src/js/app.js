@@ -110,7 +110,7 @@
 
         // Set Date
         const now = new Date();
-        const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+        const days = [t('星期日'), t('星期一'), t('星期二'), t('星期三'), t('星期四'), t('星期五'), t('星期六')];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
         // Bootstrap authentication check (VueTorrent-style probe)

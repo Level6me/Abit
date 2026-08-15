@@ -90,7 +90,7 @@
         const confirmPassword = $('#pref-webui-password-confirm').val();
 
         if (newPassword && newPassword !== confirmPassword) {
-            return showToast('❌ 两次输入的新密码不一致，请重新核对！', false);
+            return showToast(t('❌ 两次输入的新密码不一致，请重新核对！'), false);
         }
 
         const prefs = {
@@ -157,10 +157,10 @@
         $.post('/api/v2/app/setPreferences', { json: JSON.stringify(prefs) }, function() {
             $('#pref-webui-password').val('');
             $('#pref-webui-password-confirm').val('');
-            showToast('✅ 系统配置与安全凭据已全量保存！');
+            showToast(t('✅ 系统配置与安全凭据已全量保存！'));
             loadAllSystemPreferences();
         }).fail(function() {
-            showToast('保存配置失败，请检查网络或权限', false);
+            showToast(t('保存配置失败，请检查网络或权限'), false);
         });
     }
 
@@ -186,19 +186,19 @@
     }
 
     function copySystemLogs() {
-        if (!rawLogs || rawLogs.length === 0) return showToast('暂无日志记录可复制', false);
+        if (!rawLogs || rawLogs.length === 0) return showToast(t('暂无日志记录可复制'), false);
         const textLines = rawLogs.map(l => `[${formatTimestamp(l.timestamp)}] [${l.type}] ${l.message}`).join('\n');
         navigator.clipboard.writeText(textLines).then(() => {
-            showToast('✅ 已复制全部日志到剪贴板！');
+            showToast(t('✅ 已复制全部日志到剪贴板！'));
         }).catch(() => {
-            showToast('复制失败，请手动选择复制', false);
+            showToast(t('复制失败，请手动选择复制'), false);
         });
     }
 
     function renderSystemLogs(logs) {
         const container = $('#sys-logs-container');
         if (!logs || logs.length === 0) {
-            container.html('<div style="color:var(--text-sec); text-align:center; padding:20px;">暂无日志记录</div>');
+            container.html(`<div style="color:var(--text-sec); text-align:center; padding:20px;">${t('暂无日志记录')}</div>`);
             return;
         }
 

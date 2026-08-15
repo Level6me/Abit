@@ -25,7 +25,7 @@
     function renderInstalledPlugins() {
         const container = $('#installed-plugins-list');
         if (!installedPlugins || installedPlugins.length === 0) {
-            container.html('<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">暂未安装任何搜索插件。请从下方常用插件库一键安装。</div>');
+            container.html(`<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">${t('暂未安装任何搜索插件。请从下方常用插件库一键安装。')}</div>`);
             return;
         }
 
@@ -42,7 +42,7 @@
                         <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="togglePluginEnabled('${escapeHtml(p.name)}', this.checked)">
                         <span class="slider"></span>
                     </label>
-                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="卸载插件">
+                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="${t('卸载插件')}">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     </button>
                 </div>
@@ -52,7 +52,7 @@
     }
 
     function updateSearchPluginDropdown() {
-        let html = '<option value="all">🌐 全部插件</option><option value="enabled" selected>⚡ 已启用插件</option>';
+        let html = `<option value="all">${t('🌐 全部插件')}</option><option value="enabled" selected>${t('⚡ 已启用插件')}</option>`;
         installedPlugins.forEach(p => {
             html += `<option value="${escapeHtml(p.name)}">${escapeHtml(p.fullName || p.name)}</option>`;
         });

@@ -14,13 +14,13 @@
 
     function formatEta(seconds) {
         if (!seconds || seconds < 0 || seconds >= 8640000) return '∞';
-        if (seconds < 60) return `${seconds}秒`;
+        if (seconds < 60) return `${seconds}${t('秒')}`;
         const m = Math.floor(seconds / 60);
-        if (m < 60) return `${m}分 ${seconds % 60}秒`;
+        if (m < 60) return `${m}${t('分')} ${seconds % 60}${t('秒')}`;
         const h = Math.floor(m / 60);
-        if (h < 24) return `${h}时 ${m % 60}分`;
+        if (h < 24) return `${h}${t('时')} ${m % 60}${t('分')}`;
         const d = Math.floor(h / 24);
-        return `${d}天 ${h % 24}时`;
+        return `${d}${t('天')} ${h % 24}${t('时')}`;
     }
 
     function formatTimestamp(ts) {
@@ -65,47 +65,47 @@
         const isActive = (t.dlspeed > 0 || t.upspeed > 0);
 
         let stateClass = 'paused';
-        let stateName = '已暂停';
+        let stateName = t('已暂停');
 
         if (isError) {
             stateClass = 'error';
-            stateName = '错误/文件丢失';
+            stateName = t('错误/文件丢失');
         } else if (state === 'metadl') {
             stateClass = 'downloading';
-            stateName = '获取元数据';
+            stateName = t('获取元数据');
         } else if (state === 'allocating') {
             stateClass = 'downloading';
-            stateName = '分配磁盘空间';
+            stateName = t('分配磁盘空间');
         } else if (isChecking) {
             stateClass = 'queued';
-            stateName = '校验中';
+            stateName = t('校验中');
         } else if (state === 'downloading' || state === 'forceddl') {
             stateClass = 'downloading';
-            stateName = state === 'forceddl' ? '强制下载' : '下载中';
+            stateName = state === 'forceddl' ? t('强制下载') : t('下载中');
         } else if (state === 'stalleddl') {
             stateClass = 'downloading';
-            stateName = '等待下载';
+            stateName = t('等待下载');
         } else if (state === 'queueddl') {
             stateClass = 'queued';
-            stateName = '排队下载';
+            stateName = t('排队下载');
         } else if (state === 'pauseddl') {
             stateClass = 'paused';
-            stateName = '下载暂停';
+            stateName = t('下载暂停');
         } else if (state === 'uploading' || state === 'forcedup') {
             stateClass = 'completed';
-            stateName = state === 'forcedup' ? '强制做种' : '做种中';
+            stateName = state === 'forcedup' ? t('强制做种') : t('做种中');
         } else if (state === 'stalledup') {
             stateClass = 'completed';
-            stateName = '做种空闲';
+            stateName = t('做种空闲');
         } else if (state === 'queuedup') {
             stateClass = 'queued';
-            stateName = '排队做种';
+            stateName = t('排队做种');
         } else if (state === 'pausedup') {
             stateClass = 'paused';
-            stateName = '做种暂停 (已完成)';
+            stateName = t('做种暂停 (已完成)');
         } else if (isCompleted) {
             stateClass = 'completed';
-            stateName = '已完成';
+            stateName = t('已完成');
         }
 
         return {

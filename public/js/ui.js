@@ -142,7 +142,7 @@
         const password = $('#login-pass').val();
 
         if (!username || !password) {
-            showToast('⚠️ 请输入完整的 WebUI 用户名与密码', false);
+            showToast(t('⚠️ 请输入完整的 WebUI 用户名与密码'), false);
             if (!username) $('#login-user').focus();
             else $('#login-pass').focus();
             return;
@@ -150,7 +150,7 @@
 
         const loginBtn = $('#login-modal button.btn.w-full');
         const origText = loginBtn.text();
-        loginBtn.prop('disabled', true).text('正在核验中...');
+        loginBtn.prop('disabled', true).text(t('正在核验中...'));
 
         $.ajax({
             url: '/api/v2/auth/login',
@@ -163,21 +163,21 @@
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
                     $('#login-pass').val('');
-                    showToast('✅ 身份验证通过，已成功登录！');
+                    showToast(t('✅ 身份验证通过，已成功登录！'));
                     if (typeof checkAuthStatus === 'function') {
                         checkAuthStatus();
                     }
                 } else {
-                    showToast('❌ 用户名或密码错误，请核对后重试！', false);
+                    showToast(t('❌ 用户名或密码错误，请核对后重试！'), false);
                     $('#login-pass').val('').focus();
                 }
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
                 if (xhr.status === 403 || xhr.status === 401) {
-                    showToast('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定', false);
+                    showToast(t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
                 } else {
-                    showToast('❌ 连接 qBittorrent 登录接口失败 (' + xhr.status + ')', false);
+            showToast(t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
                 }
                 $('#login-pass').val('').focus();
             }
@@ -188,9 +188,9 @@
         if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
         if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
-            showToast('已退出登录');
+            showToast(t('已退出登录'));
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('未登录 / 需鉴权');
+            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
             openLoginModal(true);
         }).fail(function() {
             openLoginModal(true);

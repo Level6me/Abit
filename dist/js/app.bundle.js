@@ -164,6 +164,360 @@
         '搜索': 'Search',
         '任务': 'Torrents',
         'RSS': 'RSS',
+        // ===== Full UI dictionary (settings / rss / modals / details) =====
+        ' 项': '',
+        '(分配分类: 无)': '(Category: None)',
+        '(无分类)': '(No category)',
+        '(清除分类)': '(Clear category)',
+        '+ 安装自定义插件': '+ Install custom plugin',
+        '+ 新增分类': '+ New category',
+        '+ 新建规则': '+ New rule',
+        '+ 添加订阅源': '+ Add feed',
+        'Feed 文章': 'Feed articles',
+        'IP 封禁时长 (秒)': 'Ban duration (seconds)',
+        'RSS 订阅链接 URL (https://...)': 'RSS feed URL (https://...)',
+        'UPnP / NAT-PMP 端口映射': 'UPnP / NAT-PMP port mapping',
+        'WebAPI 版本': 'WebAPI version',
+        'WebUI 登录用户名': 'WebUI username',
+        'WebUI 监听端口': 'WebUI port',
+        'plugin_diagnostic_text': 'qBittorrent search relies on the server-side <b>Python Search Plugins</b>. If your server was just installed or plugins are disabled, no results will be returned. Switch to the <b>“🧩 Search plugins”</b> tab above to install or enable popular public index plugins (Python3 is required on the server).',
+        'qBittorrent Alternative WebUI (纯前端沙箱)': 'qBittorrent Alternative WebUI (pure front-end sandbox)',
+        'qBittorrent 身份验证': 'qBittorrent Authentication',
+        'redownload_confirm_text': 'Are you sure you want to clear downloaded files and re-download the selected torrents?<br><span style="color:var(--warning); font-size:12px;">The app will export torrent/magnet parameters, clear local files and re-download from 0%.</span>',
+        '⏸ 暂停做种任务': '⏸ Pause seeding',
+        '■ 下载中': '■ Downloading',
+        '■ 已完成': '■ Completed',
+        '■ 未下载': '■ Not downloaded',
+        '⚡ 一键安装常用公开检索插件': '⚡ One-click install popular public search plugins',
+        '⚡ 上传速度 (快到慢)': '⚡ Upload speed',
+        '⚡ 自动下载规则 (Rules)': '⚡ Auto-download rules',
+        '⚡ 速率与计划': '⚡ Speed & schedule',
+        '⚡ 速率与计划限制 (KB/s)': '⚡ Speed limit (KB/s)',
+        '一键为所有任务批量补充 Trackers': 'Add trackers to all torrents in one click',
+        '上传限制 KB/s': 'Upload limit KB/s',
+        '下载完成前将文件存放于独立临时路径': 'Keep incomplete files in a separate temporary path',
+        '下载开始时立即为整个文件分配磁盘空间，防止空间不足与碎片': 'Allocate the full disk space at download start to avoid fragmentation',
+        '下载限制 KB/s': 'Download limit KB/s',
+        '专用保存子路径 (可选)': 'Save sub-path (optional)',
+        '严重 Critical': 'Critical',
+        '中 / EN': '中 / EN',
+        '为多文件任务自动创建子文件夹': 'Create a subfolder for multi-file torrents',
+        '为未完成的文件添加 .!qB 扩展名': 'Append .!qB to incomplete files',
+        '仅删除任务 (保留硬盘文件)': 'Delete torrent only (keep files)',
+        '仅周末 (Sat-Sun)': 'Weekends (Sat-Sun)',
+        '仅工作日 (Mon-Fri)': 'Weekdays (Mon-Fri)',
+        '仅强制重新校验 (不删本地文件)': 'Force recheck only (keep files)',
+        '优先加密 (Prefer)': 'Prefer encryption',
+        '会话超时时间 (分钟)': 'Session timeout (minutes)',
+        '传入连接监听端口 (Listening Port)': 'Listening port (incoming)',
+        '传输数据加密模式': 'Encryption mode',
+        '例如: /home/ubuntu/Downloads': 'e.g. /home/ubuntu/Downloads',
+        '例如: /home/ubuntu/Downloads/temp': 'e.g. /home/ubuntu/Downloads/temp',
+        '例如: 2.0': 'e.g. 2.0',
+        '例如: 3': 'e.g. 3',
+        '例如: 3600': 'e.g. 3600',
+        '例如: 5': 'e.g. 5',
+        '例如: 6881 或随机端口': 'e.g. 6881 or random port',
+        '例如: 8': 'e.g. 8',
+        '例如: 8080': 'e.g. 8080',
+        '保存子路径 (可选)：': 'Save sub-path (optional):',
+        '保存规则': 'Save rule',
+        '信息 Info': 'Info',
+        '先下载首尾区块': 'Download first and last pieces first',
+        '全局最大上传槽数': 'Global max upload slots',
+        '全局最大连接数': 'Global max connections',
+        '全部级别': 'All levels',
+        '内核实时日志': 'Kernel live logs',
+        '内核版本': 'Kernel version',
+        '再次输入新密码': 'Re-enter new password',
+        '分类名称 (如 Movies, Anime, TV)': 'Category name (e.g. Movies, Anime, TV)',
+        '创建分类': 'Create category',
+        '删除确认': 'Confirm delete',
+        '加载 Peers 节点中...': 'Loading peers...',
+        '加载 Trackers 中...': 'Loading trackers...',
+        '加载文件树中...': 'Loading file tree...',
+        '加载日志中...': 'Loading logs...',
+        '包含关键字 (支持正则)': 'Contains (regex supported)',
+        '区块加载中...': 'Loading pieces...',
+        '单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：': 'Inject the latest available tracker list into all current torrents (separate URLs with newlines):',
+        '取消': 'Cancel',
+        '启用 DHT 网络 (Distributed Hash Table)': 'Enable DHT network',
+        '启用 LSD (本地用户发现 / Local Peer Discovery)': 'Enable LSD (local peer discovery)',
+        '启用 PeX (用户交换 / Peer Exchange)': 'Enable PeX (peer exchange)',
+        '启用任务排队管理 (Torrent Queueing)': 'Enable torrent queueing',
+        '启用备用速率计划调度': 'Enable alternative speed schedule',
+        '启用未完成文件临时保存目录': 'Enable incomplete-file temp directory',
+        '在指定时间段内自动激活备用限速策略': 'Automatically activate alt speed limits during the scheduled window',
+        '在目标目录中以种子名称创建单独的目录保存': 'Create a separate folder per torrent in the target directory',
+        '备用上传速度限制': 'Alt upload limit',
+        '备用上传限制 KB/s': 'Alt upload limit KB/s',
+        '备用下载速度限制': 'Alt download limit',
+        '备用下载限制 KB/s': 'Alt download limit KB/s',
+        '安装插件': 'Install plugin',
+        '安装自定义搜索插件': 'Install custom search plugin',
+        '密码': 'Password',
+        '对 uTP (Micro Transport Protocol) 应用上传/下载限制': 'Apply limits to uTP connections',
+        '对本地主机及子网客户端跳过身份验证': 'Skip auth for local host & subnet clients',
+        '将传输开销计入限速': 'Include transfer overhead in limits',
+        '已保存的任务分类': 'Saved categories',
+        '已订阅 RSS 列表': 'Subscribed RSS feeds',
+        '常规全局上传限制 (0 为不限)': 'Global upload limit (0 = unlimited)',
+        '常规全局下载限制 (0 为不限)': 'Global download limit (0 = unlimited)',
+        '应用分类': 'Apply category',
+        '开启后局域网访问无需输入密码；若需强制登录请关闭此项': 'LAN access needs no password; turn off to force login',
+        '开始下载': 'Start download',
+        '强制加密 (Require)': 'Require encryption',
+        '当分享率达到阈值时自动暂停或移除': 'Auto pause/remove when ratio threshold is reached',
+        '当前 WebUI 模式': 'Current WebUI mode',
+        '彻底删除任务及本地文件': 'Delete torrent and files',
+        '您确定要删除选中的任务吗？请选择是否同时删除本地下载的文件：': 'Delete the selected torrents? Choose whether to also delete local files:',
+        '或输入 Magnet 磁力链接 / HTTP 种子 URL (支持换行多个)：': 'Or paste Magnet / HTTP torrent URLs (multiple per line):',
+        '批量设置分类': 'Set category (batch)',
+        '指定分类：': 'Category:',
+        '按顺序下载 (边下边播)': 'Sequential download',
+        '排除关键字 (支持正则)': 'Excludes (regex supported)',
+        '新增 RSS 自动下载规则': 'New RSS auto-download rule',
+        '新密码 (留空则不修改密码)': 'New password (leave blank to keep)',
+        '新建任务分类': 'New torrent category',
+        '方便识别和避免未完成文件被其他软件误读': 'Marks incomplete files so other apps ignore them',
+        '无 Tracker 查找更多节点（公网资源推荐开启，PT 任务会自动隔离）': 'Discover peers without trackers (recommended for public; auto-isolated for PT)',
+        '普通 Normal': 'Normal',
+        '最大下载中任务数': 'Max active downloads',
+        '最大做种中任务数': 'Max active uploads',
+        '最大总活跃任务数': 'Max total active torrents',
+        '未完成临时目录路径 (Incomplete Save Path)': 'Incomplete save path',
+        '每个任务最大上传槽数': 'Max upload slots per torrent',
+        '每个任务最大连接数': 'Max connections per torrent',
+        '每天 (Every Day)': 'Every day',
+        '添加 RSS 订阅源': 'Add RSS feed',
+        '添加 Torrent 种子 / Magnet': 'Add torrent / magnet',
+        '添加订阅': 'Add',
+        '点击直接为您的 qBittorrent 安装官方与社区主流的 BT 索引引擎：': 'Click to install popular official & community BT index engines for qBittorrent:',
+        '生效周期': 'Schedule days',
+        '用户名 (默认: admin)': 'Username (default: admin)',
+        '留空使用默认路径': 'Leave empty for default path',
+        '留空则保持当前用户名 (如: admin)': 'Leave blank to keep current username (e.g. admin)',
+        '登录失败尝试封禁次数': 'Login failure ban threshold',
+        '登录进入面板': 'Log in',
+        '目标分享率 (Ratio)': 'Target ratio',
+        '确认新密码': 'Confirm new password',
+        '确认重新下载 (清除文件从头重下)': 'Confirm redownload (clear files and restart)',
+        '禁用加密 (Disable)': 'Disable encryption',
+        '种子详情': 'Torrent details',
+        '立即开始下载': 'Download now',
+        '管理 qBittorrent 调用的 Python 搜索索引引擎与爬虫脚本': 'Manage the Python search engines and crawlers used by qBittorrent',
+        '自动下载规则': 'Auto-download rules',
+        '自动发现同一局域网下的做种客户端': 'Discover seeding clients on the same LAN',
+        '自动请求路由器转发端口': 'Automatically request router port forwarding',
+        '规则名称 (如: Linux Releases)': 'Rule name (e.g. Linux Releases)',
+        '警告 Warning': 'Warning',
+        '订阅名称 / 文件夹路径 (可选)': 'Feed name / folder path (optional)',
+        '记住凭据': 'Remember credentials',
+        '请输入 qBittorrent WebUI 用户名与密码：': 'Enter your qBittorrent WebUI username and password:',
+        '输入 Python 插件脚本的在线 URL (以 .py 结尾或 GitHub 裸链) 或本地路径：': 'Enter the Python plugin script URL (ending in .py or a GitHub raw link) or a local path:',
+        '输入新密码': 'Enter new password',
+        '达到指定分享率后自动停止做种': 'Stop seeding after reaching the target ratio',
+        '达成后操作': 'Action after reaching',
+        '选择为所选任务应用的目标分类：': 'Choose the target category to apply to the selected torrents:',
+        '选择本地 .torrent 种子文件：': 'Choose local .torrent files:',
+        '通过已连接节点发现更多同伴': 'Discover more peers through connected nodes',
+        '重新下载确认': 'Confirm redownload',
+        '防止运营商流量特征干扰': 'Prevent ISP traffic-shaping interference',
+        '限制 TCP/IP 协议握手及传输开销': 'Apply limits to TCP/IP handshake & transfer overhead',
+        '限制 uTP 协议连接速度': 'Limit uTP connection speed',
+        '限制同时运行的最大活跃任务数': 'Limit the number of concurrently active torrents',
+        '限速生效时段': 'Active time window',
+        '预分配所有磁盘空间 (Pre-allocate Disk Space)': 'Pre-allocate disk space',
+        '默认: 100': 'Default: 100',
+        '默认: 4': 'Default: 4',
+        '默认: 500': 'Default: 500',
+        '默认: 60 分钟': 'Default: 60 minutes',
+        '默认: 8': 'Default: 8',
+        '默认下载保存路径 (Default Save Path)': 'Default save path',
+        '默认密码可查阅日志': 'Default password is shown in the logs',
+        '🌍 全局Tracker': '🌍 Global trackers',
+        '🌐 全局批量添加 Trackers': '🌐 Add trackers globally',
+        '🌐 网络与连接': '🌐 Network & connections',
+        '🌐 网络连接与端口配置': '🌐 Network & port configuration',
+        '🎯 BitTorrent、做种与排队规则': '🎯 BitTorrent, seeding & queueing',
+        '🎯 做种与BT': '🎯 Seeding & BT',
+        '👥 Peers 节点': '👥 Peers',
+        '💾 保存做种与排队配置': '💾 Save seeding & queueing',
+        '💾 保存存储配置': '💾 Save storage settings',
+        '💾 保存网络连接配置': '💾 Save network settings',
+        '💾 保存账户与安全配置': '💾 Save account & security',
+        '💾 保存速率配置': '💾 Save speed settings',
+        '📁 存储与下载': '📁 Storage & downloads',
+        '📁 存储路径与下载行为': '📁 Storage paths & behavior',
+        '📄 文件树 (Files)': '📄 Files',
+        '📋 复制日志': '📋 Copy logs',
+        '📜 运行日志': '📜 Logs',
+        '📡 RSS 订阅源 (Feeds)': '📡 RSS feeds',
+        '🔍 过滤日志关键字...': '🔍 Filter logs...',
+        '🔐 修改 WebUI 登录账户与凭据': '🔐 Change WebUI login credentials',
+        '🗑 移除种子任务': '🗑 Remove torrents',
+        '🚀 一键安装全部推荐': '🚀 Install all recommended',
+        '🚪 退出当前登录 (Logout)': '🚪 Logout',
+        '🛡️ WebUI 账户密码与安全配置': '🛡️ WebUI credentials & security',
+        '🛡️ 账户与安全': '🛡️ Account & security',
+        '🧩 已安装的搜索插件 (Search Plugins)': '🧩 Installed search plugins',
+        '🧱 下载区块 (Pieces)': '🧱 Pieces',
+        '❌ 两次输入的新密码不一致，请重新核对！': '❌ New passwords do not match!',
+        '✅ 系统配置与安全凭据已全量保存！': '✅ All system settings & credentials saved!',
+        '保存配置失败，请检查网络或权限': 'Failed to save settings, check network or permissions',
+        '暂无日志记录可复制': 'No logs to copy',
+        '✅ 已复制全部日志到剪贴板！': '✅ All logs copied to clipboard!',
+        '复制失败，请手动选择复制': 'Copy failed, select and copy manually',
+        '暂无日志记录': 'No logs',
+        '暂无订阅源，请点击上方按钮添加 RSS 订阅 URL': 'No feeds yet. Add an RSS URL using the button above',
+        'URL: ': 'URL: ',
+        '文章数: ': 'articles: ',
+        '浏览文章': 'Browse',
+        '刷新': 'Refresh',
+        '删除订阅源': 'Delete feed',
+        '共 ': 'total ',
+        ' 篇)': ')',
+        '发布时间: ': 'Published: ',
+        '已发起 RSS 订阅源刷新请求！': 'RSS refresh requested!',
+        '已发起全部 RSS 订阅刷新！': 'All RSS feeds refresh requested!',
+        '确定要删除 RSS 订阅源 ': 'Delete RSS feed ',
+        ' 吗？': '?',
+        '已删除订阅源': 'Feed deleted',
+        '请输入有效的 RSS 订阅链接！': 'Please enter a valid RSS feed URL!',
+        '已添加 RSS 订阅源': 'RSS feed added',
+        '暂无自动下载规则': 'No auto-download rules',
+        '包含: ': 'Contains: ',
+        '排除: ': 'Excludes: ',
+        '· 分类: ': '· Category: ',
+        '所有': 'All',
+        '无': 'None',
+        '删除规则': 'Delete rule',
+        '请输入规则名称！': 'Please enter a rule name!',
+        '已保存自动下载规则': 'Auto-download rule saved',
+        '确定要删除规则 ': 'Delete rule ',
+        '已删除规则': 'Rule deleted',
+        '暂无分类数据': 'No categories',
+        '请输入分类名称！': 'Please enter a category name!',
+        '已成功创建分类': 'Category created',
+        '当前筛选条件下无任务记录': 'No torrents match the current filter',
+        '做种: ': 'Seeds: ',
+        '节点: ': 'Peers: ',
+        '比率: ': 'Ratio: ',
+        '默认路径': 'Default path',
+        '详情': 'Details',
+        '重新下载': 'Redownload',
+        '恢复': 'Resume',
+        '暂停': 'Pause',
+        '删除': 'Delete',
+        '状态': 'Status',
+        '大小': 'Size',
+        '进度': 'Progress',
+        '下载速度': 'Download speed',
+        '上传速度': 'Upload speed',
+        '做种/节点': 'Seeds/Peers',
+        '分享率': 'Ratio',
+        '操作': 'Actions',
+        '已发起重新校验并启动检查': 'Recheck requested',
+        '已对 ': 'Recheck requested for ',
+        ' 个任务发起强制重新校验': ' torrents',
+        '确定要清空已下载文件并从头重新下载 ': 'Clear files and re-download ',
+        '系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。': 'The app will back up torrent parameters, clear local files and re-download from 0%.',
+        '确定要对选中的 ': 'Re-download the selected ',
+        ' 个任务进行从头重新下载吗？': ' torrents from scratch?',
+        '系统将清除已下载本地文件，并从 0% 重新发起下载。': 'The app will clear local files and re-download from 0%.',
+        '正在准备重新下载任务...': 'Preparing to re-download...',
+        '✅ 已成功重置并从头重新下载 ': '✅ Successfully re-downloaded ',
+        ' 个任务！': ' torrents!',
+        '批量操作已完成': 'Batch operation completed',
+        '确定要删除任务 ': 'Delete torrent ',
+        ' 吗？<br>请选择仅删除任务或连同本地文件一起删除：': '?<br>Choose whether to also delete local files:',
+        '确定要批量删除选中的 ': 'Delete the selected ',
+        ' 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：': ' torrents?<br>Choose whether to also delete local files:',
+        '任务已成功删除': 'Torrents deleted',
+        '暂无文件树数据': 'No file tree data',
+        '不下载': 'Skip',
+        '常规优先级': 'Normal priority',
+        '高优先级': 'High priority',
+        '最高优先级': 'Maximum priority',
+        '暂无 Trackers': 'No trackers',
+        '添加 Tracker URL (udp://...)': 'Add tracker URL (udp://...)',
+        '+ 添加': '+ Add',
+        '状态: ': 'Status: ',
+        '运行中': 'Running',
+        '工作正常': 'Working',
+        '已就绪': 'Ready',
+        '暂无连接节点': 'No peers',
+        '暂无连接节点 (Peers: 0)': 'No peers (0)',
+        '当前在线 Peers 节点: ': 'Online peers: ',
+        ' 个': '',
+        '第 ': 'Page ',
+        ' 页': '',
+        '未知客户端': 'Unknown client',
+        '进度: ': 'Progress: ',
+        '传输中': 'Transferring',
+        '连接空闲': 'Idle',
+        '已更新文件下载优先级': 'File priority updated',
+        '总区块: ': 'Total pieces: ',
+        ' · 已下载: ': ' · Downloaded: ',
+        '未下载': 'Not downloaded',
+        '区块 #': 'Piece #',
+        '请输入有效的 Tracker URL 列表！': 'Please enter a valid tracker URL list!',
+        '当前没有运行中的任务！': 'No running torrents!',
+        '已成功为全部 ': 'Successfully added trackers to all ',
+        ' 个任务批量追加 Tracker！': ' torrents!',
+        '批量 Tracker 请求已发送！': 'Batch tracker request sent!',
+        'Tracker 追加成功！': 'Tracker added!',
+        '请选择 .torrent 种子文件或填入 Magnet 磁力链接！': 'Choose a .torrent file or paste a magnet link!',
+        '任务已成功添加至 qBittorrent！': 'Torrent added to qBittorrent!',
+        '发送种子失败，请检查网络或重新登录！': 'Failed to add torrent, check network or re-login!',
+        '⚠️ 请输入完整的 WebUI 用户名与密码': '⚠️ Please enter both WebUI username and password',
+        '正在核验中...': 'Verifying...',
+        '✅ 身份验证通过，已成功登录！': '✅ Authentication passed, logged in!',
+        '❌ 用户名或密码错误，请核对后重试！': '❌ Wrong username or password, try again!',
+        '❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定': '❌ Login failed: wrong credentials / temporarily locked after too many attempts',
+        '❌ 连接 qBittorrent 登录接口失败 (': '❌ Failed to reach qBittorrent login API (',
+        '已退出登录': 'Logged out',
+        '未登录 / 需鉴权': 'Not logged in / auth required',
+        '下载 (KB/s)': 'Download (KB/s)',
+        '上传 (KB/s)': 'Upload (KB/s)',
+        '星期日': 'Sunday',
+        '星期一': 'Monday',
+        '星期二': 'Tuesday',
+        '星期三': 'Wednesday',
+        '星期四': 'Thursday',
+        '星期五': 'Friday',
+        '星期六': 'Saturday',
+        '秒': 's',
+        '分': 'm',
+        '时': 'h',
+        '天': 'd',
+        '错误/文件丢失': 'Error / missing files',
+        '获取元数据': 'Fetching metadata',
+        '分配磁盘空间': 'Allocating disk',
+        '校验中': 'Checking',
+        '强制下载': 'Forced download',
+        '等待下载': 'Stalled',
+        '排队下载': 'Queued download',
+        '下载暂停': 'Paused download',
+        '强制做种': 'Forced seed',
+        '做种空闲': 'Stalled seed',
+        '排队做种': 'Queued seed',
+        '做种暂停 (已完成)': 'Paused seed (complete)',
+        '📥 松开鼠标以添加 Torrent 种子文件': '📥 Release to add torrent files',
+        '🔄 检查更新': '🔄 Check updates',
+        '🔄 刷新全部': '🔄 Refresh all',
+        '🔄 刷新': '🔄 Refresh',
+        '加载插件列表中...': 'Loading plugins...',
+        '🏷️ 分类管理 (Categories)': '🏷️ Categories',
+        '加载 RSS 订阅源中...': 'Loading RSS feeds...',
+        '加载自动规则中...': 'Loading rules...',
+        '加载分类数据中...': 'Loading categories...',
+        '正在向 qBittorrent 发送插件安装指令...': 'Sending plugin install command to qBittorrent...',
+        '正在检查并更新所有搜索插件...': 'Checking and updating all search plugins...',
+        '已发起插件在线更新': 'Plugin online update requested',
+        '检索结果: ': 'Results: ',
+        ' 条)': ')',
+        '已更新所选任务分类': 'Category updated',
     };
 
     let currentLang = 'zh';
@@ -195,6 +549,10 @@
         document.querySelectorAll('[data-i18n-opt]').forEach(function (el) {
             const key = el.getAttribute('data-i18n-opt');
             el.textContent = window.t(key, el.textContent);
+        });
+        document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n-html');
+            el.innerHTML = window.t(key, el.innerHTML);
         });
     }
 
@@ -236,20 +594,20 @@
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
     const PRESET_PLUGINS = [
-        { name: 'The Pirate Bay', desc: '老牌经典海盗湾公网资源库 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py' },
-        { name: 'BitSearch', desc: '千万级高速 DHT 索引引擎 (社区最佳)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/bitsearch.py' },
-        { name: 'SolidTorrents', desc: '纯净无广告的 DHT 搜索引擎 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py' },
-        { name: 'EZTV', desc: '欧美电视连续剧与美剧发布站 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py' },
-        { name: 'LimeTorrents', desc: '老牌公开 BT 索引站 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py' },
-        { name: 'TorrentGalaxy', desc: '高质量影视与热门聚合资源 (社区精选)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/torrentgalaxy.py' },
-        { name: 'Nyaa', desc: '日本动漫、ACG、原声音乐大站 (社区精选)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/nyaa.py' },
-        { name: 'BT4G', desc: '中文热门资源与磁力 DHT 索引 (社区精选)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/bt4g.py' },
-        { name: 'TorLock', desc: '严格验证/无虚假种子认证站 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py' },
-        { name: 'KickassTorrents', desc: '经典 KAT 资源检索索引 (社区精选)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py' },
-        { name: 'TorrentProject', desc: '千万级元搜索引擎聚合库 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py' },
-        { name: 'TorrentCSV', desc: '开源去中心化离线种子库 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py' },
-        { name: 'RARBG Dump', desc: 'RARBG 经典历史影视资源归档 (社区精选)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/rarbg.py' },
-        { name: 'Jackett', desc: '多源 Tracker 代理与私有站聚合引擎 (官方源)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/jackett.py' }
+        { name: 'The Pirate Bay', desc: 'Classic public torrent index (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py' },
+        { name: 'BitSearch', desc: 'High-speed DHT index engine (community)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/bitsearch.py' },
+        { name: 'SolidTorrents', desc: 'Clean ad-free DHT search engine (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py' },
+        { name: 'EZTV', desc: 'TV series release tracker (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py' },
+        { name: 'LimeTorrents', desc: 'Long-running public BT index (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py' },
+        { name: 'TorrentGalaxy', desc: 'High-quality media aggregation (community)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/torrentgalaxy.py' },
+        { name: 'Nyaa', desc: 'Japanese anime / ACG / OST hub (community)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/nyaa.py' },
+        { name: 'BT4G', desc: 'Chinese hot content & magnet DHT index (community)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/bt4g.py' },
+        { name: 'TorLock', desc: 'Verified / no-fake torrent index (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py' },
+        { name: 'KickassTorrents', desc: 'Classic KAT resource index (community)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py' },
+        { name: 'TorrentProject', desc: 'Meta-search aggregation engine (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py' },
+        { name: 'TorrentCSV', desc: 'Open-source decentralized offline seed library (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py' },
+        { name: 'RARBG Dump', desc: 'RARBG classic movie/TV archive (community)', url: 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/rarbg.py' },
+        { name: 'Jackett', desc: 'Multi-source tracker proxy & private index (official)', url: 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/jackett.py' }
     ];
 
 // --- [Module: state.js] ---
@@ -313,13 +671,13 @@
 
     function formatEta(seconds) {
         if (!seconds || seconds < 0 || seconds >= 8640000) return '∞';
-        if (seconds < 60) return `${seconds}秒`;
+        if (seconds < 60) return `${seconds}${t('秒')}`;
         const m = Math.floor(seconds / 60);
-        if (m < 60) return `${m}分 ${seconds % 60}秒`;
+        if (m < 60) return `${m}${t('分')} ${seconds % 60}${t('秒')}`;
         const h = Math.floor(m / 60);
-        if (h < 24) return `${h}时 ${m % 60}分`;
+        if (h < 24) return `${h}${t('时')} ${m % 60}${t('分')}`;
         const d = Math.floor(h / 24);
-        return `${d}天 ${h % 24}时`;
+        return `${d}${t('天')} ${h % 24}${t('时')}`;
     }
 
     function formatTimestamp(ts) {
@@ -364,47 +722,47 @@
         const isActive = (t.dlspeed > 0 || t.upspeed > 0);
 
         let stateClass = 'paused';
-        let stateName = '已暂停';
+        let stateName = t('已暂停');
 
         if (isError) {
             stateClass = 'error';
-            stateName = '错误/文件丢失';
+            stateName = t('错误/文件丢失');
         } else if (state === 'metadl') {
             stateClass = 'downloading';
-            stateName = '获取元数据';
+            stateName = t('获取元数据');
         } else if (state === 'allocating') {
             stateClass = 'downloading';
-            stateName = '分配磁盘空间';
+            stateName = t('分配磁盘空间');
         } else if (isChecking) {
             stateClass = 'queued';
-            stateName = '校验中';
+            stateName = t('校验中');
         } else if (state === 'downloading' || state === 'forceddl') {
             stateClass = 'downloading';
-            stateName = state === 'forceddl' ? '强制下载' : '下载中';
+            stateName = state === 'forceddl' ? t('强制下载') : t('下载中');
         } else if (state === 'stalleddl') {
             stateClass = 'downloading';
-            stateName = '等待下载';
+            stateName = t('等待下载');
         } else if (state === 'queueddl') {
             stateClass = 'queued';
-            stateName = '排队下载';
+            stateName = t('排队下载');
         } else if (state === 'pauseddl') {
             stateClass = 'paused';
-            stateName = '下载暂停';
+            stateName = t('下载暂停');
         } else if (state === 'uploading' || state === 'forcedup') {
             stateClass = 'completed';
-            stateName = state === 'forcedup' ? '强制做种' : '做种中';
+            stateName = state === 'forcedup' ? t('强制做种') : t('做种中');
         } else if (state === 'stalledup') {
             stateClass = 'completed';
-            stateName = '做种空闲';
+            stateName = t('做种空闲');
         } else if (state === 'queuedup') {
             stateClass = 'queued';
-            stateName = '排队做种';
+            stateName = t('排队做种');
         } else if (state === 'pausedup') {
             stateClass = 'paused';
-            stateName = '做种暂停 (已完成)';
+            stateName = t('做种暂停 (已完成)');
         } else if (isCompleted) {
             stateClass = 'completed';
-            stateName = '已完成';
+            stateName = t('已完成');
         }
 
         return {
@@ -453,7 +811,7 @@
                 labels: Array(20).fill(''),
                 datasets: [
                     {
-                        label: '下载 (KB/s)',
+                        label: t('下载 (KB/s)'),
                         data: Array(20).fill(0),
                         borderColor: '#34c759',
                         backgroundColor: 'rgba(52,199,89,0.08)',
@@ -463,7 +821,7 @@
                         pointRadius: 0
                     },
                     {
-                        label: '上传 (KB/s)',
+                        label: t('上传 (KB/s)'),
                         data: Array(20).fill(0),
                         borderColor: '#007aff',
                         backgroundColor: 'rgba(0,122,255,0.08)',
@@ -616,7 +974,7 @@
         const list = getFilteredAndSortedTorrents();
 
         if (list.length === 0) {
-            container.html('<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">当前筛选条件下无任务记录</div>');
+            container.html(`<div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">${t('当前筛选条件下无任务记录')}</div>`);
             return;
         }
 
@@ -656,8 +1014,8 @@
 
             const progressVal = (t.progress * 100).toFixed(1);
             const ratioVal = (t.ratio || 0).toFixed(2);
-            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? '做种中' : '已完成') : (status.isPaused ? '已暂停' : formatEta(t.eta));
-            const seedsText = `做种: ${t.num_seeds || 0} (${t.num_complete || 0}) · 节点: ${t.num_leechs || 0} (${t.num_incomplete || 0})`;
+            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? t('做种中') : t('已完成')) : (status.isPaused ? t('已暂停') : formatEta(t.eta));
+            const seedsText = `${t('做种: ')}${t.num_seeds || 0} (${t.num_complete || 0}) · ${t('节点: ')}${t.num_leechs || 0} (${t.num_incomplete || 0})`;
 
             html += `
             <div class="torrent-card ${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
@@ -671,7 +1029,7 @@
                 </div>
                 <div class="torrent-meta">
                     <span>${progressVal}% · ${formatBytes(t.completed)} / ${formatBytes(t.size)}</span>
-                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}比率: ${ratioVal}</span>
+                    <span>${t.category ? `<span class="badge category">🏷 ${escapeHtml(t.category)}</span> ` : ''}${t('比率: ')}${ratioVal}</span>
                 </div>
                 <div class="torrent-meta">
                     <span>↓ ${formatBytes(t.dlspeed)}/s · ↑ ${formatBytes(t.upspeed)}/s</span>
@@ -682,20 +1040,20 @@
                     <span style="font-family:monospace; font-size:10px; color:var(--text-ter);">${hash.substring(0, 8)}...</span>
                 </div>
                 <div class="torrent-ctrls">
-                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || '默认路径')}">
-                        📁 ${escapeHtml(t.save_path || '默认路径')}
+                    <div class="torrent-save-path" title="${escapeHtml(t.save_path || t('默认路径'))}">
+                        📁 ${escapeHtml(t.save_path || t('默认路径'))}
                     </div>
                     <div class="torrent-btns">
-                        <button class="icon-btn" title="详情" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
+                        <button class="icon-btn" title="${t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                         </button>
-                        <button class="icon-btn accent" title="重新下载" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
+                        <button class="icon-btn accent" title="${t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                         </button>
-                        <button class="icon-btn" title="${status.isPaused ? '恢复' : '暂停'}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
+                        <button class="icon-btn" title="${status.isPaused ? t('恢复') : t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
                             <svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg>
                         </button>
-                        <button class="icon-btn danger" title="删除" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
+                        <button class="icon-btn danger" title="${t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')">
                             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                         </button>
                     </div>
@@ -713,16 +1071,16 @@
                 <thead>
                     <tr>
                         <th style="width:30px;"><input type="checkbox" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)"></th>
-                        <th>名称</th>
-                        <th>状态</th>
-                        <th>大小</th>
-                        <th>进度</th>
-                        <th>下载速度</th>
-                        <th>上传速度</th>
-                        <th>做种/节点</th>
+                        <th>${t('名称')}</th>
+                        <th>${t('状态')}</th>
+                        <th>${t('大小')}</th>
+                        <th>${t('进度')}</th>
+                        <th>${t('下载速度')}</th>
+                        <th>${t('上传速度')}</th>
+                        <th>${t('做种/节点')}</th>
                         <th>ETA</th>
-                        <th>分享率</th>
-                        <th style="text-align:right;">操作</th>
+                        <th>${t('分享率')}</th>
+                        <th style="text-align:right;">${t('操作')}</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -733,7 +1091,7 @@
             const status = getTorrentStatus(t);
 
             const progressVal = (t.progress * 100).toFixed(1);
-            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? '做种中' : '已完成') : (status.isPaused ? '已暂停' : formatEta(t.eta));
+            const etaStr = (status.isCompleted || status.isSeeding) ? (status.isSeeding ? t('做种中') : t('已完成')) : (status.isPaused ? t('已暂停') : formatEta(t.eta));
             html += `
             <tr class="${isSelected ? 'selected' : ''}" onclick="onCardClick(event, '${hash}')">
                 <td><input type="checkbox" class="torrent-check" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectTorrent('${hash}', this.checked)"></td>
@@ -751,10 +1109,10 @@
                 <td>${(t.ratio||0).toFixed(2)}</td>
                 <td style="text-align:right;">
                     <div style="display:inline-flex; gap:4px;">
-                        <button class="icon-btn" title="详情" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
-                        <button class="icon-btn accent" title="重新下载" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
-                        <button class="icon-btn" title="${status.isPaused ? '恢复' : '暂停'}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
-                        <button class="icon-btn danger" title="删除" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="icon-btn" title="${t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
+                        <button class="icon-btn accent" title="${t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
+                        <button class="icon-btn" title="${status.isPaused ? t('恢复') : t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
+                        <button class="icon-btn danger" title="${t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </td>
             </tr>`;
@@ -817,7 +1175,7 @@
     function recheckTorrent(hash) {
         $.post('/api/v2/torrents/recheck', { hashes: hash }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hash });
-            showToast('已发起重新校验并启动检查');
+            showToast(t('已发起重新校验并启动检查'));
             pollFastData();
         });
     }
@@ -830,7 +1188,7 @@
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             clearTorrentSelection();
-            showToast(`已对 ${count} 个任务发起强制重新校验`);
+            showToast(`${t('已对 ')}${count}${t(' 个任务发起强制重新校验')}`);
             pollFastData();
         });
     }
@@ -840,7 +1198,7 @@
         const t = allTorrents.find(item => item.hash === hash);
         const name = t ? t.name : hash;
         pendingRedownloadHashes = [hash];
-        $('#redownload-confirm-msg').html(`确定要清空已下载文件并从头重新下载 <b>${escapeHtml(name)}</b> 吗？<br><span style="color:var(--warning); font-size:12px;">系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。</span>`);
+        $('#redownload-confirm-msg').html(`${t('确定要清空已下载文件并从头重新下载 ')}<b>${escapeHtml(name)}</b>${t(' 吗？')}<br><span style="color:var(--warning); font-size:12px;">${t('系统将自动备份种子参数，清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
         openModal('redownload-confirm-modal');
     }
 
@@ -848,7 +1206,7 @@
     function batchRedownload() {
         if (selectedTorrents.size === 0) return;
         pendingRedownloadHashes = Array.from(selectedTorrents);
-        $('#redownload-confirm-msg').html(`确定要对选中的 <b>${pendingRedownloadHashes.length}</b> 个任务进行从头重新下载吗？<br><span style="color:var(--warning); font-size:12px;">系统将清除已下载本地文件，并从 0% 重新发起下载。</span>`);
+        $('#redownload-confirm-msg').html(`${t('确定要对选中的 ')}<b>${pendingRedownloadHashes.length}</b>${t(' 个任务进行从头重新下载吗？')}<br><span style="color:var(--warning); font-size:12px;">${t('系统将清除已下载本地文件，并从 0% 重新发起下载。')}</span>`);
         openModal('redownload-confirm-modal');
     }
 
@@ -860,7 +1218,7 @@
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
             $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             closeModal('redownload-confirm-modal');
-            showToast(`已对 ${count} 个任务发起强制重新校验`);
+            showToast(`${t('已对 ')}${count}${t(' 个任务发起强制重新校验')}`);
             pendingRedownloadHashes = [];
             clearTorrentSelection();
             pollFastData();
@@ -871,7 +1229,7 @@
     async function executeRedownloadTorrent() {
         if (pendingRedownloadHashes.length === 0) return;
         closeModal('redownload-confirm-modal');
-        showToast('正在准备重新下载任务...');
+        showToast(t('正在准备重新下载任务...'));
 
         const targets = pendingRedownloadHashes.slice();
         pendingRedownloadHashes = [];
@@ -935,7 +1293,7 @@
         }
 
         clearTorrentSelection();
-        showToast(`✅ 已成功重置并从头重新下载 ${successCount} 个任务！`);
+        showToast(`${t('✅ 已成功重置并从头重新下载 ')}${successCount}${t(' 个任务！')}`);
         pollFastData();
     }
 
@@ -945,21 +1303,21 @@
         $.post(`/api/v2/torrents/${action}`, { hashes: hashesStr }, function() {
             clearTorrentSelection();
             pollFastData();
-            showToast('批量操作已完成');
+            showToast(t('批量操作已完成'));
         });
     }
 
     // --- Safe Delete Modal System ---
     function confirmSingleDelete(hash, name) {
         pendingDeleteHashes = [hash];
-        $('#delete-confirm-msg').html(`确定要删除任务 <b>${escapeHtml(name)}</b> 吗？<br>请选择仅删除任务或连同本地文件一起删除：`);
+        $('#delete-confirm-msg').html(`${t('确定要删除任务 ')}<b>${escapeHtml(name)}</b>${t(' 吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
         openModal('delete-confirm-modal');
     }
 
     function confirmBatchDelete() {
         if (selectedTorrents.size === 0) return;
         pendingDeleteHashes = Array.from(selectedTorrents);
-        $('#delete-confirm-msg').html(`确定要批量删除选中的 <b>${pendingDeleteHashes.length}</b> 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：`);
+        $('#delete-confirm-msg').html(`${t('确定要批量删除选中的 ')}<b>${pendingDeleteHashes.length}</b>${t(' 个任务吗？<br>请选择仅删除任务或连同本地文件一起删除：')}`);
         openModal('delete-confirm-modal');
     }
 
@@ -970,7 +1328,7 @@
             closeModal('delete-confirm-modal');
             selectedTorrents.clear();
             pendingDeleteHashes = [];
-            showToast('任务已成功删除');
+            showToast(t('任务已成功删除'));
             pollFastData();
         });
     }
@@ -978,7 +1336,7 @@
     // --- Batch Category Modal ---
     function openBatchCategoryModal() {
         if (selectedTorrents.size === 0) return;
-        let optHtml = '<option value="">(清除分类)</option>';
+        let optHtml = `<option value="">${t('(清除分类)')}</option>`;
         Object.keys(allCategories).forEach(cat => {
             optHtml += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
         });
@@ -992,7 +1350,7 @@
         $.post('/api/v2/torrents/setCategory', { hashes: hashesStr, category: cat }, function() {
             closeModal('batch-category-modal');
             clearTorrentSelection();
-            showToast('已更新所选任务分类');
+            showToast(t('已更新所选任务分类'));
             pollFastData();
         });
     }
@@ -1005,7 +1363,7 @@
         }
         activeDetailHash = hash;
         const torrent = allTorrents.find(t => t.hash === hash);
-        const name = torrent ? torrent.name : '种子详情';
+        const name = torrent ? torrent.name : t('种子详情');
         $('#detail-title').text(name);
         $('#detail-hash').text(`Hash: ${hash}`);
         openModal('detail-modal');
@@ -1038,7 +1396,7 @@
         if (activeDetailSubTab === 'dt-files') {
             $.getJSON(`/api/v2/torrents/files?hash=${activeDetailHash}`, function(files) {
                 if (!files || files.length === 0) {
-                    $('#dt-files').html('<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">暂无文件树数据</div>');
+                    $('#dt-files').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无文件树数据')}</div>`);
                     return;
                 }
                 let html = '';
@@ -1054,10 +1412,10 @@
                             <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${sizeFormatted} · ${progressPercent}%</div>
                         </div>
                         <select class="select-custom" style="padding:4px 8px; font-size:12px;" onchange="setFilePriority(${idx}, this.value)">
-                            <option value="0" ${prio === 0 ? 'selected' : ''}>不下载</option>
-                            <option value="1" ${prio === 1 ? 'selected' : ''}>常规优先级</option>
-                            <option value="6" ${prio === 6 ? 'selected' : ''}>高优先级</option>
-                            <option value="7" ${prio === 7 ? 'selected' : ''}>最高优先级</option>
+                            <option value="0" ${prio === 0 ? 'selected' : ''}>${t('不下载')}</option>
+                            <option value="1" ${prio === 1 ? 'selected' : ''}>${t('常规优先级')}</option>
+                            <option value="6" ${prio === 6 ? 'selected' : ''}>${t('高优先级')}</option>
+                            <option value="7" ${prio === 7 ? 'selected' : ''}>${t('最高优先级')}</option>
                         </select>
                     </div>`;
                 });
@@ -1072,12 +1430,12 @@
         } else if (activeDetailSubTab === 'dt-trackers') {
             $.getJSON(`/api/v2/torrents/trackers?hash=${activeDetailHash}`, function(trackers) {
                 if (!trackers || trackers.length === 0) {
-                    $('#dt-trackers').html('<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">暂无 Trackers</div>');
+                    $('#dt-trackers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无 Trackers')}</div>`);
                     return;
                 }
                 let html = '<div style="margin-bottom:12px; display:flex; gap:8px;">';
-                html += '<input class="input-box" id="single-tracker-url" placeholder="添加 Tracker URL (udp://...)" style="flex:1;">';
-                html += '<button class="btn" onclick="submitAddTrackers(false)" style="padding:6px 12px; font-size:12px;">+ 添加</button>';
+                html += `<input class="input-box" id="single-tracker-url" placeholder="${t('添加 Tracker URL (udp://...)')}" style="flex:1;">`;
+                html += `<button class="btn" onclick="submitAddTrackers(false)" style="padding:6px 12px; font-size:12px;">${t('+ 添加')}</button>`;
                 html += '</div>';
 
                 trackers.forEach(t => {
@@ -1086,9 +1444,9 @@
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden; margin-right:8px;">
                             <div style="font-weight:600; font-size:12px; font-family:monospace; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(t.url)}">${escapeHtml(t.url)}</div>
-                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">状态: ${escapeHtml(t.msg || '运行中')} · 做种: ${t.num_seeds || 0} · 节点: ${t.num_peers || 0}</div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('状态: ')}${escapeHtml(t.msg || t('运行中'))} · ${t('做种: ')}${t.num_seeds || 0} · ${t('节点: ')}${t.num_peers || 0}</div>
                         </div>
-                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? '工作正常' : '已就绪'}</span>
+                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? t('工作正常') : t('已就绪')}</span>
                     </div>`;
                 });
                 $('#dt-trackers').html(html);
@@ -1096,12 +1454,12 @@
         } else if (activeDetailSubTab === 'dt-peers') {
             $.getJSON(`/api/v2/sync/torrentPeers?hash=${activeDetailHash}`, function(res) {
                 if (!res || !res.peers) {
-                    $('#dt-peers').html('<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">暂无连接节点</div>');
+                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无连接节点')}</div>`);
                     return;
                 }
                 const peerKeys = Object.keys(res.peers);
                 if (peerKeys.length === 0) {
-                    $('#dt-peers').html('<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">暂无连接节点 (Peers: 0)</div>');
+                    $('#dt-peers').html(`<div style="color:var(--text-sec); font-size:13px; text-align:center; padding:30px;">${t('暂无连接节点 (Peers: 0)')}</div>`);
                     return;
                 }
 
@@ -1112,8 +1470,8 @@
                 const pageKeys = peerKeys.slice(startIndex, startIndex + pageSize);
 
                 let html = `<div style="font-size:12px; color:var(--text-sec); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>当前在线 Peers 节点: ${peerKeys.length} 个</span>
-                    ${totalPages > 1 ? `<span>第 ${peerCurrentPage} / ${totalPages} 页</span>` : ''}
+                    <span>${t('当前在线 Peers 节点: ')}${peerKeys.length}${t(' 个')}</span>
+                    ${totalPages > 1 ? `<span>${t('第 ')}${peerCurrentPage} / ${totalPages}${t(' 页')}</span>` : ''}
                 </div>`;
 
                 pageKeys.forEach(k => {
@@ -1121,18 +1479,18 @@
                     html += `
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden;">
-                            <div style="font-weight:600; font-family:monospace;">${escapeHtml(p.ip)}:${p.port} <span style="font-size:11px; color:var(--text-sec); font-weight:normal;">(${escapeHtml(p.client || '未知客户端')})</span></div>
-                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">进度: ${(p.progress * 100).toFixed(1)}% · ↓ ${formatBytes(p.dl_speed)}/s · ↑ ${formatBytes(p.up_speed)}/s</div>
+                            <div style="font-weight:600; font-family:monospace;">${escapeHtml(p.ip)}:${p.port} <span style="font-size:11px; color:var(--text-sec); font-weight:normal;">(${escapeHtml(p.client || t('未知客户端'))})</span></div>
+                            <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('进度: ')}${(p.progress * 100).toFixed(1)}% · ↓ ${formatBytes(p.dl_speed)}/s · ↑ ${formatBytes(p.up_speed)}/s</div>
                         </div>
-                        <span class="badge ${p.dl_speed > 0 || p.up_speed > 0 ? 'downloading' : 'paused'}">${p.dl_speed > 0 ? '传输中' : '连接空闲'}</span>
+                        <span class="badge ${p.dl_speed > 0 || p.up_speed > 0 ? 'downloading' : 'paused'}">${p.dl_speed > 0 ? t('传输中') : t('连接空闲')}</span>
                     </div>`;
                 });
 
                 if (totalPages > 1) {
                     html += `
                     <div style="display:flex; justify-content:center; gap:10px; margin-top:14px; padding-top:8px; border-top:1px solid var(--border-subtle);">
-                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(-1)" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>上一页</button>
-                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(1)" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>下一页</button>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(-1)" ${peerCurrentPage <= 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${t('上一页')}</button>
+                        <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="changePeerPage(1)" ${peerCurrentPage >= totalPages ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>${t('下一页')}</button>
                     </div>`;
                 }
 
@@ -1148,7 +1506,7 @@
 
     function setFilePriority(fileId, prio) {
         $.post('/api/v2/torrents/filePrio', { hash: activeDetailHash, id: fileId, priority: prio }, function() {
-            showToast('已更新文件下载优先级');
+            showToast(t('已更新文件下载优先级'));
             refreshActiveDetailSubTab();
         });
     }
@@ -1167,7 +1525,7 @@
         const total = pieces.length;
         let downloaded = 0;
         pieces.forEach(p => { if (p === 2) downloaded++; });
-        $('#pieces-stats-text').text(`总区块: ${total} · 已下载: ${downloaded} (${((downloaded/total)*100).toFixed(1)}%)`);
+        $('#pieces-stats-text').text(`${t('总区块: ')}${total}${t(' · 已下载: ')}${downloaded} (${((downloaded/total)*100).toFixed(1)}%)`);
 
         const cols = Math.floor(Math.sqrt(total * (rect.width / rect.height))) || 30;
         const rows = Math.ceil(total / cols);
@@ -1196,9 +1554,9 @@
             const r = Math.floor((cy - 2) / cellH);
             const idx = r * cols + c;
             if (idx >= 0 && idx < total) {
-                const statusNames = ['未下载', '下载中', '已完成'];
+                const statusNames = [t('未下载'), t('下载中'), t('已完成')];
                 const tip = $('#pieces-tooltip');
-                tip.text(`区块 #${idx}：${statusNames[pieces[idx]] || '未知'}`);
+                tip.text(`${t('区块 #')}${idx}: ${statusNames[pieces[idx]] || '?'}`);
                 tip.css({ left: e.pageX + 10, top: e.pageY + 10 }).show();
             } else {
                 $('#pieces-tooltip').hide();
@@ -1216,20 +1574,20 @@
             urls = $('#single-tracker-url').val().trim();
         }
 
-        if (!urls) return showToast('请输入有效的 Tracker URL 列表！', false);
+        if (!urls) return showToast(t('请输入有效的 Tracker URL 列表！'), false);
 
         if (isGlobal) {
-            if (allTorrents.length === 0) return showToast('当前没有运行中的任务！', false);
+            if (allTorrents.length === 0) return showToast(t('当前没有运行中的任务！'), false);
             const allHashes = allTorrents.map(t => t.hash).join('|');
             $.post('/api/v2/torrents/addTrackers', { hashes: allHashes, urls: urls }, function() {
-                showToast(`已成功为全部 ${allTorrents.length} 个任务批量追加 Tracker！`);
+                showToast(`${t('已成功为全部 ')}${allTorrents.length}${t(' 个任务批量追加 Tracker！')}`);
                 $('#global-tracker-urls').val('');
             }).fail(function() {
-                showToast('批量 Tracker 请求已发送！');
+                showToast(t('批量 Tracker 请求已发送！'));
             });
         } else {
             $.post('/api/v2/torrents/addTrackers', { hash: activeDetailHash, urls: urls }, function() {
-                showToast('Tracker 追加成功！');
+                showToast(t('Tracker 追加成功！'));
                 $('#single-tracker-url').val('');
                 refreshActiveDetailSubTab();
             });
@@ -1246,7 +1604,7 @@
         const savepath = $('#add-torrent-savepath').val().trim();
 
         if (fileInput.files.length === 0 && !urls) {
-            return showToast('请选择 .torrent 种子文件或填入 Magnet 磁力链接！', false);
+            return showToast(t('请选择 .torrent 种子文件或填入 Magnet 磁力链接！'), false);
         }
 
         let formData = new FormData();
@@ -1274,11 +1632,11 @@
                 $('#torrent-urls').val('');
                 fileInput.value = '';
                 $('#add-torrent-savepath').val('');
-                showToast('任务已成功添加至 qBittorrent！');
+                showToast(t('任务已成功添加至 qBittorrent！'));
                 pollFastData();
             },
             error: function() {
-                showToast('发送种子失败，请检查网络或重新登录！', false);
+                showToast(t('发送种子失败，请检查网络或重新登录！'), false);
             }
         });
     }
@@ -1311,7 +1669,7 @@
     function renderInstalledPlugins() {
         const container = $('#installed-plugins-list');
         if (!installedPlugins || installedPlugins.length === 0) {
-            container.html('<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">暂未安装任何搜索插件。请从下方常用插件库一键安装。</div>');
+            container.html(`<div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;">${t('暂未安装任何搜索插件。请从下方常用插件库一键安装。')}</div>`);
             return;
         }
 
@@ -1328,7 +1686,7 @@
                         <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="togglePluginEnabled('${escapeHtml(p.name)}', this.checked)">
                         <span class="slider"></span>
                     </label>
-                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="卸载插件">
+                    <button class="icon-btn danger" onclick="uninstallSearchPlugin('${escapeHtml(p.name)}')" title="${t('卸载插件')}">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     </button>
                 </div>
@@ -1338,7 +1696,7 @@
     }
 
     function updateSearchPluginDropdown() {
-        let html = '<option value="all">🌐 全部插件</option><option value="enabled" selected>⚡ 已启用插件</option>';
+        let html = `<option value="all">${t('🌐 全部插件')}</option><option value="enabled" selected>${t('⚡ 已启用插件')}</option>`;
         installedPlugins.forEach(p => {
             html += `<option value="${escapeHtml(p.name)}">${escapeHtml(p.fullName || p.name)}</option>`;
         });
@@ -1763,7 +2121,7 @@
     function renderRssFeeds(feeds) {
         const container = $('#rss-feed-list-container');
         if (!feeds || Object.keys(feeds).length === 0) {
-            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无订阅源，请点击上方按钮添加 RSS 订阅 URL</div>');
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无订阅源，请点击上方按钮添加 RSS 订阅 URL')}</div>`);
             return;
         }
 
@@ -1776,12 +2134,12 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <div>
                         <div style="font-weight:700; font-size:14px;">📡 ${escapeHtml(feed.title || key)}</div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">URL: ${escapeHtml(feed.url || key)} · 文章数: ${articles.length}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('URL: ')}${escapeHtml(feed.url || key)} · ${t('文章数: ')}${articles.length}</div>
                     </div>
                     <div style="display:flex; gap:6px;">
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">浏览文章</button>
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">刷新</button>
-                        <button class="icon-btn danger" style="width:30px; height:30px;" title="删除订阅源" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="viewRssArticles('${escapeHtml(key)}')">${t('浏览文章')}</button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshRssFeed('${escapeHtml(key)}')">${t('刷新')}</button>
+                        <button class="icon-btn danger" style="width:30px; height:30px;" title="${t('删除订阅源')}" onclick="deleteRssFeed('${escapeHtml(key)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
                 </div>
             </div>`;
@@ -1794,16 +2152,16 @@
             const feed = feeds[feedKey];
             if (!feed || !feed.articles) return;
 
-            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (共 ${feed.articles.length} 篇)`);
+            $('#rss-active-feed-title').text(`📡 ${feed.title || feedKey} (${t('共 ')}${feed.articles.length}${t(' 篇)')}`);
             let html = '';
             feed.articles.forEach(art => {
                 html += `
                 <div class="list-row">
                     <div style="flex:1; overflow:hidden; margin-right:10px;">
                         <div style="font-weight:600; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(art.title)}">${escapeHtml(art.title)}</div>
-                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">发布时间: ${art.date ? formatTimestamp(art.date) : '--'}</div>
+                        <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${t('发布时间: ')}${art.date ? formatTimestamp(art.date) : '--'}</div>
                     </div>
-                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">下载</button>
+                    <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="addMagnetFromSearch('${escapeHtml(art.torrentURL || art.link)}')">${t('下载')}</button>
                 </div>`;
             });
             $('#rss-articles-list').html(html);
@@ -1813,22 +2171,22 @@
 
     function refreshRssFeed(feedPath) {
         $.post('/api/v2/rss/refreshItem', { itemPath: feedPath }, function() {
-            showToast('已发起 RSS 订阅源刷新请求！');
+            showToast(t('已发起 RSS 订阅源刷新请求！'));
             fetchRssData();
         });
     }
 
     function refreshAllRssFeeds() {
         $.post('/api/v2/rss/refreshItem', { itemPath: '' }, function() {
-            showToast('已发起全部 RSS 订阅刷新！');
+            showToast(t('已发起全部 RSS 订阅刷新！'));
             fetchRssData();
         });
     }
 
     function deleteRssFeed(feedPath) {
-        if (!confirm(`确定要删除 RSS 订阅源 [${feedPath}] 吗？`)) return;
+        if (!confirm(`${t('确定要删除 RSS 订阅源 ')}[${feedPath}]${t(' 吗？')}`)) return;
         $.post('/api/v2/rss/removeItem', { path: feedPath }, function() {
-            showToast('已删除订阅源');
+            showToast(t('已删除订阅源'));
             fetchRssData();
         });
     }
@@ -1836,13 +2194,13 @@
     function submitAddRssFeed() {
         const url = $('#feed-url').val().trim();
         const path = $('#feed-path').val().trim();
-        if (!url) return showToast('请输入有效的 RSS 订阅链接！', false);
+        if (!url) return showToast(t('请输入有效的 RSS 订阅链接！'), false);
 
         $.post('/api/v2/rss/addFeed', { url: url, path: path }, function() {
             closeModal('add-rss-feed-modal');
             $('#feed-url').val('');
             $('#feed-path').val('');
-            showToast('已添加 RSS 订阅源');
+            showToast(t('已添加 RSS 订阅源'));
             fetchRssData();
         });
     }
@@ -1850,7 +2208,7 @@
     function renderRssRules(rules) {
         const container = $('#rss-rules-container');
         if (!rules || Object.keys(rules).length === 0) {
-            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无自动下载规则</div>');
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无自动下载规则')}</div>`);
             return;
         }
 
@@ -1863,10 +2221,10 @@
                     <div>
                         <div style="font-weight:700; font-size:14px;">⚡ ${escapeHtml(name)}</div>
                         <div style="font-size:12px; color:var(--text-sec); margin-top:4px;">
-                            包含: <code>${escapeHtml(r.mustContain || '所有')}</code> · 排除: <code>${escapeHtml(r.mustNotContain || '无')}</code> · 分类: ${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : '无'}
+                            ${t('包含: ')}<code>${escapeHtml(r.mustContain || t('所有'))}</code> · ${t('排除: ')}<code>${escapeHtml(r.mustNotContain || t('无'))}</code> · ${t('· 分类: ')}${r.assignedCategory ? `🏷 ${escapeHtml(r.assignedCategory)}` : t('无')}
                         </div>
                     </div>
-                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="删除规则"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                    <button class="icon-btn danger" onclick="deleteRssRule('${escapeHtml(name)}')" title="${t('删除规则')}"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                 </div>
             </div>`;
         });
@@ -1874,7 +2232,7 @@
     }
 
     function openRssRuleModal() {
-        let optHtml = '<option value="">(分配分类: 无)</option>';
+        let optHtml = `<option value="">${t('(分配分类: 无)')}</option>`;
         Object.keys(allCategories).forEach(c => {
             optHtml += `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`;
         });
@@ -1887,7 +2245,7 @@
         const must = $('#rule-must').val().trim();
         const not = $('#rule-not').val().trim();
         const cat = $('#rule-category').val();
-        if (!name) return showToast('请输入规则名称！', false);
+        if (!name) return showToast(t('请输入规则名称！'), false);
 
         const ruleDef = {
             enabled: true,
@@ -1903,15 +2261,15 @@
             $('#rule-name').val('');
             $('#rule-must').val('');
             $('#rule-not').val('');
-            showToast('已保存自动下载规则');
+            showToast(t('已保存自动下载规则'));
             fetchRssData();
         });
     }
 
     function deleteRssRule(name) {
-        if (!confirm(`确定要删除规则 [${name}] 吗？`)) return;
+        if (!confirm(`${t('确定要删除规则 ')}[${name}]${t(' 吗？')}`)) return;
         $.post('/api/v2/rss/removeRule', { ruleName: name }, function() {
-            showToast('已删除规则');
+            showToast(t('已删除规则'));
             fetchRssData();
         });
     }
@@ -1919,7 +2277,7 @@
     function renderCategories() {
         const container = $('#categories-container');
         if (!allCategories || Object.keys(allCategories).length === 0) {
-            container.html('<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">暂无分类数据</div>');
+            container.html(`<div class="card" style="text-align:center; color:var(--text-sec); font-size:13px;">${t('暂无分类数据')}</div>`);
             return;
         }
 
@@ -1934,20 +2292,20 @@
     function submitCreateCategory() {
         const name = $('#new-cat-name').val().trim();
         const path = $('#new-cat-path').val().trim();
-        if (!name) return showToast('请输入分类名称！', false);
+        if (!name) return showToast(t('请输入分类名称！'), false);
 
         $.post('/api/v2/torrents/createCategory', { category: name, savePath: path }, function() {
             closeModal('add-category-modal');
             $('#new-cat-name').val('');
             $('#new-cat-path').val('');
-            showToast('已成功创建分类');
+            showToast(t('已成功创建分类'));
             pollSlowData();
         });
     }
 
     function updateCategoryDropdowns() {
-        let filterHtml = '<option value="all">📁 全部分类</option>';
-        let addHtml = '<option value="">(无分类)</option>';
+        let filterHtml = `<option value="all">${t('📁 全部分类')}</option>`;
+        let addHtml = `<option value="">${t('(无分类)')}</option>`;
 
         Object.keys(allCategories).forEach(c => {
             filterHtml += `<option value="${escapeHtml(c)}" ${currentCategory === c ? 'selected' : ''}>${escapeHtml(c)}</option>`;
@@ -2051,7 +2409,7 @@
         const confirmPassword = $('#pref-webui-password-confirm').val();
 
         if (newPassword && newPassword !== confirmPassword) {
-            return showToast('❌ 两次输入的新密码不一致，请重新核对！', false);
+            return showToast(t('❌ 两次输入的新密码不一致，请重新核对！'), false);
         }
 
         const prefs = {
@@ -2118,10 +2476,10 @@
         $.post('/api/v2/app/setPreferences', { json: JSON.stringify(prefs) }, function() {
             $('#pref-webui-password').val('');
             $('#pref-webui-password-confirm').val('');
-            showToast('✅ 系统配置与安全凭据已全量保存！');
+            showToast(t('✅ 系统配置与安全凭据已全量保存！'));
             loadAllSystemPreferences();
         }).fail(function() {
-            showToast('保存配置失败，请检查网络或权限', false);
+            showToast(t('保存配置失败，请检查网络或权限'), false);
         });
     }
 
@@ -2147,19 +2505,19 @@
     }
 
     function copySystemLogs() {
-        if (!rawLogs || rawLogs.length === 0) return showToast('暂无日志记录可复制', false);
+        if (!rawLogs || rawLogs.length === 0) return showToast(t('暂无日志记录可复制'), false);
         const textLines = rawLogs.map(l => `[${formatTimestamp(l.timestamp)}] [${l.type}] ${l.message}`).join('\n');
         navigator.clipboard.writeText(textLines).then(() => {
-            showToast('✅ 已复制全部日志到剪贴板！');
+            showToast(t('✅ 已复制全部日志到剪贴板！'));
         }).catch(() => {
-            showToast('复制失败，请手动选择复制', false);
+            showToast(t('复制失败，请手动选择复制'), false);
         });
     }
 
     function renderSystemLogs(logs) {
         const container = $('#sys-logs-container');
         if (!logs || logs.length === 0) {
-            container.html('<div style="color:var(--text-sec); text-align:center; padding:20px;">暂无日志记录</div>');
+            container.html(`<div style="color:var(--text-sec); text-align:center; padding:20px;">${t('暂无日志记录')}</div>`);
             return;
         }
 
@@ -2328,7 +2686,7 @@
         const password = $('#login-pass').val();
 
         if (!username || !password) {
-            showToast('⚠️ 请输入完整的 WebUI 用户名与密码', false);
+            showToast(t('⚠️ 请输入完整的 WebUI 用户名与密码'), false);
             if (!username) $('#login-user').focus();
             else $('#login-pass').focus();
             return;
@@ -2336,7 +2694,7 @@
 
         const loginBtn = $('#login-modal button.btn.w-full');
         const origText = loginBtn.text();
-        loginBtn.prop('disabled', true).text('正在核验中...');
+        loginBtn.prop('disabled', true).text(t('正在核验中...'));
 
         $.ajax({
             url: '/api/v2/auth/login',
@@ -2349,21 +2707,21 @@
                     $('#login-modal').removeClass('forced-login');
                     closeModal('login-modal');
                     $('#login-pass').val('');
-                    showToast('✅ 身份验证通过，已成功登录！');
+                    showToast(t('✅ 身份验证通过，已成功登录！'));
                     if (typeof checkAuthStatus === 'function') {
                         checkAuthStatus();
                     }
                 } else {
-                    showToast('❌ 用户名或密码错误，请核对后重试！', false);
+                    showToast(t('❌ 用户名或密码错误，请核对后重试！'), false);
                     $('#login-pass').val('').focus();
                 }
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
                 if (xhr.status === 403 || xhr.status === 401) {
-                    showToast('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定', false);
+                    showToast(t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
                 } else {
-                    showToast('❌ 连接 qBittorrent 登录接口失败 (' + xhr.status + ')', false);
+            showToast(t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
                 }
                 $('#login-pass').val('').focus();
             }
@@ -2374,9 +2732,9 @@
         if (typeof fastPollTimer !== 'undefined' && fastPollTimer) clearInterval(fastPollTimer);
         if (typeof slowPollTimer !== 'undefined' && slowPollTimer) clearInterval(slowPollTimer);
         $.post('/api/v2/auth/logout', function() {
-            showToast('已退出登录');
+            showToast(t('已退出登录'));
             $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text('未登录 / 需鉴权');
+            $('#qbt-status-text').text(t('未登录 / 需鉴权'));
             openLoginModal(true);
         }).fail(function() {
             openLoginModal(true);
@@ -2544,7 +2902,7 @@
 
         // Set Date
         const now = new Date();
-        const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+        const days = [t('星期日'), t('星期一'), t('星期二'), t('星期三'), t('星期四'), t('星期五'), t('星期六')];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
         // Bootstrap authentication check (VueTorrent-style probe)
