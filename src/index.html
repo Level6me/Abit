@@ -7,9 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Abit — qBittorrent Apple UI Alternative WebUI</title>
-    <!-- Third-party CDNs -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Third-party libraries are bundled locally (no CDN dependency) -->
     <!-- Modular Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -1064,6 +1062,8 @@
 </div>
 
     <!-- Modular Application Scripts -->
+    <script src="js/vendor_jquery.min.js"></script>
+    <script src="js/vendor_chart.umd.min.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/constants.js"></script>
     <script src="js/state.js"></script>

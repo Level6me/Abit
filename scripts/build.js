@@ -24,6 +24,8 @@ const CSS_ORDER = [
 ];
 
 const JS_ORDER = [
+    'vendor_jquery.min.js',
+    'vendor_chart.umd.min.js',
     'i18n.js',
     'constants.js',
     'state.js',
