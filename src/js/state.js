@@ -30,6 +30,8 @@
     let searchId = null;
     let searchRefreshTimer = null;
     let installedPlugins = [];
+    let searchCurrentPage = 1;
+    const SEARCH_PAGE_SIZE = 20;
 
     // Polling System
     let netHistory = Array(20).fill(null).map(() => ({ down: 0, up: 0 }));

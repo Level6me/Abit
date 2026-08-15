@@ -789,6 +789,65 @@ input:checked + .slider:before { transform: translateX(20px); }
     z-index: 100;
 }
 
+/* Pagination Controller */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+}
+.pagination-info {
+    font-size: 12px;
+    color: var(--text-sec);
+    font-weight: 500;
+}
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.page-pill {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: rgba(120, 120, 128, 0.08);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+.page-pill:hover:not(:disabled) {
+    background: rgba(120, 120, 128, 0.18);
+}
+.page-pill.active {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.35);
+}
+.page-pill:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.page-ellipsis {
+    color: var(--text-sec);
+    padding: 0 4px;
+    font-size: 12px;
+}
+
 /* --- [Module: torrents.css] --- */
 /* Batch Action Floating Bar */
 .batch-bar {

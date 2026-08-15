@@ -59,6 +59,8 @@
     let searchId = null;
     let searchRefreshTimer = null;
     let installedPlugins = [];
+    let searchCurrentPage = 1;
+    const SEARCH_PAGE_SIZE = 20;
 
     // Polling System
     let netHistory = Array(20).fill(null).map(() => ({ down: 0, up: 0 }));
@@ -1227,6 +1229,7 @@
 
     function changeSearchSort(mode) {
         searchSortMode = mode;
+        searchCurrentPage = 1;
         $('.sort-pill').removeClass('active');
         $(`#sort-btn-${mode}`).addClass('active');
         renderSearchResultsUI();
@@ -1242,15 +1245,24 @@
             list.sort((a, b) => (a.fileName || '').localeCompare(b.fileName || ''));
         }
 
-        $('#search-count-label').text(`检索结果: ${list.length} 条`);
-        if (list.length > 0) {
+        const totalResults = list.length;
+        const totalPages = Math.ceil(totalResults / SEARCH_PAGE_SIZE) || 1;
+        if (searchCurrentPage > totalPages) searchCurrentPage = totalPages;
+        if (searchCurrentPage < 1) searchCurrentPage = 1;
+
+        if (totalResults > 0) {
+            $('#search-count-label').text(`检索结果: ${totalResults} 条 (第 ${searchCurrentPage} / ${totalPages} 页)`);
             $('#search-toolbar').css('display', 'flex');
         } else {
             $('#search-toolbar').hide();
         }
 
+        const startIndex = (searchCurrentPage - 1) * SEARCH_PAGE_SIZE;
+        const endIndex = Math.min(startIndex + SEARCH_PAGE_SIZE, totalResults);
+        const pageItems = list.slice(startIndex, endIndex);
+
         let html = '';
-        list.forEach(item => {
+        pageItems.forEach(item => {
             const sizeFormatted = formatBytes(item.fileSize);
             html += `
             <div class="card" style="padding:14px; margin-bottom:10px;">
@@ -1266,11 +1278,64 @@
             </div>`;
         });
 
-        if (list.length === 0) {
+        if (totalResults === 0) {
             html = '<div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">正在检索全网结果，请稍候...</div>';
+        } else if (totalPages > 1) {
+            // 分页控制器
+            let pageButtonsHtml = '';
+            // 上一页
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(-1)" ${searchCurrentPage <= 1 ? 'disabled' : ''} title="上一页">‹</button>`;
+
+            // 智能计算页码范围
+            const maxVisible = 5;
+            let startPage = Math.max(1, searchCurrentPage - 2);
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            if (startPage > 1) {
+                pageButtonsHtml += `<button class="page-pill" onclick="goToSearchPage(1)">1</button>`;
+                if (startPage > 2) pageButtonsHtml += `<span class="page-ellipsis">…</span>`;
+            }
+
+            for (let p = startPage; p <= endPage; p++) {
+                pageButtonsHtml += `<button class="page-pill ${p === searchCurrentPage ? 'active' : ''}" onclick="goToSearchPage(${p})">${p}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) pageButtonsHtml += `<span class="page-ellipsis">…</span>`;
+                pageButtonsHtml += `<button class="page-pill" onclick="goToSearchPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            // 下一页
+            pageButtonsHtml += `<button class="page-pill" onclick="changeSearchPage(1)" ${searchCurrentPage >= totalPages ? 'disabled' : ''} title="下一页">›</button>`;
+
+            html += `
+            <div class="pagination-wrapper">
+                <div class="pagination-info">
+                    显示第 <strong>${startIndex + 1}</strong> - <strong>${endIndex}</strong> 条 / 共 <strong>${totalResults}</strong> 条 (每页 20 条)
+                </div>
+                <div class="pagination-controls">
+                    ${pageButtonsHtml}
+                </div>
+            </div>`;
         }
 
         $('#search-results-container').html(html);
+    }
+
+    function changeSearchPage(delta) {
+        goToSearchPage(searchCurrentPage + delta);
+    }
+
+    function goToSearchPage(page) {
+        searchCurrentPage = page;
+        renderSearchResultsUI();
+        const el = document.getElementById('search-toolbar');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
     function triggerSearch() {
@@ -1279,6 +1344,7 @@
 
         stopCurrentSearch();
         cachedSearchResults = [];
+        searchCurrentPage = 1;
         $('#search-toolbar').hide();
         const plugin = $('#search-plugin').val();
         const category = $('#search-category').val();
@@ -1300,7 +1366,7 @@
 
     function pollSearchResults() {
         if (!searchId) return;
-        $.post('/api/v2/search/results', { id: searchId, limit: 100 }, function(res) {
+        $.post('/api/v2/search/results', { id: searchId, limit: 500 }, function(res) {
             if (!res || !res.results) return;
 
             cachedSearchResults = res.results || [];
