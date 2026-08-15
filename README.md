@@ -95,9 +95,25 @@ node scripts/build.js
 
 ---
 
-## 🚀 qBittorrent 部署配置
+## ⚡ 一键智能安装与配置（极力推荐）
 
-1. **获取代码**：
+无论您是初次安装还是更新已有配置，直接在服务器终端运行下方一键安装命令，脚本将**自动检测安装路径、自动检索 qBittorrent 配置文件、自动写入备用 WebUI 路径并优雅重启生效**：
+
+```bash
+# 方式 A：单行远程一键安装（无需预先 clone，全自动搞定）
+curl -sSL https://raw.githubusercontent.com/Level6me/Abit/main/install.sh | bash
+
+# 方式 B：在已下载的项目目录中一键配置
+bash install.sh
+```
+
+---
+
+## 🚀 手动部署与备用 WebUI 配置
+
+若您希望手动配置：
+
+1. **获取最新源码并编译**：
    ```bash
    git clone https://github.com/Level6me/Abit.git /home/ubuntu/Abit
    cd /home/ubuntu/Abit
@@ -105,7 +121,7 @@ node scripts/build.js
    ```
 2. **启用备用 Web UI**：
    - 登录您的 qBittorrent 网页控制台（或直接编辑 `~/.config/qBittorrent/qBittorrent.conf`）。
-   - 在 **“使用备用 Web UI (Use alternative Web UI)”** 下，将 **“文件路径 (Files path)”** 设置为项目的 **`public`** 目录（或 `dist` 目录）：
+   - 在 **“使用备用 Web UI (Use alternative Web UI)”** 下，将 **“文件路径 (Files path)”** 设置为项目的 **`public`** 目录：
      ```ini
      WebUI\AlternativeUIEnabled=true
      WebUI\RootFolder=/home/ubuntu/Abit/public

@@ -1,9 +1,10 @@
 {
-  "name": "apple-torrent-dashboard",
+  "name": "abit",
   "version": "2.0.0",
-  "description": "A refined, zero-overhead, Apple-styled Alternative WebUI for qBittorrent (Torrent Omni)",
+  "description": "A refined, zero-overhead, Apple-styled Alternative WebUI for qBittorrent",
   "main": "scripts/build.js",
   "scripts": {
+    "setup": "bash install.sh",
     "build": "node scripts/build.js",
     "dev": "node scripts/dev.js",
     "dev:dist": "node scripts/dev.js --dist",
