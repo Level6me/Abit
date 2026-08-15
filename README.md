@@ -1,4 +1,4 @@
-# 🍏 Apple Torrent Dashboard (Torrent Omni) — WebUI 主题版
+# 🍏 Abit — Apple Style qBittorrent Alternative WebUI
 
 这是一个精美、轻量、高颜值的 **qBittorrent 自定义备用 WebUI 主题（Alternative Web UI）**，采用现代化 Apple iOS / macOS 磨砂毛玻璃视觉设计风格。
 
@@ -8,17 +8,17 @@
 
 ## 📐 系统架构与目录结构
 
-本项目采用**模块化开发源码（`src/`）与单文件零依赖发布产物（`dist/`）分离**的标准工程架构：
+本项目采用**模块化开发源码（`src/`）与单文件零依赖发布产物（`dist/` / `public/`）分离**的标准工程架构：
 
 ```
-apple_torrent_dashboard/
+Abit/
 ├── src/                    # 源码开发目录 (Modular Source Code)
 │   ├── index.html          # 开发态模板入口 (Development Template)
 │   ├── css/                # 模块化样式表 (Modular CSS)
 │   │   ├── variables.css   # 主题色板与 CSS 变量 (Variables & Themes)
 │   │   ├── base.css        # 基础重置与排版 (Reset & Typography)
 │   │   ├── layout.css      # 栅格布局与容器 (Grid & Containers)
-│   │   ├── components.css  # 通用组件与徽标 (Buttons, Cards, Toasts)
+│   │   ├── components.css  # 通用组件与徽标 (Buttons, Cards, Toasts, Pagination)
 │   │   ├── torrents.css    # 种子卡片/列表与操作栏 (Torrents UI)
 │   │   ├── dock.css        # 底部毛玻璃导航 Dock 栏 (Bottom Dock UI)
 │   │   ├── modal.css       # 模态弹窗与详情抽屉 (Modals & Drawers)
@@ -43,11 +43,11 @@ apple_torrent_dashboard/
 │   ├── index.html          # 单文件独立完整版 (Standalone Single-File WebUI)
 │   ├── css/style.css       # 合并打包后的全量样式 (Bundled CSS)
 │   └── js/app.bundle.js    # 合并打包后的全量逻辑 (Bundled JS)
-├── public/                 # 多文件三件套分离部署目录 (Modular Multi-File WebUI)
+├── public/                 # 多文件模块化静态发布目录 (Modular Multi-File WebUI，推荐 WebUI 指向此目录)
 │   ├── index.html          # 结构化多文件入口 (Modular HTML Entry)
 │   ├── css/                # 细分样式模块目录 (8 个独立 CSS 模块)
 │   └── js/                 # 细分逻辑模块目录 (11 个独立 JS 模块)
-├── index.html              # 根目录运行入口 (qBittorrent 直接指定根目录即用)
+├── index.html              # 根目录单文件镜像入口
 ├── package.json            # NPM 项目工程描述文件
 ├── .gitignore              # Git 忽略规则
 └── README.md               # 项目开发与部署指南
@@ -68,6 +68,7 @@ apple_torrent_dashboard/
    - 🗂️ 网格卡片（Card Grid）与紧凑表格（Table View）双视图无缝切换。
    - ⚡ 批量管理操作、安全确认弹窗、右键与拖拽添加种子文件、剪贴板磁力识别。
    - ⌨️ 快捷键支持（`1-5` 切换导航，`/` 或 `F` 搜索任务，`N` 新建任务，`Esc` 关闭弹窗）。
+   - 🔍 全网检索支持 14 个真实高效官方/社区插件、每页 20 条分页及连续序号高亮。
 
 ---
 
@@ -97,22 +98,28 @@ node scripts/build.js
 ## 🚀 qBittorrent 部署配置
 
 1. **获取代码**：
-   将本项目克隆或下载到安装了 qBittorrent 的服务器（或任何您能访问到的本地目录）。
+   ```bash
+   git clone https://github.com/Level6me/Abit.git /home/ubuntu/Abit
+   cd /home/ubuntu/Abit
+   node scripts/build.js
+   ```
 2. **启用备用 Web UI**：
-   - 登录您的 qBittorrent 网页控制台。
-   - 点击顶部菜单栏 **“工具 (Tools)”** -> **“选项 (Options)”**。
-   - 切换到 **“Web UI”** 标签页。
-   - 勾选 **“使用备用 Web UI (Use alternative Web UI)”**。
-   - 在 **“文件路径 (Files path)”** 输入框中，填写您存放本项目的**绝对路径**（例如 `/home/ubuntu/apple_torrent_dashboard` 或其 `dist` 目录）。
-3. **保存并应用**：
-   - 点击 **“保存 (Save)”**。
-   - 刷新浏览器页面，即可开始体验精美的苹果风格 Torrent Omni 备用面板！
+   - 登录您的 qBittorrent 网页控制台（或直接编辑 `~/.config/qBittorrent/qBittorrent.conf`）。
+   - 在 **“使用备用 Web UI (Use alternative Web UI)”** 下，将 **“文件路径 (Files path)”** 设置为项目的 **`public`** 目录（或 `dist` 目录）：
+     ```ini
+     WebUI\AlternativeUIEnabled=true
+     WebUI\RootFolder=/home/ubuntu/Abit/public
+     ```
+3. **保存并重启 qBittorrent**：
+   - 重启服务后刷新浏览器页面，即可开始体验精美的苹果风格 Abit 备用面板！
 
 ---
 
 ## ❓ 常见问题
 
+* **Q：打开页面提示 `Unacceptable file type, only regular file is allowed` 是怎么回事？**
+  * **A**：这是由于 qBittorrent Web 服务器在映射根路径 `/` 时遇到了非纯净静态目录。请将 `WebUI\RootFolder` 从项目根目录修改为指向 **`/home/ubuntu/Abit/public`**（或 `dist`）纯静态发布目录即可完美解决。
 * **Q：为什么访问页面时显示“离线/未登入”？**
-  * **A**：主题直接通过当前浏览器的 Session 会话进行 API 通信。若显示离线，请先访问 qBittorrent 默认的 Web 登录接口进行登录，验证通过后刷新页面即可恢复在线。
+  * **A**：主题直接通过当前浏览器的 Session 会话进行 API 通信。若显示离线，请先在弹出的登录窗口输入您的 qBittorrent 账密进行登录，验证通过后即可恢复在线。
 * **Q：修改了 `src/` 中的代码后如何生效？**
-  * **A**：运行 `npm run build` 或 `node scripts/build.js`，脚本会自动将模块化代码合并生成最新的单文件 `dist/index.html` 并同步更新根目录 `index.html`。
+  * **A**：运行 `npm run build` 或 `node scripts/build.js`，脚本会自动将模块化代码合并生成最新的发布产物。
