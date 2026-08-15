@@ -4,6 +4,10 @@
 
 > *An Apple-style alternative Web UI for qBittorrent — beautiful, lightweight, frosted-glass design.*
 
+<p align="center">
+  <img src="assets/preview.jpg" alt="Abit 界面预览" width="800" />
+</p>
+
 这是一个精美、轻量、高颜值的 **qBittorrent 自定义备用 WebUI 主题（Alternative Web UI）**，采用现代化 Apple iOS / macOS 磨砂毛玻璃视觉设计风格。
 
 直接与 qBittorrent 原生 WebAPI 通信，完全运行在浏览器沙箱中。无需配置 Python/Node 后端服务，即开即用。

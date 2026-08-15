@@ -4,6 +4,10 @@
 
 > *An Apple-style alternative Web UI for qBittorrent — beautiful, lightweight, frosted-glass design.*
 
+<p align="center">
+  <img src="assets/preview.jpg" alt="Abit Preview" width="800" />
+</p>
+
 A polished, lightweight, high-fidelity **alternative Web UI for qBittorrent**, designed with a modern Apple iOS / macOS frosted-glass aesthetic.
 
 It talks directly to the qBittorrent native Web API and runs entirely in the browser sandbox — no Python/Node backend service required. Open it and it just works.
