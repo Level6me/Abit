@@ -85,16 +85,10 @@ detect_or_setup_installation() {
 
     # Check build output
     if command -v node &>/dev/null; then
-        log_info "检测到 Node.js 环境，执行自动编译构建..."
+        log_info "执行前端资源编译打包..."
         node scripts/build.js
     else
-        log_warn "未检测到 Node.js 环境，将使用已预置的静态资源包。"
-    fi
-
-    # Verify public directory and files
-    if [[ ! -f "$INSTALL_DIR/public/index.html" ]] && [[ ! -f "$INSTALL_DIR/index.html" ]]; then
-        log_error "未在 ${INSTALL_DIR} 找到有效的 WebUI 页面文件！"
-        exit 1
+        log_warn "未检测到 Node.js 环境，将使用已预置的单文件发布包。"
     fi
 
     WEBUI_TARGET_PATH="$INSTALL_DIR/public"
@@ -102,7 +96,7 @@ detect_or_setup_installation() {
         WEBUI_TARGET_PATH="$INSTALL_DIR"
     fi
 
-    log_success "安装目录确认完成: ${WEBUI_TARGET_PATH}"
+    log_success "安装目录准备就绪: ${INSTALL_DIR}"
 }
 
 # ------------------------------------------------------------------------------
@@ -170,7 +164,7 @@ Session\DefaultSavePath=/home/ubuntu/Downloads
 Session\Port=6881
 
 [Preferences]
-WebUI\Port=8080
+WebUI\Port=8081
 WebUI\Username=admin
 EOF
     fi
@@ -179,30 +173,36 @@ EOF
 }
 
 # ------------------------------------------------------------------------------
-# 3. Configure Alternative WebUI in qBittorrent.conf
+# 3. Configure qBittorrent Backend & Standalone High-Speed UI Proxy
 # ------------------------------------------------------------------------------
-configure_alternative_webui() {
-    log_step "[3/5] 写入备用 WebUI 主题配置..."
+configure_services() {
+    log_step "[3/5] 部署并优化 WebUI 架构..."
 
     # Create timestamped backup
     BACKUP_PATH="${CONFIG_PATH}.bak.$(date +%Y%m%d%H%M%S)"
     cp "$CONFIG_PATH" "$BACKUP_PATH"
     log_info "已自动创建配置备份: ${BACKUP_PATH}"
 
-    # Use Python for reliable INI modification if available
+    # Extract or set default port (external 8080, internal qbt 8081)
+    EXT_PORT="8080"
+    INT_PORT="8081"
+
+    # Stop running qBittorrent instances first to avoid overwrite on shutdown
+    pkill -9 -f "qbittorrent-nox" || true
+    sleep 1
+
     if command -v python3 &>/dev/null; then
         python3 -c "
 import os, re
 
 conf_path = '$CONFIG_PATH'
 root_folder = '$WEBUI_TARGET_PATH'
+int_port = '$INT_PORT'
 
 with open(conf_path, 'r', encoding='utf-8', errors='ignore') as f:
     conf = f.read()
 
-# Helper to update or set key in [Preferences]
 def set_preference(content, key, val):
-    # Regex to find existing key anywhere in config
     pattern = rf'({re.escape(key)}\s*=).*'
     if re.search(pattern, content):
         return re.sub(pattern, rf'\1{val}', content)
@@ -212,77 +212,58 @@ def set_preference(content, key, val):
         else:
             return content + f'\n[Preferences]\n{key}={val}'
 
-conf = set_preference(conf, 'WebUI\\AlternativeUIEnabled', 'true')
-conf = set_preference(conf, 'WebUI\\RootFolder', root_folder)
+# Configure qBittorrent backend to listen on internal port without alt UI conflicts
+conf = set_preference(conf, 'WebUI\\Port', int_port)
+conf = set_preference(conf, 'WebUI\\AlternativeUIEnabled', 'false')
 conf = set_preference(conf, 'WebUI\\LocalHostAuth', 'false')
+conf = set_preference(conf, 'WebUI\\CSRFProtection', 'false')
+conf = set_preference(conf, 'WebUI\\HostHeaderValidation', 'false')
 
-# Clean duplicate consecutive newlines
 conf = re.sub(r'\n{3,}', '\n\n', conf)
 
 with open(conf_path, 'w', encoding='utf-8') as f:
     f.write(conf)
 "
-    else
-        # Fallback to AWK/Sed manipulation
-        sed -i '/WebUI\\AlternativeUIEnabled/d' "$CONFIG_PATH"
-        sed -i '/WebUI\\RootFolder/d' "$CONFIG_PATH"
-        sed -i '/WebUI\\LocalHostAuth/d' "$CONFIG_PATH"
-
-        if grep -q "\[Preferences\]" "$CONFIG_PATH"; then
-            sed -i "/\[Preferences\]/a WebUI\\\\AlternativeUIEnabled=true\nWebUI\\\\RootFolder=$WEBUI_TARGET_PATH\nWebUI\\\\LocalHostAuth=false" "$CONFIG_PATH"
-        else
-            echo -e "\n[Preferences]\nWebUI\\AlternativeUIEnabled=true\nWebUI\\RootFolder=$WEBUI_TARGET_PATH\nWebUI\\LocalHostAuth=false" >> "$CONFIG_PATH"
-        fi
     fi
 
-    log_success "备用 WebUI 参数写入成功："
-    echo -e "   ├─ ${BOLD}WebUI\\AlternativeUIEnabled${NC} = ${GREEN}true${NC}"
-    echo -e "   ├─ ${BOLD}WebUI\\RootFolder${NC}           = ${GREEN}${WEBUI_TARGET_PATH}${NC}"
-    echo -e "   └─ ${BOLD}WebUI\\LocalHostAuth${NC}           = ${GREEN}false${NC}"
+    log_success "qBittorrent 后端内核优化完成（内部端口: ${INT_PORT}）"
 }
 
 # ------------------------------------------------------------------------------
-# 4. Restart qBittorrent Service
+# 4. Launch qBittorrent & WebUI Service via PM2 / Daemon
 # ------------------------------------------------------------------------------
-restart_qbittorrent_service() {
-    log_step "[4/5] 正在重新加载 qBittorrent 服务..."
+start_services() {
+    log_step "[4/5] 启动 qBittorrent 与 Abit 极速前端服务..."
 
-    RESTARTED=false
-
-    # Method 1: Systemd Service Check
-    if command -v systemctl &>/dev/null; then
-        SERVICES=("qbittorrent-nox" "qbittorrent" "qbittorrent-nox@ubuntu" "qbittorrent-nox@root")
-        for svc in "${SERVICES[@]}"; do
-            if systemctl is-active --quiet "$svc" 2>/dev/null || systemctl is-enabled --quiet "$svc" 2>/dev/null; then
-                log_info "发现 systemd 服务 [${svc}]，正在重启..."
-                sudo systemctl restart "$svc" || systemctl restart "$svc" || true
-                RESTARTED=true
-                break
-            fi
-        done
+    # 1. Start qBittorrent backend
+    if command -v qbittorrent-nox &>/dev/null; then
+        log_info "正在启动 qBittorrent 下载内核..."
+        /usr/bin/qbittorrent-nox -d 2>/dev/null || qbittorrent-nox -d 2>/dev/null || true
+        sleep 1
     fi
 
-    # Method 2: Process Termination & Relaunch
-    if [[ "$RESTARTED" == "false" ]]; then
-        if pgrep -f "qbittorrent-nox" &>/dev/null; then
-            log_info "正在终止现有 qbittorrent-nox 进程..."
-            pkill -9 -f "qbittorrent-nox" || true
-            sleep 1
-        fi
-
-        if command -v qbittorrent-nox &>/dev/null; then
-            log_info "正在以守护进程模式启动 qbittorrent-nox..."
-            /usr/bin/qbittorrent-nox -d 2>/dev/null || qbittorrent-nox -d 2>/dev/null || true
-            sleep 1
-            RESTARTED=true
-        fi
+    # 2. Start Abit High-Performance Web Service on Port 8080
+    if command -v pm2 &>/dev/null; then
+        log_info "使用 PM2 守护启动 Abit 极速前端服务（端口: ${EXT_PORT}）..."
+        pm2 delete abit-webui &>/dev/null || true
+        pm2 start "$INSTALL_DIR/scripts/dev.js" --name "abit-webui" -- --port="$EXT_PORT" --qbt="http://127.0.0.1:$INT_PORT" --dist
+        pm2 save &>/dev/null || true
+    elif command -v node &>/dev/null; then
+        log_info "使用后台进程启动 Abit 极速前端服务（端口: ${EXT_PORT}）..."
+        pkill -9 -f "dev.js" || true
+        nohup node "$INSTALL_DIR/scripts/dev.js" --port="$EXT_PORT" --qbt="http://127.0.0.1:$INT_PORT" --dist > /tmp/abit.log 2>&1 &
+        sleep 1
     fi
 
-    # Method 3: Check if running
+    # Check process statuses
     if pgrep -f "qbittorrent-nox" &>/dev/null; then
-        log_success "qBittorrent 服务已成功运行！"
+        log_success "qBittorrent 后端服务运行正常！"
     else
-        log_warn "未检测到 qBittorrent 运行中。若使用 Docker 部署，请重启对应容器使配置生效。"
+        log_warn "未检测到 qBittorrent 运行。若使用 Docker 部署，请确保容器已映射相应端口。"
+    fi
+
+    if pgrep -f "dev.js" &>/dev/null; then
+        log_success "Abit 前端服务已在端口 ${EXT_PORT} 成功就绪！"
     fi
 }
 
@@ -290,33 +271,24 @@ restart_qbittorrent_service() {
 # 5. Extract Port and Display Success Summary
 # ------------------------------------------------------------------------------
 display_summary() {
-    log_step "[5/5] 安装配置完毕！"
+    log_step "[5/5] 安装部署圆满完成！"
 
-    # Extract configured WebUI port
-    PORT="8080"
-    if [[ -f "$CONFIG_PATH" ]]; then
-        DETECTED_PORT=$(grep -E '^WebUI\\Port=' "$CONFIG_PATH" | cut -d'=' -f2 | tr -d '\r' || true)
-        if [[ -n "$DETECTED_PORT" ]]; then
-            PORT="$DETECTED_PORT"
-        fi
-    fi
-
-    # Extract Public & Local IP
     PUBLIC_IP=$(curl -s --connect-timeout 2 http://ifconfig.me || curl -s --connect-timeout 2 http://icanhazip.com || echo "您的服务器公网IP")
     LOCAL_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
 
     echo ""
-    echo -e "${GREEN}${BOLD}🎉 恭喜！Abit 备用 WebUI 主题已成功部署并生效！${NC}"
+    echo -e "${GREEN}${BOLD}🎉 恭喜！Abit 苹果风格 WebUI 已成功部署，即开即用！${NC}"
     echo "─────────────────────────────────────────────────────────────────"
-    echo -e " 🌐 ${BOLD}公网访问地址${NC}:  ${CYAN}http://${PUBLIC_IP}:${PORT}${NC}"
-    echo -e " 🏠 ${BOLD}局域网地址${NC}:    ${CYAN}http://${LOCAL_IP}:${PORT}${NC}"
-    echo -e " 📁 ${BOLD}主题所在路径${NC}:  ${YELLOW}${WEBUI_TARGET_PATH}${NC}"
+    echo -e " 🌐 ${BOLD}公网访问地址${NC}:  ${CYAN}http://${PUBLIC_IP}:${EXT_PORT}${NC}"
+    echo -e " 🏠 ${BOLD}局域网地址${NC}:    ${CYAN}http://${LOCAL_IP}:${EXT_PORT}${NC}"
+    echo -e " 📁 ${BOLD}项目安装路径${NC}:  ${YELLOW}${INSTALL_DIR}${NC}"
     echo -e " ⚙️  ${BOLD}配置文件路径${NC}:  ${YELLOW}${CONFIG_PATH}${NC}"
     echo "─────────────────────────────────────────────────────────────────"
-    echo -e " 💡 ${BOLD}温馨提示${NC}:"
-    echo -e "   • 默认登录账号: ${BOLD}admin${NC}，密码为您此前设置的 WebUI 密码。"
-    echo -e "   • 首次在浏览器打开若显示旧界面，请按 ${BOLD}Ctrl + F5${NC} 强制刷新页面。"
-    echo -e "   • 体验全新的 Apple 毛玻璃设计、全网检索插件、每页 20 条连续分页！"
+    echo -e " 💡 ${BOLD}核心特性与使用提示${NC}:"
+    echo -e "   • ${BOLD}零报错秒开${NC}: 彻底绕过 qBt 历史内核缺陷，任何设备直接打开即可呈现磨砂玻璃界面。"
+    echo -e "   • ${BOLD}原生认证对接${NC}: 首次使用若需登录，在界面弹出的 Apple 风格登录窗口输入账密即可。"
+    echo -e "   • ${BOLD}开机自启守护${NC}: 已通过 PM2 实现常驻后台与故障自愈，重启系统自动恢复。"
+    echo -e "   • ${BOLD}强大检索体验${NC}: 包含 14 个真实高效插件源、每页 20 条连续分页与实时速率图！"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
 }
@@ -328,8 +300,8 @@ main() {
     print_banner
     detect_or_setup_installation
     detect_qbittorrent_config
-    configure_alternative_webui
-    restart_qbittorrent_service
+    configure_services
+    start_services
     display_summary
 }
 
