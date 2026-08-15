@@ -2212,11 +2212,11 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div class="modal-overlay" id="login-modal">
     <div class="modal-card" style="max-width:400px; text-align:center;">
         <div style="font-size:36px; margin-bottom:8px;">🔒</div>
-        <div style="font-size:18px; font-weight:800; margin-bottom:4px;" data-i18n="qBittorrent 身份验证">qBittorrent 身份验证</div>
-        <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;" id="login-modal-sub" data-i18n="请输入 qBittorrent WebUI 用户名与密码：">
-            请输入 qBittorrent WebUI 用户名与密码：
+        <div style="font-size:18px; font-weight:800; margin-bottom:4px;" data-i18n="身份验证">身份验证</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;" id="login-modal-sub" data-i18n="请输入用户名密码">
+            请输入用户名密码
         </div>
-        <input class="input-box" id="login-user" data-i18n-ph="用户名 (默认: admin)" placeholder="用户名 (默认: admin)" style="margin-bottom:10px;" onkeydown="if(event.key==='Enter') submitLogin();">
+        <input class="input-box" id="login-user" data-i18n-ph="用户名" placeholder="用户名" style="margin-bottom:10px;" onkeydown="if(event.key==='Enter') submitLogin();">
         <input class="input-box" type="password" id="login-pass" data-i18n-ph="密码" placeholder="密码" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') submitLogin();">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:12px; color:var(--text-sec);">
             <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
@@ -2438,7 +2438,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         'WebUI 监听端口': 'WebUI port',
         'plugin_diagnostic_text': 'qBittorrent search relies on the server-side <b>Python Search Plugins</b>. If your server was just installed or plugins are disabled, no results will be returned. Switch to the <b>“🧩 Search plugins”</b> tab above to install or enable popular public index plugins (Python3 is required on the server).',
         'qBittorrent Alternative WebUI (纯前端沙箱)': 'qBittorrent Alternative WebUI (pure front-end sandbox)',
-        'qBittorrent 身份验证': 'qBittorrent Authentication',
+        '身份验证': 'Authentication',
         'redownload_confirm_text': 'Are you sure you want to clear downloaded files and re-download the selected torrents?<br><span style="color:var(--warning); font-size:12px;">The app will export torrent/magnet parameters, clear local files and re-download from 0%.</span>',
         '⏸ 暂停做种任务': '⏸ Pause seeding',
         '■ 下载中': '■ Downloading',
@@ -2550,7 +2550,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         '添加订阅': 'Add',
         '点击直接为您的 qBittorrent 安装官方与社区主流的 BT 索引引擎：': 'Click to install popular official & community BT index engines for qBittorrent:',
         '生效周期': 'Schedule days',
-        '用户名 (默认: admin)': 'Username (default: admin)',
+        '用户名': 'Username',
         '留空使用默认路径': 'Leave empty for default path',
         '留空则保持当前用户名 (如: admin)': 'Leave blank to keep current username (e.g. admin)',
         '登录失败尝试封禁次数': 'Login failure ban threshold',
@@ -2569,7 +2569,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         '警告 Warning': 'Warning',
         '订阅名称 / 文件夹路径 (可选)': 'Feed name / folder path (optional)',
         '记住凭据': 'Remember credentials',
-        '请输入 qBittorrent WebUI 用户名与密码：': 'Enter your qBittorrent WebUI username and password:',
+        '请输入用户名密码': 'Please enter username and password',
         '输入 Python 插件脚本的在线 URL (以 .py 结尾或 GitHub 裸链) 或本地路径：': 'Enter the Python plugin script URL (ending in .py or a GitHub raw link) or a local path:',
         '输入新密码': 'Enter new password',
         '达到指定分享率后自动停止做种': 'Stop seeding after reaching the target ratio',
