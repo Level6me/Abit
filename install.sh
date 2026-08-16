@@ -413,6 +413,9 @@ do_uninstall() {
     log_step "正在执行 Abit 卸载与官方默认 WebUI 恢复..."
     detect_qbittorrent_config
 
+    # Stop running qBittorrent first to prevent in-memory config from flushing back to disk on exit
+    stop_qbittorrent_precisely
+
     if [[ -f "$CONFIG_PATH" ]]; then
         log_info "正在恢复配置文件至官方默认 WebUI..."
         if command -v python3 >/dev/null 2>&1; then
