@@ -6,14 +6,12 @@
 #  Repository: https://github.com/Level6me/Abit
 #
 #  Features:
-#   - Multi-platform qBittorrent bootstrap (apt/dnf/yum/pacman/apk/brew + Docker)
-#   - Node.js auto-install with explicit failure instead of silent mock mode
-#   - Configurable ports (ABIT_EXT_PORT / ABIT_INT_PORT) with occupancy check
-#   - Dynamic default save path (uses $HOME/Downloads, no hardcoded user)
-#   - Precise process termination (exact process-name match, Docker-aware)
-#   - PM2 startup integration for reboot persistence
-#   - Security modes: default keeps qBittorrent auth; ABIT_INSECURE=1 opt-out
-#   - uninstall subcommand
+#   - 100% Pure Native Alternative WebUI (Replaces official WebUI directly)
+#   - Zero background overhead (No extra Node.js / PM2 / python daemons)
+#   - Single port architecture (Uses standard qBittorrent WebUI port 8080)
+#   - Automatic environment, git & configuration detection
+#   - Safe configuration backup & rollback support
+#   - Native uninstall subcommand (bash install.sh uninstall)
 # ==============================================================================
 
 set -eo pipefail
@@ -21,9 +19,6 @@ set -eo pipefail
 # ---------- Runtime configuration ----------
 ABIT_REPO="https://github.com/Level6me/Abit.git"
 INSTALL_DIR_DEFAULT="$HOME/Abit"
-EXT_PORT="${ABIT_EXT_PORT:-8080}"
-INT_PORT="${ABIT_INT_PORT:-8081}"
-INSECURE="${ABIT_INSECURE:-0}"
 DOCKER_MODE=0
 
 SUDO_CMD=""
@@ -47,7 +42,7 @@ print_banner() {
     echo "  ╔═══════════════════════════════════════════════════════════════╗"
     echo "  ║                                                               ║"
     echo "  ║   🍏  Abit — Apple Style qBittorrent WebUI Installer          ║"
-    echo "  ║       Automated Environment Detection & Instant Setup         ║"
+    echo "  ║       Native Alternative WebUI Direct Replacement (8080)      ║"
     echo "  ║                                                               ║"
     echo "  ╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -60,29 +55,27 @@ log_error()   { echo -e " ${RED}✖${NC} ${BOLD}$1${NC}"; }
 log_step()    { echo -e "\n${CYAN}==>${NC} ${BOLD}$1${NC}"; }
 
 # ------------------------------------------------------------------------------
-# 0. Platform detection
+# 0. Platform & Dependency Detection
 # ------------------------------------------------------------------------------
 detect_os() {
     OS="$(uname -s)"
-    DISTRO=""
     PKG_MGR=""
     case "$OS" in
         Linux)
-            if   command -v apt-get >/dev/null 2>&1; then DISTRO="debian"; PKG_MGR="apt"
-            elif command -v dnf     >/dev/null 2>&1; then DISTRO="fedora"; PKG_MGR="dnf"
-            elif command -v yum     >/dev/null 2>&1; then DISTRO="rhel";   PKG_MGR="yum"
-            elif command -v pacman  >/dev/null 2>&1; then DISTRO="arch";   PKG_MGR="pacman"
-            elif command -v apk     >/dev/null 2>&1; then DISTRO="alpine"; PKG_MGR="apk"
+            if   command -v apt-get >/dev/null 2>&1; then PKG_MGR="apt"
+            elif command -v dnf     >/dev/null 2>&1; then PKG_MGR="dnf"
+            elif command -v yum     >/dev/null 2>&1; then PKG_MGR="yum"
+            elif command -v pacman  >/dev/null 2>&1; then PKG_MGR="pacman"
+            elif command -v apk     >/dev/null 2>&1; then PKG_MGR="apk"
             fi
             ;;
         Darwin)
-            DISTRO="macos"; PKG_MGR="brew"
+            PKG_MGR="brew"
             ;;
     esac
 }
 
 install_pkg() {
-    # $1: package names
     case "$PKG_MGR" in
         apt)     $SUDO_CMD apt-get update -qq && $SUDO_CMD apt-get install -y -qq "$1" ;;
         dnf)     $SUDO_CMD dnf install -y "$1" ;;
@@ -100,77 +93,45 @@ ensure_git() {
     install_pkg "git" || { log_error "git 安装失败，请手动安装后重试。"; exit 1; }
 }
 
-ensure_node() {
-    if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
-        log_info "Node.js $(node -v 2>/dev/null) / npm $(npm -v 2>/dev/null)"
-        return 0
-    fi
-    log_warn "未检测到 Node.js（Abit 前端服务需要），尝试自动安装..."
-    case "$PKG_MGR" in
-        apt|dnf|yum|pacman|apk) install_pkg "nodejs npm" || true ;;
-        brew)                   install_pkg "node" || true ;;
-    esac
-    if ! command -v node >/dev/null 2>&1; then
-        log_error "Node.js 安装失败。请手动安装后重试："
-        log_error "  Debian/Ubuntu:  sudo apt-get install -y nodejs npm"
-        log_error "  Fedora/RHEL:    sudo dnf install -y nodejs npm"
-        log_error "  Arch:           sudo pacman -S --noconfirm nodejs npm"
-        log_error "  Alpine:         sudo apk add --no-cache nodejs npm"
-        log_error "  macOS:          brew install node"
-        exit 1
-    fi
-}
-
 ensure_qbittorrent() {
-    # 1. Docker container detection first (works on hosts running containerized qBittorrent)
-    if command -v docker >/dev/null 2>&1 && docker ps >/dev/null 2>&1; then
-        QBT_CT="$(docker ps --format '{{.Names}}' | grep -iE 'qbit|torrent' | head -n 1 || true)"
-        if [ -n "$QBT_CT" ]; then
-            DOCKER_MODE=1
-            log_info "检测到 qBittorrent Docker 容器: ${BOLD}${QBT_CT}${NC}（将使用容器端口映射模式）"
-            return 0
-        fi
-    fi
-    if [ -f /.dockerenv ]; then
-        DOCKER_MODE=1
-        log_info "检测到当前运行于容器内部，将使用容器配置路径模式"
+    if [ "$DOCKER_MODE" = "1" ]; then
+        log_info "容器/Docker 模式：跳过宿主 qBittorrent 安装检查。"
         return 0
     fi
-
-    # 2. Already installed?
     if command -v qbittorrent-nox >/dev/null 2>&1; then
-        log_info "qBittorrent 已存在: $(qbittorrent-nox --version 2>/dev/null | head -n 1)"
+        local ver
+        ver="$(qbittorrent-nox --version 2>/dev/null | head -n 1 || true)"
+        log_info "qBittorrent 已就绪: ${BOLD}${ver:-qbittorrent-nox}${NC}"
         return 0
     fi
 
-    # 3. Try package manager bootstrap
-    log_info "未检测到 qbittorrent-nox，尝试自动安装..."
+    log_warn "未检测到 qbittorrent-nox，尝试为您自动安装最新官方版本..."
     case "$PKG_MGR" in
-        apt)    install_pkg "qbittorrent-nox" || true ;;
-        dnf)    install_pkg "qbittorrent-nox" || log_warn "Fedora/RHEL 若提示找不到包，请先: sudo dnf install -y epel-release 再重试" ;;
-        yum)    install_pkg "qbittorrent-nox" || log_warn "RHEL/CentOS 若提示找不到包，请先: sudo yum install -y epel-release 再重试" ;;
-        pacman) install_pkg "qbittorrent-nox" || true ;;
-        apk)    install_pkg "qbittorrent-nox" || true ;;
-        brew)   install_pkg "qbittorrent" || true ;;
-        *)      log_warn "未能识别的平台，跳过自动安装" ;;
+        apt)
+            $SUDO_CMD apt-get update -qq
+            $SUDO_CMD apt-get install -y -qq software-properties-common
+            $SUDO_CMD add-apt-repository -y ppa:qbittorrent-team/qbittorrent-stable || true
+            $SUDO_CMD apt-get update -qq
+            $SUDO_CMD apt-get install -y -qq qbittorrent-nox
+            ;;
+        dnf)    $SUDO_CMD dnf install -y qbittorrent-nox ;;
+        yum)    $SUDO_CMD yum install -y epel-release && $SUDO_CMD yum install -y qbittorrent-nox ;;
+        pacman) $SUDO_CMD pacman -S --noconfirm qbittorrent-nox ;;
+        apk)    $SUDO_CMD apk add --no-cache qbittorrent-nox ;;
+        brew)   brew install qbittorrent-nox ;;
+        *)
+            log_error "无法自动安装 qbittorrent-nox，请先手动安装。"
+            exit 1
+            ;;
     esac
-
-    if ! command -v qbittorrent-nox >/dev/null 2>&1; then
-        log_error "qBittorrent 安装失败或平台不受支持。请任选一种方式后重试："
-        log_error "  apt:    sudo apt-get install -y qbittorrent-nox"
-        log_error "  dnf:    sudo dnf install -y epel-release && sudo dnf install -y qbittorrent-nox"
-        log_error "  pacman: sudo pacman -S --noconfirm qbittorrent-nox"
-        log_error "  apk:    sudo apk add --no-cache qbittorrent-nox"
-        log_error "  Docker: docker run -d --name qbittorrent -p ${INT_PORT}:8080 -v /config:/config linuxserver/qbittorrent"
-        exit 1
-    fi
+    log_success "qBittorrent 安装完成！"
 }
 
 # ------------------------------------------------------------------------------
 # 1. Detect or Setup Installation Directory
 # ------------------------------------------------------------------------------
 detect_or_setup_installation() {
-    log_step "[1/6] 检测安装目录与项目产物..."
+    log_step "[1/4] 获取与准备 Abit 静态主题包..."
     ensure_git
 
     INSTALL_DIR="$INSTALL_DIR_DEFAULT"
@@ -178,6 +139,7 @@ detect_or_setup_installation() {
         INSTALL_DIR="$(pwd -P)"
         log_info "检测到当前目录即为 Abit 项目仓库: ${BOLD}${INSTALL_DIR}${NC}"
     elif [[ -d "$HOME/Abit" ]] && [[ -f "$HOME/Abit/scripts/build.js" ]]; then
+        INSTALL_DIR="$HOME/Abit"
         log_info "检测到已有安装目录: ${BOLD}${INSTALL_DIR}${NC}"
         cd "$INSTALL_DIR"
         log_info "正在同步拉取最新代码..."
@@ -188,24 +150,29 @@ detect_or_setup_installation() {
         cd "$INSTALL_DIR"
     fi
 
-    log_info "执行前端资源编译打包..."
-    node scripts/build.js
+    # Build if node is available, otherwise use pre-built public bundle
+    if command -v node >/dev/null 2>&1; then
+        log_info "检测到 Node.js 环境，执行自动前端构建打包..."
+        node scripts/build.js
+    else
+        log_info "使用仓库内置的高性能预编译静态资源包。"
+    fi
 
     WEBUI_TARGET_PATH="$INSTALL_DIR/public"
     if [[ ! -d "$WEBUI_TARGET_PATH" ]]; then
         WEBUI_TARGET_PATH="$INSTALL_DIR"
     fi
-    log_success "安装目录准备就绪: ${INSTALL_DIR}"
+    log_success "Abit 静态主题包就绪: ${WEBUI_TARGET_PATH}"
 }
 
 # ------------------------------------------------------------------------------
 # 2. Detect qBittorrent Configuration File
 # ------------------------------------------------------------------------------
 detect_qbittorrent_config() {
-    log_step "[2/6] 智能检索 qBittorrent 配置文件..."
+    log_step "[2/4] 智能检索 qBittorrent 配置文件..."
     CONFIG_PATH=""
 
-    # 1. Docker / container paths take priority when in container mode
+    # 1. Docker / container paths
     if [ "$DOCKER_MODE" = "1" ]; then
         for path in "/config/qBittorrent/qBittorrent.conf" "/config/qBittorrent/config/qBittorrent.conf" "/appdata/qbittorrent/config/qBittorrent/qBittorrent.conf"; do
             if [[ -f "$path" ]]; then
@@ -223,7 +190,7 @@ detect_qbittorrent_config() {
             FOUND_CONF="$(ls -l "/proc/$QBT_PID/fd" 2>/dev/null | grep -o '/.*qBittorrent\.conf' | head -n 1 || true)"
             if [[ -n "$FOUND_CONF" ]] && [[ -f "$FOUND_CONF" ]]; then
                 CONFIG_PATH="$FOUND_CONF"
-                log_info "从运行中的 qBittorrent 进程(PID: ${QBT_PID})定位配置文件: ${CONFIG_PATH}"
+                log_info "从运行中的 qBittorrent 进程(PID: ${QBT_PID})精准定位配置文件: ${CONFIG_PATH}"
             fi
         fi
     fi
@@ -248,7 +215,7 @@ detect_qbittorrent_config() {
         done
     fi
 
-    # 4. Fallback: search in user home directory
+    # 4. Fallback search
     if [[ -z "$CONFIG_PATH" ]]; then
         log_info "正在进行用户主目录轻量搜索..."
         FOUND_SEARCH="$(find "$HOME/.config" -maxdepth 3 -name "qBittorrent.conf" 2>/dev/null | head -n 1 || true)"
@@ -258,7 +225,7 @@ detect_qbittorrent_config() {
         fi
     fi
 
-    # 5. If still not found, create standard default config with dynamic paths
+    # 5. If still not found, create standard default config
     if [[ -z "$CONFIG_PATH" ]]; then
         CONFIG_PATH="$HOME/.config/qBittorrent/qBittorrent.conf"
         log_warn "未找到现有配置文件，将为您自动初始化标准配置文件: ${CONFIG_PATH}"
@@ -273,7 +240,7 @@ Session\DefaultSavePath=$HOME/Downloads
 Session\Port=6881
 
 [Preferences]
-WebUI\Port=$INT_PORT
+WebUI\Port=8080
 WebUI\Username=admin
 EOF
     fi
@@ -282,43 +249,26 @@ EOF
 }
 
 # ------------------------------------------------------------------------------
-# 3. Configure qBittorrent Backend & Standalone High-Speed UI Proxy
+# 3. Configure Native Alternative WebUI in qBittorrent.conf
 # ------------------------------------------------------------------------------
-port_in_use() {
-    local p="$1"
-    if command -v ss >/dev/null 2>&1; then
-        ss -tln 2>/dev/null | awk '{print $4}' | grep -q ":$p$"
-    elif command -v lsof >/dev/null 2>&1; then
-        lsof -iTCP:"$p" -sTCP:LISTEN >/dev/null 2>&1
-    else
-        if (exec 3<>"/dev/tcp/127.0.0.1/$p") 2>/dev/null; then
-            exec 3>&- 3<&- 2>/dev/null || true
-            return 0
-        fi
-        return 1
-    fi
-}
-
 stop_qbittorrent_precisely() {
     if [ "$DOCKER_MODE" = "1" ]; then
-        log_info "Docker 模式：跳过宿主进程终止，容器内配置修改后由容器自行生效。"
         return
     fi
-    # Exact process-name match only, avoid killing unrelated processes
     local pids
     pids="$(pgrep -x qbittorrent-nox 2>/dev/null || true)"
     for pid in $pids; do
         kill -TERM "$pid" 2>/dev/null || true
     done
-    sleep 2
+    sleep 1
     pids="$(pgrep -x qbittorrent-nox 2>/dev/null || true)"
     for pid in $pids; do
         kill -KILL "$pid" 2>/dev/null || true
     done
 }
 
-configure_services() {
-    log_step "[3/6] 部署并优化 WebUI 架构..."
+configure_alternative_webui() {
+    log_step "[3/4] 写入备用 WebUI 主题配置..."
 
     BACKUP_PATH="${CONFIG_PATH}.bak.$(date +%Y%m%d%H%M%S)"
     cp "$CONFIG_PATH" "$BACKUP_PATH"
@@ -327,230 +277,187 @@ configure_services() {
     # Stop qBittorrent first so config writes are not overwritten on shutdown
     stop_qbittorrent_precisely
 
-    # Stop any existing Abit front-end first (update scenario releases ports)
+    # Clean any legacy node/pm2 dev server if previously existed
     if command -v pm2 >/dev/null 2>&1; then
         pm2 delete abit-webui >/dev/null 2>&1 || true
+        pm2 save >/dev/null 2>&1 || true
     fi
-    pkill -f "$INSTALL_DIR/scripts/dev.js" 2>/dev/null || true
-    sleep 1
+    pkill -f "scripts/dev.js" 2>/dev/null || true
 
-    # Port occupancy checks
-    if port_in_use "$EXT_PORT"; then
-        log_error "外部端口 ${EXT_PORT} 已被占用。请换端口重试，例如: ABIT_EXT_PORT=8090 bash install.sh"
-        exit 1
-    fi
-    if [ "$DOCKER_MODE" != "1" ] && port_in_use "$INT_PORT"; then
-        if pgrep -x qbittorrent-nox >/dev/null 2>&1; then
-            :  # our own freshly-started instance, fine
-        else
-            log_warn "检测到内部端口 ${INT_PORT} 已被其他系统服务占用，正在自动探测可用备用端口..."
-            ORIG_INT_PORT="$INT_PORT"
-            for candidate in $(seq $((INT_PORT + 1)) $((INT_PORT + 20))); do
-                if ! port_in_use "$candidate"; then
-                    INT_PORT="$candidate"
-                    log_success "已自动切换内部通讯端口: ${BOLD}${INT_PORT}${NC} (原 ${ORIG_INT_PORT})"
-                    break
-                fi
-            done
-            if port_in_use "$INT_PORT"; then
-                log_error "未能找到空闲内部端口，请手动指定: ABIT_INT_PORT=8095 bash install.sh"
-                exit 1
-            fi
-        fi
-    fi
-
-    # Rewrite configuration via python3 heredoc (no shell-quoting pitfalls)
+    # Use Python for reliable INI modification if available
     if command -v python3 >/dev/null 2>&1; then
         ABIT_CONF_PATH="$CONFIG_PATH" \
-        ABIT_INT_PORT="$INT_PORT" \
-        ABIT_INSECURE="$INSECURE" \
+        ABIT_ROOT_FOLDER="$WEBUI_TARGET_PATH" \
         python3 - <<'PYEOF'
 import os
 import re
 
 conf_path = os.environ["ABIT_CONF_PATH"]
-int_port = os.environ["ABIT_INT_PORT"]
-insecure = os.environ.get("ABIT_INSECURE", "0") == "1"
+root_folder = os.environ["ABIT_ROOT_FOLDER"]
 
-with open(conf_path, "r", encoding="utf-8", errors="ignore") as f:
+with open(conf_path, 'r', encoding='utf-8', errors='ignore') as f:
     conf = f.read()
 
-def set_preference(content, key, val):
-    pattern = re.compile(r"(?m)^(" + re.escape(key) + r")\s*=.*$")
-    if pattern.search(content):
-        return pattern.sub(r"\1=" + val, content)
-    if "[Preferences]" in content:
-        return content.replace("[Preferences]", "[Preferences]\n" + key + "=" + val)
-    return content + "\n[Preferences]\n" + key + "=" + val
+def set_pref(content, key, val):
+    pattern = rf'({re.escape(key)}\s*=).*'
+    if re.search(pattern, content):
+        return re.sub(pattern, rf'\1{val}', content)
+    else:
+        if '[Preferences]' in content:
+            return content.replace('[Preferences]', f'[Preferences]\n{key}={val}')
+        else:
+            return content + f'\n[Preferences]\n{key}={val}'
 
-# Backend listens on internal port; Abit front-end proxies externally
-conf = set_preference(conf, r"WebUI\Port", int_port)
-conf = set_preference(conf, r"WebUI\AlternativeUIEnabled", "false")
+# Direct native replacement mode
+conf = set_pref(conf, 'WebUI\\AlternativeUIEnabled', 'true')
+conf = set_pref(conf, 'WebUI\\RootFolder', root_folder)
 
-if insecure:
-    # Compatibility mode: disable auth checks so the proxy flows open instantly.
-    conf = set_preference(conf, r"WebUI\LocalHostAuth", "false")
-    conf = set_preference(conf, r"WebUI\CSRFProtection", "false")
-    conf = set_preference(conf, r"WebUI\HostHeaderValidation", "false")
-else:
-    # Secure mode (default): keep qBittorrent authentication intact.
-    conf = set_preference(conf, r"WebUI\LocalHostAuth", "true")
+# Clean excessive newlines
+conf = re.sub(r'\n{3,}', '\n\n', conf)
 
-conf = re.sub(r"\n{3,}", "\n\n", conf)
-
-with open(conf_path, "w", encoding="utf-8") as f:
+with open(conf_path, 'w', encoding='utf-8') as f:
     f.write(conf)
 PYEOF
-        log_success "qBittorrent 后端配置完成（内部端口: ${INT_PORT}，安全模式: $([ "$INSECURE" = "1" ] && echo 兼容 || echo 安全)）"
     else
-        log_error "未找到 python3，无法自动改写 qBittorrent 配置。请手动安装 python3 后重试。"
-        exit 1
-    fi
-}
-
-# ------------------------------------------------------------------------------
-# 4. Launch qBittorrent & WebUI Service via PM2 / Daemon
-# ------------------------------------------------------------------------------
-verify_qbt_backend() {
-    local code
-    code="$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 3 "http://127.0.0.1:${INT_PORT}/api/v2/app/version" || true)"
-    if [ "$code" = "200" ]; then
-        log_success "qBittorrent 后端 API 可达（v$(curl -s --connect-timeout 3 "http://127.0.0.1:${INT_PORT}/api/v2/app/version" 2>/dev/null || echo '?')）"
-        return 0
-    fi
-    log_warn "qBittorrent 后端 API 暂不可达（HTTP ${code:-无响应}）。"
-    if [ "$DOCKER_MODE" = "1" ]; then
-        log_warn "Docker 模式请确认容器端口已映射到宿主 ${INT_PORT}，例如: docker run -p ${INT_PORT}:8080 ..."
-    else
-        log_warn "请确认 qbittorrent-nox 已成功启动且 WebUI 端口为 ${INT_PORT}。"
-    fi
-    return 1
-}
-
-setup_pm2_startup() {
-    command -v pm2 >/dev/null 2>&1 || return 0
-    local cmd
-    cmd="$(pm2 startup 2>&1 | grep -E 'sudo .*pm2 startup|pm2 startup' | tail -n 1 || true)"
-    if [ -n "$cmd" ]; then
-        log_info "配置 PM2 开机自启..."
-        if [ "$(id -u)" -eq 0 ]; then
-            eval "${cmd#sudo }" 2>/dev/null || true
+        # Fallback to sed
+        sed -i '/WebUI\\AlternativeUIEnabled/d' "$CONFIG_PATH"
+        sed -i '/WebUI\\RootFolder/d' "$CONFIG_PATH"
+        if grep -q "\[Preferences\]" "$CONFIG_PATH"; then
+            sed -i "/\[Preferences\]/a WebUI\\\\AlternativeUIEnabled=true\nWebUI\\\\RootFolder=$WEBUI_TARGET_PATH" "$CONFIG_PATH"
         else
-            eval "$cmd" 2>/dev/null || true
+            echo -e "\n[Preferences]\nWebUI\\AlternativeUIEnabled=true\nWebUI\\RootFolder=$WEBUI_TARGET_PATH" >> "$CONFIG_PATH"
         fi
-        pm2 save >/dev/null 2>&1 || true
-        log_success "PM2 开机自启已配置（系统重启后自动恢复服务）。"
     fi
+
+    log_success "备用 WebUI 配置写入成功："
+    echo -e "   ├─ ${BOLD}WebUI\\AlternativeUIEnabled${NC} = ${GREEN}true${NC}"
+    echo -e "   └─ ${BOLD}WebUI\\RootFolder${NC}           = ${GREEN}${WEBUI_TARGET_PATH}${NC}"
 }
 
-start_services() {
-    log_step "[4/6] 启动 qBittorrent 与 Abit 极速前端服务..."
+# ------------------------------------------------------------------------------
+# 4. Restart qBittorrent Service & Summary
+# ------------------------------------------------------------------------------
+start_service() {
+    log_step "[4/4] 正在重新加载 qBittorrent 服务..."
 
-    # 1. Start qBittorrent backend (skip in Docker mode - container manages itself)
-    if [ "$DOCKER_MODE" != "1" ] && command -v qbittorrent-nox >/dev/null 2>&1; then
-        log_info "正在启动 qBittorrent 下载内核..."
-        qbittorrent-nox -d 2>/dev/null || true
+    if [ "$DOCKER_MODE" = "1" ]; then
+        log_info "Docker 模式：配置已写入挂载卷，请重启对应容器使配置生效。"
+        return
+    fi
+
+    RESTARTED=0
+    # Try systemd first
+    if command -v systemctl >/dev/null 2>&1; then
+        for svc in "qbittorrent-nox" "qbittorrent" "qbittorrent-nox@$USER" "qbittorrent-nox@root"; do
+            if systemctl is-active --quiet "$svc" 2>/dev/null || systemctl is-enabled --quiet "$svc" 2>/dev/null; then
+                log_info "发现 systemd 服务 [${svc}]，正在重启..."
+                $SUDO_CMD systemctl restart "$svc" 2>/dev/null || systemctl restart "$svc" 2>/dev/null || true
+                RESTARTED=1
+                break
+            fi
+        done
+    fi
+
+    # Fallback to daemon relaunch
+    if [ "$RESTARTED" = "0" ] && command -v qbittorrent-nox >/dev/null 2>&1; then
+        log_info "正在启动 qbittorrent-nox (守护进程模式)..."
+        /usr/bin/qbittorrent-nox -d 2>/dev/null || qbittorrent-nox -d 2>/dev/null || true
         sleep 2
+        RESTARTED=1
     fi
 
-    verify_qbt_backend || true
-
-    # 2. Start Abit front-end service
-    if command -v pm2 >/dev/null 2>&1; then
-        log_info "使用 PM2 守护启动 Abit 极速前端服务（端口: ${EXT_PORT}）..."
-        pm2 delete abit-webui >/dev/null 2>&1 || true
-        pm2 start "$INSTALL_DIR/scripts/dev.js" --name "abit-webui" -- --port="$EXT_PORT" --qbt="http://127.0.0.1:${INT_PORT}" --dist
-        pm2 save >/dev/null 2>&1 || true
-        setup_pm2_startup
-    elif command -v node >/dev/null 2>&1; then
-        log_info "使用后台进程启动 Abit 极速前端服务（端口: ${EXT_PORT}）..."
-        pkill -f "$INSTALL_DIR/scripts/dev.js" 2>/dev/null || true
-        nohup node "$INSTALL_DIR/scripts/dev.js" --port="$EXT_PORT" --qbt="http://127.0.0.1:${INT_PORT}" --dist > /tmp/abit.log 2>&1 &
-        sleep 1
-    fi
-
-    # 3. Verify front-end
-    if curl -s -o /dev/null --connect-timeout 3 "http://127.0.0.1:${EXT_PORT}/" >/dev/null 2>&1; then
-        log_success "Abit 前端服务已在端口 ${EXT_PORT} 成功就绪！"
+    if pgrep -x qbittorrent-nox >/dev/null 2>&1; then
+        log_success "qBittorrent 服务已成功运行！"
     else
-        log_error "Abit 前端服务未能响应，请检查日志: pm2 logs abit-webui 或 /tmp/abit.log"
-        exit 1
+        log_warn "未检测到 qbittorrent 进程，请手动执行 'qbittorrent-nox -d' 启动。"
     fi
 }
 
-# ------------------------------------------------------------------------------
-# 5. Extract Port and Display Success Summary
-# ------------------------------------------------------------------------------
 display_summary() {
-    log_step "[5/6] 安装部署完成！"
+    # Extract port from config
+    WEBUI_PORT="8080"
+    if [[ -f "$CONFIG_PATH" ]]; then
+        DETECTED_PORT="$(grep -E '^WebUI\\Port=' "$CONFIG_PATH" | cut -d'=' -f2 | tr -d '\r' || true)"
+        if [[ -n "$DETECTED_PORT" ]]; then
+            WEBUI_PORT="$DETECTED_PORT"
+        fi
+    fi
 
-    PUBLIC_IP="$(curl -s --connect-timeout 2 http://ifconfig.me || curl -s --connect-timeout 2 http://icanhazip.com || echo "您的服务器公网IP")"
+    PUBLIC_IP="$(curl -s --connect-timeout 2 http://ifconfig.me 2>/dev/null || curl -s --connect-timeout 2 http://icanhazip.com 2>/dev/null || echo "您的服务器公网IP")"
     LOCAL_IP="$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")"
 
     echo ""
-    echo -e "${GREEN}${BOLD}🎉 恭喜！Abit 苹果风格 WebUI 已成功部署，即开即用！${NC}"
+    echo -e "${GREEN}${BOLD}🎉 恭喜！Abit 备用 WebUI 主题已成功替换并生效！${NC}"
     echo "─────────────────────────────────────────────────────────────────"
-    echo -e " 🌐 ${BOLD}公网访问地址${NC}:  ${CYAN}http://${PUBLIC_IP}:${EXT_PORT}${NC}"
-    echo -e " 🏠 ${BOLD}局域网地址${NC}:    ${CYAN}http://${LOCAL_IP}:${EXT_PORT}${NC}"
-    echo -e " 📁 ${BOLD}项目安装路径${NC}:  ${YELLOW}${INSTALL_DIR}${NC}"
+    echo -e " 🌐 ${BOLD}访问地址${NC}:      ${CYAN}http://${PUBLIC_IP}:${WEBUI_PORT}${NC}"
+    echo -e " 🏠 ${BOLD}局域网地址${NC}:    ${CYAN}http://${LOCAL_IP}:${WEBUI_PORT}${NC}"
+    echo -e " 📁 ${BOLD}主题所在路径${NC}:  ${YELLOW}${WEBUI_TARGET_PATH}${NC}"
     echo -e " ⚙️  ${BOLD}配置文件路径${NC}:  ${YELLOW}${CONFIG_PATH}${NC}"
-    if [ "$INSECURE" = "1" ]; then
-        echo -e " ⚠️  ${BOLD}安全模式${NC}: ${RED}兼容模式（ABIT_INSECURE=1）已关闭 CSRF/本机认证校验，请勿直接暴露公网${NC}"
-    else
-        echo -e " 🔒 ${BOLD}安全模式${NC}: 保留 qBittorrent 认证；首次打开若提示登录，输入 qBittorrent 账密即可"
-    fi
     echo "─────────────────────────────────────────────────────────────────"
-    echo -e " 💡 ${BOLD}使用提示${NC}:"
-    echo -e "   • 更新: bash install.sh（自动 git pull + 重新配置）"
-    echo -e "   • 卸载: bash install.sh uninstall"
-    echo -e "   • 换端口: ABIT_EXT_PORT=8090 bash install.sh"
-    echo -e "   • 免登录兼容模式: ABIT_INSECURE=1 bash install.sh"
+    echo -e " 💡 ${BOLD}温馨提示${NC}:"
+    echo -e "   • 原生直接替换: 0 额外内存占用，直接由 qBittorrent 自带服务托管。"
+    echo -e "   • 默认登录账号: ${BOLD}admin${NC}，密码为您此前设置的 WebUI 密码。"
+    echo -e "   • 卸载恢复官方: 运行 ${BOLD}bash install.sh uninstall${NC} 即可秒级恢复官方自带界面。"
     echo "─────────────────────────────────────────────────────────────────"
     echo ""
 }
 
 # ------------------------------------------------------------------------------
-# Uninstall subcommand
+# Subcommand: Uninstall / Rollback
 # ------------------------------------------------------------------------------
 do_uninstall() {
     print_banner
-    log_step "卸载 Abit WebUI..."
-    pm2 delete abit-webui >/dev/null 2>&1 || true
-    pkill -f "$INSTALL_DIR_DEFAULT/scripts/dev.js" 2>/dev/null || true
-    pm2 save >/dev/null 2>&1 || true
+    log_step "正在执行 Abit 卸载与官方默认 WebUI 恢复..."
+    detect_qbittorrent_config
 
-    read -r -p "是否删除项目目录 ${INSTALL_DIR_DEFAULT}？[y/N]: " del_dir
-    if [[ "$del_dir" =~ ^[Yy]$ ]]; then
-        case "$INSTALL_DIR_DEFAULT" in
-            *Abit|*abit)
-                rm -rf "$INSTALL_DIR_DEFAULT"
-                log_success "项目目录已删除。"
-                ;;
-            *)
-                log_error "目录名异常，拒绝删除: ${INSTALL_DIR_DEFAULT}"
-                ;;
-        esac
+    if [[ -f "$CONFIG_PATH" ]]; then
+        log_info "正在恢复配置文件至官方默认 WebUI..."
+        if command -v python3 >/dev/null 2>&1; then
+            ABIT_CONF_PATH="$CONFIG_PATH" python3 - <<'PYEOF'
+import os, re
+conf_path = os.environ["ABIT_CONF_PATH"]
+with open(conf_path, 'r', encoding='utf-8', errors='ignore') as f:
+    conf = f.read()
+conf = re.sub(r'WebUI\\AlternativeUIEnabled\s*=.*', 'WebUI\\AlternativeUIEnabled=false', conf)
+conf = re.sub(r'WebUI\\RootFolder\s*=.*\n?', '', conf)
+with open(conf_path, 'w', encoding='utf-8') as f:
+    f.write(conf)
+PYEOF
+        else
+            sed -i "s/WebUI\\\\AlternativeUIEnabled=true/WebUI\\\\AlternativeUIEnabled=false/g" "$CONFIG_PATH"
+            sed -i "/WebUI\\\\RootFolder/d" "$CONFIG_PATH"
+        fi
+        log_success "配置文件已恢复官方原生设置。"
     fi
-    log_success "卸载完成。qBittorrent 本体与下载数据未动（如需卸载请自行处理）。"
+
+    # Clean installed directory if exists
+    if [[ -d "$INSTALL_DIR_DEFAULT" ]]; then
+        rm -rf "$INSTALL_DIR_DEFAULT"
+        log_info "已清理安装目录: $INSTALL_DIR_DEFAULT"
+    fi
+
+    start_service
+    log_success "已完全恢复为 qBittorrent 官方自带默认 WebUI！"
+    exit 0
 }
 
 # ------------------------------------------------------------------------------
-# Main Execution Entry
+# Main Entry Point
 # ------------------------------------------------------------------------------
 main() {
+    if [ "${1:-}" = "uninstall" ] || [ "${1:-}" = "--uninstall" ]; then
+        do_uninstall
+        return
+    fi
+
     print_banner
     detect_os
-    log_info "平台: ${DISTRO:-未知} (${PKG_MGR:-无包管理器}) | 端口: 外 ${EXT_PORT} / 内 ${INT_PORT}"
     ensure_qbittorrent
-    ensure_node
     detect_or_setup_installation
     detect_qbittorrent_config
-    configure_services
-    start_services
+    configure_alternative_webui
+    start_service
     display_summary
 }
 
-case "${1:-}" in
-    uninstall) do_uninstall; exit 0 ;;
-    *) main "$@" ;;
-esac
+main "$@"
