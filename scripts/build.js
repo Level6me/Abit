@@ -158,16 +158,22 @@ function build() {
         `<script src="js/$1?v=${versionStamp}"></script>`
     );
     const publicIndexPath = path.join(PUBLIC_DIR, 'index.html');
+    const publicLoginPath = path.join(PUBLIC_DIR, 'login.html');
     fs.writeFileSync(publicIndexPath, publicHtml);
+    fs.writeFileSync(publicLoginPath, publicHtml);
 
-    // Sync Standalone Output to Root index.html
+    // Sync Standalone Output to Root index.html & login.html and dist/login.html
     const rootIndexPath = path.join(ROOT_DIR, 'index.html');
+    const rootLoginPath = path.join(ROOT_DIR, 'login.html');
+    const distLoginPath = path.join(DIST_DIR, 'login.html');
     fs.writeFileSync(rootIndexPath, standaloneHtml);
+    fs.writeFileSync(rootLoginPath, standaloneHtml);
+    fs.writeFileSync(distLoginPath, standaloneHtml);
 
-    console.log(`   ├─ public/index.html (Modular Structure Entry) (${formatKB(Buffer.byteLength(publicHtml))})`);
+    console.log(`   ├─ public/index.html & login.html (${formatKB(Buffer.byteLength(publicHtml))})`);
     console.log(`   ├─ public/css/ (${publicCssCount} Granular CSS Files)`);
     console.log(`   ├─ public/js/ (${publicJsCount} Granular JS Files)`);
-    console.log(`   └─ index.html (Root WebUI Standalone Entry) (${formatKB(Buffer.byteLength(standaloneHtml))})`);
+    console.log(`   └─ index.html & login.html (${formatKB(Buffer.byteLength(standaloneHtml))})`);
 
     const elapsed = Date.now() - startTime;
     console.log(`\n🎉 Build successfully completed in ${elapsed}ms!\n`);

@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Abit — qBittorrent Apple UI Alternative WebUI</title>
+    <!-- Third-party libraries are bundled locally (no CDN dependency) -->
+    <!-- Modular Stylesheet -->
+    <!-- Modular Granular Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css?v=1786853756293">
+    <link rel="stylesheet" href="css/base.css?v=1786853756293">
+    <link rel="stylesheet" href="css/layout.css?v=1786853756293">
+    <link rel="stylesheet" href="css/components.css?v=1786853756293">
+    <link rel="stylesheet" href="css/torrents.css?v=1786853756293">
+    <link rel="stylesheet" href="css/dock.css?v=1786853756293">
+    <link rel="stylesheet" href="css/modal.css?v=1786853756293">
+</head>
+<body>
+<!-- Global Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Drag and drop full window overlay -->
+<div class="drag-overlay" id="drag-overlay">
+    <div data-i18n="📥 松开鼠标以添加 Torrent 种子文件">📥 松开鼠标以添加 Torrent 种子文件</div>
+</div>
+
+<div class="container">
+    <!-- Header Bar -->
+    <div class="header">
+        <div class="header-left">
+            <div class="date-badge" id="date-now">TORRENT OMNI</div>
+            <div class="title" id="page-title" data-i18n="总览">总览</div>
+        </div>
+        <div class="header-actions">
+            <!-- Alt Speed Mode Button (Turtle 🐢) -->
+            <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" data-i18n-title="切换备用速度限制模式" title="切换备用速度限制模式">
+                <span id="alt-speed-icon">⚡</span>
+                <span id="alt-speed-label" data-i18n="常规速率">常规速率</span>
+            </button>
+
+            <!-- Theme Toggle Button -->
+            <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" data-i18n-title="切换明暗主题" title="切换明暗主题">
+                <span id="theme-icon">🌓</span>
+                <span id="theme-label" data-i18n="自动">自动</span>
+            </button>
+
+            <!-- Language Toggle Button -->
+            <button class="pill-btn" id="btn-lang-toggle" onclick="toggleLang()" data-i18n-title="语言切换 / Language" title="语言切换 / Language">
+                <span>🌐</span>
+                <span id="lang-label" data-i18n="中 / EN">中 / EN</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== PAGE 1: DASHBOARD ==================== -->
+    <div id="p-dash" class="page active">
+        <div class="grid-4">
+            <div class="card">
+                <div class="val-sub" style="color:var(--success);" data-i18n="↓ 实时下载速度">↓ 实时下载速度</div>
+                <div class="val-big" id="v-dl-speed" style="color:var(--success);">0 B/s</div>
+                <div class="val-sub" id="v-dl-count" style="margin-top:4px;" data-i18n="活跃下载: ">活跃下载: 0</div>
+            </div>
+            <div class="card">
+                <div class="val-sub" style="color:var(--accent);" data-i18n="↑ 实时上传速度">↑ 实时上传速度</div>
+                <div class="val-big" id="v-up-speed" style="color:var(--accent);">0 B/s</div>
+                <div class="val-sub" id="v-up-count" style="margin-top:4px;" data-i18n="活跃做种: ">活跃做种: 0</div>
+            </div>
+            <div class="card">
+                <div class="val-sub" data-i18n="网络连接与 DHT">网络连接与 DHT</div>
+                <div class="val-big" id="v-conn-status" style="font-size:20px;" data-i18n="连接中...">连接中...</div>
+                <div class="val-sub" id="v-dht-nodes" style="margin-top:4px;" data-i18n="DHT 节点: ">DHT 节点: --</div>
+            </div>
+            <div class="card">
+                <div class="val-sub" data-i18n="下载磁盘剩余">下载磁盘剩余</div>
+                <div class="val-big" id="v-disk-free" style="font-size:20px;">--</div>
+                <div class="val-sub" id="v-total-transferred" style="margin-top:4px;" data-i18n="累计传输: ↓ ">累计传输: ↓ 0 B | ↑ 0 B</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span style="font-weight:700; font-size:15px;" data-i18n="实时网络传输走势">实时网络传输走势</span>
+                    <span class="val-sub" style="margin-left:8px;">(KB/s)</span>
+                </div>
+                <div style="font-size:12px; display:flex; gap:12px;">
+                    <span style="color:var(--success); font-weight:600;" data-i18n="● 下载速率">● 下载速率</span>
+                    <span style="color:var(--accent); font-weight:600;" data-i18n="● 上传速率">● 上传速率</span>
+                </div>
+            </div>
+            <div class="chart-mini"><canvas id="netChart"></canvas></div>
+        </div>
+
+        <!-- Quick Summary Grid -->
+        <!-- Task Status Summary Card -->
+        <div class="card">
+            <div style="font-weight:700; font-size:15px; margin-bottom:12px;"><span data-i18n="📊 任务状态汇总">📊 任务状态汇总</span> <span class="val-sub" style="font-weight:normal; margin-left:4px;" data-i18n="(点击快速跳转筛选)">(点击快速跳转筛选)</span></div>
+            <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" data-i18n-title="点击查看全部任务" title="点击查看全部任务">
+                    <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
+                    <div class="val-sub" data-i18n="全部任务">全部任务</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('downloading')" data-i18n-title="点击查看下载中任务" title="点击查看下载中任务">
+                    <div class="val-big" id="sum-dl" style="color:var(--success);">0</div>
+                    <div class="val-sub" data-i18n="下载中">下载中</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('seeding')" data-i18n-title="点击查看做种中任务" title="点击查看做种中任务">
+                    <div class="val-big" id="sum-seed" style="color:var(--purple);">0</div>
+                    <div class="val-sub" data-i18n="做种中">做种中</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('completed')" data-i18n-title="点击查看已完成任务" title="点击查看已完成任务">
+                    <div class="val-big" id="sum-completed" style="color:var(--text);">0</div>
+                    <div class="val-sub" data-i18n="已完成">已完成</div>
+                </div>
+                <div class="stat-interactive" onclick="jumpToTorrentFilter('paused')" data-i18n-title="点击查看已暂停任务" title="点击查看已暂停任务">
+                    <div class="val-big" id="sum-pause" style="color:var(--text-sec);">0</div>
+                    <div class="val-sub" data-i18n="已暂停">已暂停</div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </div>
+
+    <!-- ==================== PAGE 2: TORRENTS LIST ==================== -->
+    <div id="p-torrents" class="page">
+        <!-- Floating Sticky Filter Toolbar -->
+        <div class="sticky-toolbar">
+            <div class="controls-bar">
+                <div class="filter-row">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="torrent-search-input" data-i18n-ph="实时过滤名称 / Hash..." placeholder="实时过滤名称 / Hash..." oninput="onSearchFilterChange(this.value)">
+                        <span class="search-clear" id="search-clear-btn" onclick="clearSearchFilter()">✖</span>
+                    </div>
+                    <select class="select-custom" id="filter-category" onchange="onCategoryFilterChange(this.value)">
+                        <option value="all" data-i18n-opt="📁 全部分类">📁 全部分类</option>
+                    </select>
+                    <select class="select-custom" id="sort-by" onchange="onSortChange(this.value)">
+                        <option value="added_on_desc" data-i18n-opt="🕒 添加时间 (最新)">🕒 添加时间 (最新)</option>
+                        <option value="added_on_asc" data-i18n-opt="🕒 添加时间 (最早)">🕒 添加时间 (最早)</option>
+                        <option value="name_asc" data-i18n-opt="🔤 任务名称 (A-Z)">🔤 任务名称 (A-Z)</option>
+                        <option value="size_desc" data-i18n-opt="📦 文件体积 (大到小)">📦 文件体积 (大到小)</option>
+                        <option value="progress_desc" data-i18n-opt="📈 下载进度 (高到低)">📈 下载进度 (高到低)</option>
+                        <option value="dlspeed_desc" data-i18n-opt="⚡ 下载速度 (快到慢)">⚡ 下载速度 (快到慢)</option>
+                        <option value="upspeed_desc" data-i18n-opt="⚡ 上传速度 (快到慢)">⚡ 上传速度 (快到慢)</option>
+                        <option value="eta_asc" data-i18n-opt="⏳ 剩余时间 (ETA)">⏳ 剩余时间 (ETA)</option>
+                        <option value="ratio_desc" data-i18n-opt="🔄 分享率 (高到低)">🔄 分享率 (高到低)</option>
+                    </select>
+                    <button class="icon-btn" id="btn-view-mode" onclick="toggleViewMode()" data-i18n-title="切换卡片 / 表格视图" title="切换卡片 / 表格视图">
+                        <svg id="view-icon-cards" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                        <svg id="view-icon-table" viewBox="0 0 24 24" style="display:none;"><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg>
+                    </button>
+                    <button class="btn" onclick="openAddModal()" style="padding:8px 14px; font-size:13px;">
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> <span data-i18n="新建任务">新建任务</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Filter Segmented Control -->
+            <div class="segmented-control">
+                <button class="segment-btn active" onclick="filterTorrents('all', this)"><span data-i18n="全部">全部</span> (<span id="cnt-all">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('downloading', this)"><span data-i18n="下载中">下载中</span> (<span id="cnt-dl">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('seeding', this)"><span data-i18n="做种中">做种中</span> (<span id="cnt-seed">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('completed', this)"><span data-i18n="已完成">已完成</span> (<span id="cnt-completed">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('paused', this)"><span data-i18n="已暂停">已暂停</span> (<span id="cnt-pause">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('active', this)"><span data-i18n="活动中">活动中</span> (<span id="cnt-active">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('queued', this)"><span data-i18n="排队中">排队中</span> (<span id="cnt-queue">0</span>)</button>
+                <button class="segment-btn" onclick="filterTorrents('error', this)"><span data-i18n="错误">错误</span> (<span id="cnt-err">0</span>)</button>
+            </div>
+        </div>
+
+        <!-- Batch Operations Bar (Appears when items are selected) -->
+        <div class="batch-bar" id="batch-bar">
+            <div class="batch-left">
+                <input type="checkbox" id="select-all-check" class="torrent-check" onchange="toggleSelectAllTorrents(this.checked)">
+                <span><span data-i18n="已选中 ">已选中 </span><span id="batch-count">0</span><span data-i18n=" 项"> 项</span></span>
+            </div>
+            <div class="batch-actions">
+                <button class="batch-btn" onclick="batchTorrentAction('resume')"><span data-i18n="▶ 恢复">▶ 恢复</span></button>
+                <button class="batch-btn" onclick="batchTorrentAction('pause')"><span data-i18n="⏸ 暂停">⏸ 暂停</span></button>
+                <button class="batch-btn" onclick="batchForceRecheck()"><span data-i18n="🔍 重新校验">🔍 重新校验</span></button>
+                <button class="batch-btn" onclick="batchRedownload()"><span data-i18n="🔄 重新下载">🔄 重新下载</span></button>
+                <button class="batch-btn" onclick="openBatchCategoryModal()"><span data-i18n="🏷 分类">🏷 分类</span></button>
+                <button class="batch-btn danger" onclick="confirmBatchDelete()"><span data-i18n="🗑 删除">🗑 删除</span></button>
+                <button class="icon-btn" onclick="clearTorrentSelection()" data-i18n-title="取消选择" title="取消选择" style="width:28px; height:28px;">✖</button>
+            </div>
+        </div>
+
+        <!-- Main Torrents List Container -->
+        <div id="torrent-list-container">
+            <div style="text-align:center; padding:60px 20px; color:var(--text-sec); font-size:14px;">
+                <span data-i18n="正在与 qBittorrent 通信加载任务中...">正在与 qBittorrent 通信加载任务中...</span>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </div>
+
+    <!-- ==================== PAGE 3: SEARCH ENGINE ==================== -->
+    <div id="p-search" class="page">
+        <!-- Floating Sticky Search Header -->
+        <div class="sticky-toolbar">
+            <div class="tab-bar">
+                <div class="tab-item active" onclick="switchSearchSubTab('search-sub-query', this)" data-i18n="🔍 资源全网检索">🔍 资源全网检索</div>
+                <div class="tab-item" onclick="switchSearchSubTab('search-sub-plugins', this)"><span data-i18n="🧩 搜索插件管理">🧩 搜索插件管理</span> (<span id="cnt-plugins">0</span>)</div>
+            </div>
+        </div>
+
+        <!-- Sub 1: Search Query -->
+        <div id="search-sub-query" class="search-sub-content">
+            <div class="card">
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                    <input class="input-box" id="search-keyword" placeholder="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." data-i18n-ph="输入搜索关键字 (如 Ubuntu, Debian, Linux, Movie)..." style="flex:2; min-width:200px;" onkeydown="if(event.key==='Enter') triggerSearch();">
+                    <select class="select-custom" id="search-plugin" style="flex:1; min-width:130px;">
+                        <option value="all" data-i18n-opt="🌐 全部已安装插件">🌐 全部已安装插件</option>
+                        <option value="enabled" data-i18n-opt="⚡ 已启用插件">⚡ 已启用插件</option>
+                    </select>
+                    <select class="select-custom" id="search-category" style="flex:1; min-width:110px;">
+                        <option value="all" data-i18n-opt="全部类型">全部类型</option>
+                        <option value="movies" data-i18n-opt="电影">电影</option>
+                        <option value="tv" data-i18n-opt="剧集">剧集</option>
+                        <option value="music" data-i18n-opt="音乐">音乐</option>
+                        <option value="software" data-i18n-opt="软件">软件</option>
+                        <option value="games" data-i18n-opt="游戏">游戏</option>
+                        <option value="anime" data-i18n-opt="动漫">动漫</option>
+                    </select>
+                    <button class="btn" style="padding:10px 20px;" onclick="triggerSearch()">
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> <span data-i18n="搜索">搜索</span>
+                    </button>
+                </div>
+                <div id="search-status-bar" style="font-size:12px; color:var(--text-sec); display:none; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:8px;">
+                    <span id="search-status-text" data-i18n="搜索进行中...">搜索进行中...</span>
+                    <button class="pill-btn" onclick="stopCurrentSearch()" style="padding:3px 10px; font-size:11px;"><span data-i18n="停止搜索">停止搜索</span></button>
+                </div>
+            </div>
+
+            <!-- Plugin Diagnostic Alert -->
+            <div id="plugin-warning-box" style="display:none;" class="card">
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <span style="font-size:24px;">💡</span>
+                    <div style="flex:1;">
+                        <div style="font-weight:700; font-size:14px; margin-bottom:4px;" data-i18n="为什么搜索不到资源？">为什么搜索不到资源？</div>
+                        <div style="font-size:12px; color:var(--text-sec); line-height:1.6;">
+                            <span data-i18n-html="plugin_diagnostic_text">qBittorrent 资源检索依靠服务器内置的 <b>Python 搜索插件 (Search Plugins)</b>。如果您的服务器刚安装 qBt 或未开启插件，将无法获取任何检索结果。请切换至上方<b>「🧩 搜索插件管理」</b>标签页一键安装或启用常用公开索引插件（需确保服务器已安装 Python3）。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Results Sorting & Filtering Toolbar -->
+            <div id="search-toolbar" style="display:none; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <div style="font-size:12px; color:var(--text-sec); font-weight:600;" id="search-count-label" data-i18n="检索结果: 0 条">检索结果: 0 条</div>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                    <span style="font-size:11px; color:var(--text-sec); font-weight:600;" data-i18n="排序:">排序:</span>
+                    <button class="sort-pill active" id="sort-btn-seeds" onclick="changeSearchSort('seeds')"><span data-i18n="👥 做种数">👥 做种数</span></button>
+                    <button class="sort-pill" id="sort-btn-size" onclick="changeSearchSort('size')"><span data-i18n="📦 体积">📦 体积</span></button>
+                    <button class="sort-pill" id="sort-btn-name" onclick="changeSearchSort('name')">🔤 <span data-i18n="名称">名称</span></button>
+                </div>
+            </div>
+
+            <div id="search-results-container">
+                <div style="text-align:center; padding:50px; color:var(--text-sec); font-size:14px;">
+                    <span data-i18n="输入关键字开始全网检索种子资源">输入关键字开始全网检索种子资源</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub 2: Search Plugins Management -->
+        <div id="search-sub-plugins" class="search-sub-content" style="display:none;">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <div style="font-weight:700; font-size:15px;" data-i18n="🧩 已安装的搜索插件 (Search Plugins)">🧩 已安装的搜索插件 (Search Plugins)</div>
+                        <div style="font-size:12px; color:var(--text-sec); margin-top:2px;" data-i18n="管理 qBittorrent 调用的 Python 搜索索引引擎与爬虫脚本">管理 qBittorrent 调用的 Python 搜索索引引擎与爬虫脚本</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="updateSearchPlugins()" data-i18n="🔄 检查更新">🔄 检查更新</button>
+                        <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openModal('install-plugin-modal')" data-i18n="+ 安装自定义插件">+ 安装自定义插件</button>
+                    </div>
+                </div>
+
+                <div id="installed-plugins-list">
+                    <div style="text-align:center; padding:30px; color:var(--text-sec); font-size:13px;" data-i18n="加载插件列表中...">加载插件列表中...</div>
+                </div>
+            </div>
+
+            <!-- Preset Popular Plugins One-Click Install Card -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <div style="font-weight:700; font-size:15px; margin-bottom:2px;" data-i18n="⚡ 一键安装常用公开检索插件">⚡ 一键安装常用公开检索插件</div>
+                        <div style="font-size:12px; color:var(--text-sec);" data-i18n="点击直接为您的 qBittorrent 安装官方与社区主流的 BT 索引引擎：">
+                            点击直接为您的 qBittorrent 安装官方与社区主流的 BT 索引引擎：
+                        </div>
+                    </div>
+                    <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="installAllPresetPlugins()" data-i18n="🚀 一键安装全部推荐">🚀 一键安装全部推荐</button>
+                </div>
+                <div class="grid-3" id="preset-plugins-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </div>
+
+    <!-- ==================== PAGE 4: RSS & RULES ==================== -->
+    <div id="p-rss" class="page">
+        <!-- Floating Sticky Header -->
+        <div class="sticky-toolbar">
+            <div class="tab-bar">
+                <div class="tab-item active" onclick="switchRssSubTab('rss-sub-feeds', this)" data-i18n="📡 RSS 订阅源 (Feeds)">📡 RSS 订阅源 (Feeds)</div>
+                <div class="tab-item" onclick="switchRssSubTab('rss-sub-rules', this)" data-i18n="⚡ 自动下载规则 (Rules)">⚡ 自动下载规则 (Rules)</div>
+                <div class="tab-item" onclick="switchRssSubTab('rss-sub-cats', this)" data-i18n="🏷️ 分类管理 (Categories)">🏷️ 分类管理 (Categories)</div>
+            </div>
+        </div>
+
+        <!-- RSS Feeds Sub-Tab -->
+        <div id="rss-sub-feeds" class="rss-sub-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="subtitle" style="margin:0;" data-i18n="已订阅 RSS 列表">已订阅 RSS 列表</div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="refreshAllRssFeeds()" data-i18n="🔄 刷新全部">🔄 刷新全部</button>
+                    <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openModal('add-rss-feed-modal')" data-i18n="+ 添加订阅源">+ 添加订阅源</button>
+                </div>
+            </div>
+            <div id="rss-feed-list-container">
+                <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:13px;" data-i18n="加载 RSS 订阅源中...">加载 RSS 订阅源中...</div>
+            </div>
+            <!-- Feed Article Browser Drawer -->
+            <div id="rss-articles-container" style="margin-top:16px; display:none;">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-weight:700; font-size:14px;" id="rss-active-feed-title" data-i18n="Feed 文章">Feed 文章</span>
+                        <button class="icon-btn" onclick="$('#rss-articles-container').slideUp()" style="width:26px; height:26px;">✖</button>
+                    </div>
+                    <div id="rss-articles-list" style="max-height:360px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RSS Rules Sub-Tab -->
+        <div id="rss-sub-rules" class="rss-sub-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="subtitle" style="margin:0;" data-i18n="自动下载规则">自动下载规则</div>
+                <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openRssRuleModal()" data-i18n="+ 新建规则">+ 新建规则</button>
+            </div>
+            <div id="rss-rules-container">
+                <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:13px;" data-i18n="加载自动规则中...">加载自动规则中...</div>
+            </div>
+        </div>
+
+        <!-- Categories Sub-Tab -->
+        <div id="rss-sub-cats" class="rss-sub-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="subtitle" style="margin:0;" data-i18n="已保存的任务分类">已保存的任务分类</div>
+                <button class="btn" style="padding:6px 14px; font-size:12px;" onclick="openModal('add-category-modal')" data-i18n="+ 新增分类">+ 新增分类</button>
+            </div>
+            <div id="categories-container">
+                <div style="text-align:center; padding:40px; color:var(--text-sec); font-size:13px;" data-i18n="加载分类数据中...">加载分类数据中...</div>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </div>
+
+    <!-- ==================== PAGE 5: SYSTEM & LOGS ==================== -->
+    <div id="p-system" class="page">
+        <!-- Floating Sticky Header -->
+        <div class="sticky-toolbar">
+            <div class="tab-bar">
+                <div class="tab-item active" onclick="switchSysSubTab('sys-sub-speed', this)" data-i18n="⚡ 速率与计划">⚡ 速率与计划</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-storage', this)" data-i18n="📁 存储与下载">📁 存储与下载</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-network', this)" data-i18n="🌐 网络与连接">🌐 网络与连接</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-bittorrent', this)" data-i18n="🎯 做种与BT">🎯 做种与BT</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-security', this)" data-i18n="🛡️ 账户与安全">🛡️ 账户与安全</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-logs', this)" data-i18n="📜 运行日志">📜 运行日志</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-trackers', this)" data-i18n="🌍 全局Tracker">🌍 全局Tracker</div>
+            </div>
+        </div>
+
+        <!-- 1. Speed & Scheduling Sub-Tab -->
+        <div id="sys-sub-speed" class="sys-sub-content">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="⚡ 速率与计划限制 (KB/s)">⚡ 速率与计划限制 (KB/s)</div>
+                
+                <div class="grid-2" style="margin-bottom:12px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="常规全局下载限制 (0 为不限)">常规全局下载限制 (0 为不限)</div>
+                        <input class="input-box" id="limit-dl" type="number" data-i18n-ph="下载限制 KB/s" placeholder="下载限制 KB/s">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="常规全局上传限制 (0 为不限)">常规全局上传限制 (0 为不限)</div>
+                        <input class="input-box" id="limit-up" type="number" data-i18n-ph="上传限制 KB/s" placeholder="上传限制 KB/s">
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-bottom:14px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="备用下载速度限制">备用下载速度限制</div>
+                        <input class="input-box" id="limit-alt-dl" type="number" data-i18n-ph="备用下载限制 KB/s" placeholder="备用下载限制 KB/s">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="备用上传速度限制">备用上传速度限制</div>
+                        <input class="input-box" id="limit-alt-up" type="number" data-i18n-ph="备用上传限制 KB/s" placeholder="备用上传限制 KB/s">
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="启用备用速率计划调度">启用备用速率计划调度</div>
+                        <div class="setting-desc" data-i18n="在指定时间段内自动激活备用限速策略">在指定时间段内自动激活备用限速策略</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-scheduler-enabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin:10px 0 14px 0; border:1px solid var(--border-subtle);">
+                    <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;">
+                        <div>
+                            <div class="val-sub" style="margin-bottom:6px; font-weight:600;" data-i18n="限速生效时段">限速生效时段</div>
+                            <div style="display:inline-flex; align-items:center; gap:8px;">
+                                <input class="input-box-time" type="time" id="pref-schedule-from" value="08:00">
+                                <span style="font-size:12px; color:var(--text-sec); font-weight:700;">➔</span>
+                                <input class="input-box-time" type="time" id="pref-schedule-to" value="20:00">
+                            </div>
+                        </div>
+                        <div style="min-width:140px; flex:1; max-width:220px;">
+                            <div class="val-sub" style="margin-bottom:6px; font-weight:600;" data-i18n="生效周期">生效周期</div>
+                            <select class="select-custom" id="pref-scheduler-days" style="width:100%; padding:6px 10px; font-size:12px; height:36px;">
+                                <option value="0" data-i18n-opt="每天 (Every Day)">每天 (Every Day)</option>
+                                <option value="1" data-i18n-opt="仅工作日 (Mon-Fri)">仅工作日 (Mon-Fri)</option>
+                                <option value="2" data-i18n-opt="仅周末 (Sat-Sun)">仅周末 (Sat-Sun)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="将传输开销计入限速">将传输开销计入限速</div>
+                        <div class="setting-desc" data-i18n="限制 TCP/IP 协议握手及传输开销">限制 TCP/IP 协议握手及传输开销</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-limit-overhead">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="限制 uTP 协议连接速度">限制 uTP 协议连接速度</div>
+                        <div class="setting-desc" data-i18n="对 uTP (Micro Transport Protocol) 应用上传/下载限制">对 uTP (Micro Transport Protocol) 应用上传/下载限制</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-limit-utp">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()" data-i18n="💾 保存速率配置">
+                    💾 保存速率配置
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Downloads & Storage Sub-Tab -->
+        <div id="sys-sub-storage" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="📁 存储路径与下载行为">📁 存储路径与下载行为</div>
+                <div style="margin-bottom:12px;">
+                    <div class="val-sub" style="margin-bottom:4px;" data-i18n="默认下载保存路径 (Default Save Path)">默认下载保存路径 (Default Save Path)</div>
+                    <input class="input-box" id="pref-save-path" data-i18n-ph="例如: /home/ubuntu/Downloads" placeholder="例如: /home/ubuntu/Downloads">
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="启用未完成文件临时保存目录">启用未完成文件临时保存目录</div>
+                        <div class="setting-desc" data-i18n="下载完成前将文件存放于独立临时路径">下载完成前将文件存放于独立临时路径</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-temp-path-enabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div style="margin-top:8px; margin-bottom:12px;">
+                    <div class="val-sub" style="margin-bottom:4px;" data-i18n="未完成临时目录路径 (Incomplete Save Path)">未完成临时目录路径 (Incomplete Save Path)</div>
+                    <input class="input-box" id="pref-temp-path" data-i18n-ph="例如: /home/ubuntu/Downloads/temp" placeholder="例如: /home/ubuntu/Downloads/temp">
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="预分配所有磁盘空间 (Pre-allocate Disk Space)">预分配所有磁盘空间 (Pre-allocate Disk Space)</div>
+                        <div class="setting-desc" data-i18n="下载开始时立即为整个文件分配磁盘空间，防止空间不足与碎片">下载开始时立即为整个文件分配磁盘空间，防止空间不足与碎片</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-preallocate">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="为未完成的文件添加 .!qB 扩展名">为未完成的文件添加 .!qB 扩展名</div>
+                        <div class="setting-desc" data-i18n="方便识别和避免未完成文件被其他软件误读">方便识别和避免未完成文件被其他软件误读</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-incomplete-ext">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="为多文件任务自动创建子文件夹">为多文件任务自动创建子文件夹</div>
+                        <div class="setting-desc" data-i18n="在目标目录中以种子名称创建单独的目录保存">在目标目录中以种子名称创建单独的目录保存</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-create-subfolder">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()" data-i18n="💾 保存存储配置">
+                    💾 保存存储配置
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. Connection & Ports Sub-Tab -->
+        <div id="sys-sub-network" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🌐 网络连接与端口配置">🌐 网络连接与端口配置</div>
+                <div class="grid-2" style="margin-bottom:12px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="传入连接监听端口 (Listening Port)">传入连接监听端口 (Listening Port)</div>
+                        <input class="input-box" id="pref-listen-port" type="number" data-i18n-ph="例如: 6881 或随机端口" placeholder="例如: 6881 或随机端口">
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; padding-top:18px;">
+                        <div>
+                            <div class="setting-label" data-i18n="UPnP / NAT-PMP 端口映射">UPnP / NAT-PMP 端口映射</div>
+                            <div class="setting-desc" data-i18n="自动请求路由器转发端口">自动请求路由器转发端口</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="pref-upnp">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-bottom:10px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="全局最大连接数">全局最大连接数</div>
+                        <input class="input-box" id="pref-max-conns" type="number" data-i18n-ph="默认: 500" placeholder="默认: 500">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="每个任务最大连接数">每个任务最大连接数</div>
+                        <input class="input-box" id="pref-max-conns-per-torrent" type="number" data-i18n-ph="默认: 100" placeholder="默认: 100">
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="全局最大上传槽数">全局最大上传槽数</div>
+                        <input class="input-box" id="pref-max-uploads" type="number" data-i18n-ph="默认: 8" placeholder="默认: 8">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="每个任务最大上传槽数">每个任务最大上传槽数</div>
+                        <input class="input-box" id="pref-max-uploads-per-torrent" type="number" data-i18n-ph="默认: 4" placeholder="默认: 4">
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()" data-i18n="💾 保存网络连接配置">
+                    💾 保存网络连接配置
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. BitTorrent & Queueing Sub-Tab -->
+        <div id="sys-sub-bittorrent" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🎯 BitTorrent、做种与排队规则">🎯 BitTorrent、做种与排队规则</div>
+                
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="启用 DHT 网络 (Distributed Hash Table)">启用 DHT 网络 (Distributed Hash Table)</div>
+                        <div class="setting-desc" data-i18n="无 Tracker 查找更多节点（公网资源推荐开启，PT 任务会自动隔离）">无 Tracker 查找更多节点（公网资源推荐开启，PT 任务会自动隔离）</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-dht">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="启用 PeX (用户交换 / Peer Exchange)">启用 PeX (用户交换 / Peer Exchange)</div>
+                        <div class="setting-desc" data-i18n="通过已连接节点发现更多同伴">通过已连接节点发现更多同伴</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-pex">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="启用 LSD (本地用户发现 / Local Peer Discovery)">启用 LSD (本地用户发现 / Local Peer Discovery)</div>
+                        <div class="setting-desc" data-i18n="自动发现同一局域网下的做种客户端">自动发现同一局域网下的做种客户端</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-lsd">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="传输数据加密模式">传输数据加密模式</div>
+                        <div class="setting-desc" data-i18n="防止运营商流量特征干扰">防止运营商流量特征干扰</div>
+                    </div>
+                    <select class="select-custom" id="pref-encryption" style="min-width:140px;">
+                        <option value="0" data-i18n-opt="优先加密 (Prefer)">优先加密 (Prefer)</option>
+                        <option value="1" data-i18n-opt="强制加密 (Require)">强制加密 (Require)</option>
+                        <option value="2" data-i18n-opt="禁用加密 (Disable)">禁用加密 (Disable)</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="启用任务排队管理 (Torrent Queueing)">启用任务排队管理 (Torrent Queueing)</div>
+                        <div class="setting-desc" data-i18n="限制同时运行的最大活跃任务数">限制同时运行的最大活跃任务数</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-queueing">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="grid-3" style="margin-top:10px; margin-bottom:12px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="最大下载中任务数">最大下载中任务数</div>
+                        <input class="input-box" id="pref-max-active-dl" type="number" data-i18n-ph="例如: 3" placeholder="例如: 3">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="最大做种中任务数">最大做种中任务数</div>
+                        <input class="input-box" id="pref-max-active-up" type="number" data-i18n-ph="例如: 5" placeholder="例如: 5">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="最大总活跃任务数">最大总活跃任务数</div>
+                        <input class="input-box" id="pref-max-active-torrents" type="number" data-i18n-ph="例如: 8" placeholder="例如: 8">
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="达到指定分享率后自动停止做种">达到指定分享率后自动停止做种</div>
+                        <div class="setting-desc" data-i18n="当分享率达到阈值时自动暂停或移除">当分享率达到阈值时自动暂停或移除</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-max-ratio-enabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="grid-2" style="margin-top:10px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="目标分享率 (Ratio)">目标分享率 (Ratio)</div>
+                        <input class="input-box" id="pref-max-ratio" type="number" step="0.1" data-i18n-ph="例如: 2.0" placeholder="例如: 2.0">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="达成后操作">达成后操作</div>
+                        <select class="select-custom input-box" id="pref-max-ratio-act">
+                            <option value="0" data-i18n-opt="⏸ 暂停做种任务">⏸ 暂停做种任务</option>
+                            <option value="1" data-i18n-opt="🗑 移除种子任务">🗑 移除种子任务</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()" data-i18n="💾 保存做种与排队配置">
+                    💾 保存做种与排队配置
+                </button>
+            </div>
+        </div>
+
+        <!-- 5. Security & WebUI Sub-Tab -->
+        <div id="sys-sub-security" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🛡️ WebUI 账户密码与安全配置">🛡️ WebUI 账户密码与安全配置</div>
+                
+                <div style="background:var(--card-sec); border-radius:14px; padding:14px; margin-bottom:14px; border:1px solid var(--border-subtle);">
+                    <div style="font-weight:700; font-size:13px; margin-bottom:8px; color:var(--accent);" data-i18n="🔐 修改 WebUI 登录账户与凭据">🔐 修改 WebUI 登录账户与凭据</div>
+                    <div style="margin-bottom:10px;">
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="WebUI 登录用户名">WebUI 登录用户名</div>
+                        <input class="input-box" id="pref-webui-username" data-i18n-ph="留空则保持当前用户名 (如: admin)" placeholder="留空则保持当前用户名 (如: admin)">
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <div class="val-sub" style="margin-bottom:4px;" data-i18n="新密码 (留空则不修改密码)">新密码 (留空则不修改密码)</div>
+                            <input class="input-box" id="pref-webui-password" type="password" data-i18n-ph="输入新密码" placeholder="输入新密码">
+                        </div>
+                        <div>
+                            <div class="val-sub" style="margin-bottom:4px;" data-i18n="确认新密码">确认新密码</div>
+                            <input class="input-box" id="pref-webui-password-confirm" type="password" data-i18n-ph="再次输入新密码" placeholder="再次输入新密码">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-bottom:10px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="WebUI 监听端口">WebUI 监听端口</div>
+                        <input class="input-box" id="pref-webui-port" type="number" data-i18n-ph="例如: 8080" placeholder="例如: 8080">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="会话超时时间 (分钟)">会话超时时间 (分钟)</div>
+                        <input class="input-box" id="pref-session-timeout" type="number" data-i18n-ph="默认: 60 分钟" placeholder="默认: 60 分钟">
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="对本地主机及子网客户端跳过身份验证">对本地主机及子网客户端跳过身份验证</div>
+                        <div class="setting-desc" data-i18n="开启后局域网访问无需输入密码；若需强制登录请关闭此项">开启后局域网访问无需输入密码；若需强制登录请关闭此项</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pref-bypass-local-auth">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="grid-2" style="margin-top:10px; margin-bottom:14px;">
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="登录失败尝试封禁次数">登录失败尝试封禁次数</div>
+                        <input class="input-box" id="pref-ban-count" type="number" data-i18n-ph="例如: 5" placeholder="例如: 5">
+                    </div>
+                    <div>
+                        <div class="val-sub" style="margin-bottom:4px;" data-i18n="IP 封禁时长 (秒)">IP 封禁时长 (秒)</div>
+                        <input class="input-box" id="pref-ban-duration" type="number" data-i18n-ph="例如: 3600" placeholder="例如: 3600">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end;">
+                    <button class="btn secondary" style="padding:6px 14px; font-size:12px;" onclick="logout()" data-i18n="🚪 退出当前登录 (Logout)">
+                        🚪 退出当前登录 (Logout)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Master Save Button -->
+            <div style="margin-bottom:20px;">
+                <button class="btn w-full" style="padding:13px; font-size:14px;" onclick="saveAllSystemPreferences()" data-i18n="💾 保存账户与安全配置">
+                    💾 保存账户与安全配置
+                </button>
+            </div>
+
+            <!-- Environment Specs Card -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
+                    <span class="val-sub" data-i18n="当前 WebUI 模式">当前 WebUI 模式</span>
+                    <span style="font-weight:600;" data-i18n="qBittorrent Alternative WebUI (纯前端沙箱)">qBittorrent Alternative WebUI (纯前端沙箱)</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
+                    <span class="val-sub" data-i18n="内核版本">内核版本</span>
+                    <span style="font-weight:600;" id="sys-qbt-version-text">qBittorrent --</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:10px 0;">
+                    <span class="val-sub" data-i18n="WebAPI 版本">WebAPI 版本</span>
+                    <span style="font-weight:600;" id="sys-webapi-version-text">v2.x</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Sub-Tab -->
+        <div id="sys-sub-logs" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1;">
+                        <span style="font-weight:700; font-size:15px;" data-i18n="内核实时日志">内核实时日志</span>
+                        <select class="select-custom" id="log-filter-type" onchange="filterLogEntries()" style="padding:4px 8px; font-size:12px;">
+                            <option value="all" data-i18n-opt="全部级别">全部级别</option>
+                            <option value="1" data-i18n-opt="普通 Normal">普通 Normal</option>
+                            <option value="2" data-i18n-opt="信息 Info">信息 Info</option>
+                            <option value="4" data-i18n-opt="警告 Warning">警告 Warning</option>
+                            <option value="8" data-i18n-opt="严重 Critical">严重 Critical</option>
+                        </select>
+                        <input class="input-box" id="log-search-input" data-i18n-ph="🔍 过滤日志关键字..." placeholder="🔍 过滤日志关键字..." oninput="filterLogEntries()" style="padding:4px 10px; font-size:12px; width:180px;">
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="copySystemLogs()" data-i18n="📋 复制日志">📋 复制日志</button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="fetchSystemLogs()" data-i18n="🔄 刷新">🔄 刷新</button>
+                    </div>
+                </div>
+                <div id="sys-logs-container" style="max-height:480px; overflow-y:auto; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; background:var(--card-sec); border-radius:12px; padding:12px;">
+                    <span data-i18n="加载日志中...">加载日志中...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trackers Sub-Tab -->
+        <div id="sys-sub-trackers" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:8px;" data-i18n="🌐 全局批量添加 Trackers">🌐 全局批量添加 Trackers</div>
+                <div class="val-sub" style="margin-bottom:10px;" data-i18n="单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：">单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：</div>
+                <textarea class="input-box" id="global-tracker-urls" rows="5" placeholder="udp://tracker.opentrackr.org:1337/announce&#10;http://tracker.openbittorrent.com:80/announce&#10;https://tracker.tamersunion.org:443/announce" style="margin-bottom:10px; font-family:monospace; font-size:12px;"></textarea>
+                <button class="btn" onclick="submitAddTrackers(true)" data-i18n="一键为所有任务批量补充 Trackers">一键为所有任务批量补充 Trackers</button>
+            </div>
+        </div>
+        <div class="bottom-spacer"></div>
+    </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- 1. Torrent Details Modal -->
+<div class="modal-overlay" id="detail-modal">
+    <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div style="flex:1; margin-right:12px;">
+                <div style="font-size:17px; font-weight:800; line-height:1.3; word-break:break-all;" id="detail-title" data-i18n="种子详情">种子详情</div>
+                <div style="font-size:11px; color:var(--text-sec); font-family:monospace; margin-top:2px;" id="detail-hash"></div>
+            </div>
+            <button class="icon-btn" onclick="closeDetailModal()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        </div>
+
+        <div class="tab-bar" style="margin-bottom:16px;">
+            <div class="tab-item active" onclick="switchDetailTab('dt-files', this)" data-i18n="📄 文件树 (Files)">📄 文件树 (Files)</div>
+            <div class="tab-item" onclick="switchDetailTab('dt-pieces', this)" data-i18n="🧱 下载区块 (Pieces)">🧱 下载区块 (Pieces)</div>
+            <div class="tab-item" onclick="switchDetailTab('dt-trackers', this)">🔗 Trackers</div>
+            <div class="tab-item" onclick="switchDetailTab('dt-peers', this)" data-i18n="👥 Peers 节点">👥 Peers 节点</div>
+        </div>
+
+        <!-- Sub 1: Files Tree with Priority Selection -->
+        <div id="dt-files" class="detail-tab-content">
+            <div style="text-align:center; padding:30px; color:var(--text-sec);" data-i18n="加载文件树中...">加载文件树中...</div>
+        </div>
+
+        <!-- Sub 2: Canvas Pieces Map -->
+        <div id="dt-pieces" class="detail-tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; color:var(--text-sec);">
+                <div id="pieces-stats-text" data-i18n="区块加载中...">区块加载中...</div>
+                <div style="display:flex; gap:8px;">
+                    <span style="color:var(--success); font-weight:600;" data-i18n="■ 已完成">■ 已完成</span>
+                    <span style="color:var(--accent); font-weight:600;" data-i18n="■ 下载中">■ 下载中</span>
+                    <span style="color:var(--text-ter); font-weight:600;" data-i18n="■ 未下载">■ 未下载</span>
+                </div>
+            </div>
+            <div style="position:relative;">
+                <canvas id="piecesCanvas"></canvas>
+                <div class="pieces-tooltip" id="pieces-tooltip"></div>
+            </div>
+        </div>
+
+        <!-- Sub 3: Trackers -->
+        <div id="dt-trackers" class="detail-tab-content" style="display:none;">
+            <div style="text-align:center; padding:30px; color:var(--text-sec);" data-i18n="加载 Trackers 中...">加载 Trackers 中...</div>
+        </div>
+
+        <!-- Sub 4: Peers List -->
+        <div id="dt-peers" class="detail-tab-content" style="display:none;">
+            <div style="text-align:center; padding:30px; color:var(--text-sec);" data-i18n="加载 Peers 节点中...">加载 Peers 节点中...</div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Safe Delete Confirmation Modal -->
+<div class="modal-overlay" id="delete-confirm-modal">
+    <div class="modal-card" style="max-width:460px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">⚠️</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;" data-i18n="删除确认">删除确认</div>
+        <div style="font-size:13px; color:var(--text-sec); margin-bottom:18px; line-height:1.5;" id="delete-confirm-msg" data-i18n="您确定要删除选中的任务吗？请选择是否同时删除本地下载的文件：">
+            您确定要删除选中的任务吗？请选择是否同时删除本地下载的文件：
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn secondary" onclick="executeDeleteTorrent(false)" data-i18n="仅删除任务 (保留硬盘文件)">
+                仅删除任务 (保留硬盘文件)
+            </button>
+            <button class="btn danger" onclick="executeDeleteTorrent(true)" data-i18n="彻底删除任务及本地文件">
+                彻底删除任务及本地文件
+            </button>
+            <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('delete-confirm-modal')" data-i18n="取消">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 2.1 Safe Redownload Confirmation Modal -->
+<div class="modal-overlay" id="redownload-confirm-modal">
+    <div class="modal-card" style="max-width:460px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">🔄</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;" data-i18n="重新下载确认">重新下载确认</div>
+        <div style="font-size:13px; color:var(--text-sec); margin-bottom:18px; line-height:1.5;" id="redownload-confirm-msg" data-i18n-html="redownload_confirm_text">
+            确定要清空已下载文件并从头重新下载选中的任务吗？<br><span style="color:var(--warning); font-size:12px;">系统将自动导出种子/磁链参数，清除已下载本地文件，并从 0% 重新发起下载。</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn" style="background:var(--accent);" onclick="executeRedownloadTorrent()" data-i18n="确认重新下载 (清除文件从头重下)">
+                确认重新下载 (清除文件从头重下)
+            </button>
+            <button class="btn secondary" onclick="executeForceRecheckOnly()" data-i18n="仅强制重新校验 (不删本地文件)">
+                仅强制重新校验 (不删本地文件)
+            </button>
+            <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('redownload-confirm-modal')" data-i18n="取消">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Add Torrent Modal -->
+<div class="modal-overlay" id="add-modal">
+    <div class="modal-card">
+        <div style="font-size:20px; font-weight:800; margin-bottom:14px;" data-i18n="添加 Torrent 种子 / Magnet">添加 Torrent 种子 / Magnet</div>
+        
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:6px; font-weight:700;" data-i18n="选择本地 .torrent 种子文件：">选择本地 .torrent 种子文件：</div>
+        <input type="file" id="torrent-file" accept=".torrent" class="input-box" style="margin-bottom:14px;">
+        
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:6px; font-weight:700;" data-i18n="或输入 Magnet 磁力链接 / HTTP 种子 URL (支持换行多个)：">或输入 Magnet 磁力链接 / HTTP 种子 URL (支持换行多个)：</div>
+        <textarea class="input-box" id="torrent-urls" rows="3" placeholder="magnet:?xt=urn:btih:..." style="margin-bottom:14px;"></textarea>
+        
+        <div class="grid-2" style="margin-bottom:14px;">
+            <div>
+                <div style="font-size:12px; color:var(--text-sec); margin-bottom:4px; font-weight:700;" data-i18n="指定分类：">指定分类：</div>
+                <select class="input-box" id="add-torrent-category" style="padding:10px;">
+                    <option value="" data-i18n-opt="(无分类)">(无分类)</option>
+                </select>
+            </div>
+            <div>
+                <div style="font-size:12px; color:var(--text-sec); margin-bottom:4px; font-weight:700;" data-i18n="保存子路径 (可选)：">保存子路径 (可选)：</div>
+                <input class="input-box" id="add-torrent-savepath" data-i18n-ph="留空使用默认路径" placeholder="留空使用默认路径">
+            </div>
+        </div>
+
+        <!-- Advanced Add Options -->
+        <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px; padding:10px 14px; background:var(--card-sec); border-radius:14px; border:1px solid var(--border-subtle);">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; font-weight:500;">
+                <input type="checkbox" id="add-torrent-sequential" class="torrent-check" style="width:16px; height:16px;">
+                <span data-i18n="按顺序下载 (边下边播)">按顺序下载 (边下边播)</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; font-weight:500;">
+                <input type="checkbox" id="add-torrent-firstlast" class="torrent-check" style="width:16px; height:16px;">
+                <span data-i18n="先下载首尾区块">先下载首尾区块</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; font-weight:500;">
+                <input type="checkbox" id="add-torrent-autostart" class="torrent-check" style="width:16px; height:16px;" checked>
+                <span data-i18n="立即开始下载">立即开始下载</span>
+            </label>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('add-modal')" data-i18n="取消">取消</button>
+            <button class="btn" style="flex:2;" onclick="submitAddTorrent()" data-i18n="开始下载">开始下载</button>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Batch Category Modal -->
+<div class="modal-overlay" id="batch-category-modal">
+    <div class="modal-card" style="max-width:420px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;" data-i18n="批量设置分类">批量设置分类</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:8px;" data-i18n="选择为所选任务应用的目标分类：">选择为所选任务应用的目标分类：</div>
+        <select class="input-box" id="batch-target-category" style="margin-bottom:16px; padding:10px;">
+            <option value="" data-i18n-opt="(清除分类)">(清除分类)</option>
+        </select>
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('batch-category-modal')" data-i18n="取消">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitBatchCategory()" data-i18n="应用分类">应用分类</button>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Add RSS Feed Modal -->
+<div class="modal-overlay" id="add-rss-feed-modal">
+    <div class="modal-card" style="max-width:480px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;" data-i18n="添加 RSS 订阅源">添加 RSS 订阅源</div>
+        <input class="input-box" id="feed-url" data-i18n-ph="RSS 订阅链接 URL (https://...)" placeholder="RSS 订阅链接 URL (https://...)" style="margin-bottom:10px;">
+        <input class="input-box" id="feed-path" data-i18n-ph="订阅名称 / 文件夹路径 (可选)" placeholder="订阅名称 / 文件夹路径 (可选)" style="margin-bottom:16px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('add-rss-feed-modal')" data-i18n="取消">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitAddRssFeed()" data-i18n="添加订阅">添加订阅</button>
+        </div>
+    </div>
+</div>
+
+<!-- 6. RSS Rule Modal -->
+<div class="modal-overlay" id="rss-rule-modal">
+    <div class="modal-card" style="max-width:520px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;" data-i18n="新增 RSS 自动下载规则">新增 RSS 自动下载规则</div>
+        <input class="input-box" id="rule-name" data-i18n-ph="规则名称 (如: Linux Releases)" placeholder="规则名称 (如: Linux Releases)" style="margin-bottom:10px;">
+        <input class="input-box" id="rule-must" data-i18n-ph="包含关键字 (支持正则)" placeholder="包含关键字 (支持正则)" style="margin-bottom:10px;">
+        <input class="input-box" id="rule-not" data-i18n-ph="排除关键字 (支持正则)" placeholder="排除关键字 (支持正则)" style="margin-bottom:10px;">
+        <select class="input-box" id="rule-category" style="margin-bottom:16px; padding:10px;">
+            <option value="" data-i18n-opt="(分配分类: 无)">(分配分类: 无)</option>
+        </select>
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('rss-rule-modal')" data-i18n="取消">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitRssRule()" data-i18n="保存规则">保存规则</button>
+        </div>
+    </div>
+</div>
+
+<!-- 7. Add Category Modal -->
+<div class="modal-overlay" id="add-category-modal">
+    <div class="modal-card" style="max-width:440px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px;" data-i18n="新建任务分类">新建任务分类</div>
+        <input class="input-box" id="new-cat-name" data-i18n-ph="分类名称 (如 Movies, Anime, TV)" placeholder="分类名称 (如 Movies, Anime, TV)" style="margin-bottom:10px;">
+        <input class="input-box" id="new-cat-path" data-i18n-ph="专用保存子路径 (可选)" placeholder="专用保存子路径 (可选)" style="margin-bottom:16px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('add-category-modal')" data-i18n="取消">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitCreateCategory()" data-i18n="创建分类">创建分类</button>
+        </div>
+    </div>
+</div>
+
+<!-- 8. Custom Search Plugin Install Modal -->
+<div class="modal-overlay" id="install-plugin-modal">
+    <div class="modal-card" style="max-width:500px;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;" data-i18n="安装自定义搜索插件">安装自定义搜索插件</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:14px;" data-i18n="输入 Python 插件脚本的在线 URL (以 .py 结尾或 GitHub 裸链) 或本地路径：">
+            输入 Python 插件脚本的在线 URL (以 .py 结尾或 GitHub 裸链) 或本地路径：
+        </div>
+        <input class="input-box" id="custom-plugin-url" placeholder="https://raw.githubusercontent.com/.../plugin.py" style="margin-bottom:16px;">
+        <div style="display:flex; gap:10px;">
+            <button class="btn secondary" style="flex:1;" onclick="closeModal('install-plugin-modal')" data-i18n="取消">取消</button>
+            <button class="btn" style="flex:1;" onclick="submitInstallCustomPlugin()" data-i18n="安装插件">安装插件</button>
+        </div>
+    </div>
+</div>
+
+<!-- 9. Auth Login Modal (Auto pops up when session expires) -->
+<div class="modal-overlay" id="login-modal">
+    <div class="modal-card" style="max-width:400px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">🔒</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:4px;" data-i18n="身份验证">身份验证</div>
+        <div style="font-size:12px; color:var(--text-sec); margin-bottom:16px;" id="login-modal-sub" data-i18n="请输入用户名密码">
+            请输入用户名密码
+        </div>
+        <input class="input-box" id="login-user" data-i18n-ph="用户名" placeholder="用户名" style="margin-bottom:10px;" onkeydown="if(event.key==='Enter') submitLogin();">
+        <input class="input-box" type="password" id="login-pass" data-i18n-ph="密码" placeholder="密码" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') submitLogin();">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:12px; color:var(--text-sec);">
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="login-remember" checked> <span data-i18n="记住凭据">记住凭据</span>
+            </label>
+            <span style="font-size:11px; opacity:0.8;" data-i18n="默认密码可查阅日志">默认密码可查阅日志</span>
+        </div>
+        <button class="btn w-full" style="padding:12px;" onclick="submitLogin()" data-i18n="登录进入面板">登录进入面板</button>
+    </div>
+</div>
+
+<!-- Floating Glass Dock -->
+<div class="dock">
+    <button class="dock-btn active" onclick="switchTab('p-dash', '总览', this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-10h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span data-i18n="总览">总览</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('p-torrents', '任务', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <span data-i18n="任务">任务</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('p-search', '搜索', this)">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span data-i18n="搜索">搜索</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('p-rss', 'RSS', this)">
+        <svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20 5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
+        <span data-i18n="RSS">RSS</span>
+    </button>
+    <button class="dock-btn" onclick="switchTab('p-system', '系统', this)">
+        <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+        <span data-i18n="系统">系统</span>
+    </button>
+</div>
+
+    <!-- Modular Application Scripts -->
+    <script src="js/vendor_jquery.min.js?v=1786853756293"></script>
+    <script src="js/vendor_chart.umd.min.js?v=1786853756293"></script>
+    <script src="js/i18n.js?v=1786853756293"></script>
+    <script src="js/constants.js?v=1786853756293"></script>
+    <script src="js/state.js?v=1786853756293"></script>
+    <script src="js/utils.js?v=1786853756293"></script>
+    <script src="js/api.js?v=1786853756293"></script>
+    <script src="js/chart.js?v=1786853756293"></script>
+    <script src="js/torrents.js?v=1786853756293"></script>
+    <script src="js/search.js?v=1786853756293"></script>
+    <script src="js/rss.js?v=1786853756293"></script>
+    <script src="js/system.js?v=1786853756293"></script>
+    <script src="js/ui.js?v=1786853756293"></script>
+    <script src="js/app.js?v=1786853756293"></script>
+</body>
+</html>
