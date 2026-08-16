@@ -158,11 +158,9 @@ detect_or_setup_installation() {
         log_info "使用仓库内置的高性能预编译静态资源包。"
     fi
 
-    WEBUI_TARGET_PATH="$INSTALL_DIR/public"
-    if [[ ! -d "$WEBUI_TARGET_PATH" ]]; then
-        WEBUI_TARGET_PATH="$INSTALL_DIR"
-    fi
-    log_success "Abit 静态主题包就绪: ${WEBUI_TARGET_PATH}"
+    # qBittorrent native Alternative WebUI expects RootFolder to contain a 'public' directory
+    WEBUI_TARGET_PATH="$INSTALL_DIR"
+    log_success "Abit 静态主题根目录就绪: ${WEBUI_TARGET_PATH}"
 }
 
 # ------------------------------------------------------------------------------

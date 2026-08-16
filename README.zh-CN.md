@@ -137,10 +137,10 @@ bash install.sh
    ```
 2. **启用备用 Web UI**：
    - 登录您的 qBittorrent 网页控制台（或直接编辑 `~/.config/qBittorrent/qBittorrent.conf`）。
-   - 在 **“使用备用 Web UI (Use alternative Web UI)”** 下，将 **“文件路径 (Files path)”** 设置为项目的 **`public`** 目录：
+   - 在 **“使用备用 Web UI (Use alternative Web UI)”** 下，将 **“文件路径 (Files path)”** 设置为项目的**根目录**（例如 `/home/ubuntu/Abit`）：
      ```ini
      WebUI\AlternativeUIEnabled=true
-     WebUI\RootFolder=/home/ubuntu/Abit/public
+     WebUI\RootFolder=/home/ubuntu/Abit
      ```
 3. **保存并重启 qBittorrent**：
    - 重启服务后刷新浏览器页面，即可开始体验精美的苹果风格 Abit 备用面板！
@@ -150,7 +150,7 @@ bash install.sh
 ## ❓ 常见问题
 
 * **Q：打开页面提示 `Unacceptable file type, only regular file is allowed` 是怎么回事？**
-  * **A**：这是由于 qBittorrent Web 服务器在映射根路径 `/` 时遇到了非纯净静态目录。请将 `WebUI\RootFolder` 从项目根目录修改为指向 **`/home/ubuntu/Abit/public`**（或 `dist`）纯静态发布目录即可完美解决。
+  * **A**：请确保 `WebUI\RootFolder` 指向的是项目根目录（例如 **`/home/ubuntu/Abit`**，该目录下包含 `public/` 文件夹）。qBittorrent 原生内核会自动在 `RootFolder/public/` 下查找页面。
 * **Q：为什么访问页面时显示“离线/未登入”？**
   * **A**：主题直接通过当前浏览器的 Session 会话进行 API 通信。若显示离线，请先在弹出的登录窗口输入您的 qBittorrent 账密进行登录，验证通过后即可恢复在线。
 * **Q：搜索结果的「下载」按钮点了没反应/任务未出现？**

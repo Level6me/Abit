@@ -138,10 +138,10 @@ Prefer to configure manually:
    ```
 2. **Enable the alternative Web UI**:
    - Open your qBittorrent web console (or edit `~/.config/qBittorrent/qBittorrent.conf`).
-   - Under **“Use alternative Web UI”**, point **“Files path”** to the project's **`public`** folder:
+   - Under **“Use alternative Web UI”**, point **“Files path”** to the project root directory (e.g. `/home/ubuntu/Abit`):
      ```ini
      WebUI\AlternativeUIEnabled=true
-     WebUI\RootFolder=/home/ubuntu/Abit/public
+     WebUI\RootFolder=/home/ubuntu/Abit
      ```
 3. **Save and restart qBittorrent**, then refresh the browser to enjoy the Apple-style Abit panel.
 
@@ -150,7 +150,7 @@ Prefer to configure manually:
 ## ❓ FAQ
 
 * **Q: I get `Unacceptable file type, only regular file is allowed`.**
-  * **A**: qBittorrent hit a non-pure static directory while mapping the root `/`. Point `WebUI\RootFolder` to a clean static folder, e.g. **`/home/ubuntu/Abit/public`** (or `dist`).
+  * **A**: Ensure `WebUI\RootFolder` points to the project root `/home/ubuntu/Abit` (containing the `public/` directory). qBittorrent native WebUI automatically resolves routes within `RootFolder/public/`.
 * **Q: The page shows “Offline / Not logged in”.**
   * **A**: The theme talks to the API through your browser session. Log in with your qBittorrent credentials when prompted, and it will reconnect.
 * **Q: The search “Download” button does nothing / no task appears.**
