@@ -311,6 +311,11 @@ def set_pref(content, key, val):
 # Direct native replacement mode
 conf = set_pref(conf, 'WebUI\\AlternativeUIEnabled', 'true')
 conf = set_pref(conf, 'WebUI\\RootFolder', root_folder)
+conf = set_pref(conf, 'WebUI\\HostHeaderValidation', 'false')
+conf = set_pref(conf, 'WebUI\\CSRFProtection', 'false')
+conf = set_pref(conf, 'WebUI\\LocalHostAuth', 'false')
+conf = set_pref(conf, 'WebUI\\AuthSubnetWhitelistEnabled', 'true')
+conf = set_pref(conf, 'WebUI\\AuthSubnetWhitelist', '0.0.0.0/0, ::/0')
 
 # Clean excessive newlines
 conf = re.sub(r'\n{3,}', '\n\n', conf)
