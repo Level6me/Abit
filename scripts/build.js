@@ -171,6 +171,9 @@ function build() {
 
     const elapsed = Date.now() - startTime;
     console.log(`\n🎉 Build successfully completed in ${elapsed}ms!\n`);
+    if (require.main === module) {
+        process.exit(0);
+    }
 }
 
 if (require.main === module) {

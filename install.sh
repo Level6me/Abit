@@ -153,7 +153,7 @@ detect_or_setup_installation() {
     # Build if node is available, otherwise use pre-built public bundle
     if command -v node >/dev/null 2>&1; then
         log_info "检测到 Node.js 环境，执行自动前端构建打包..."
-        node scripts/build.js
+        node scripts/build.js || true
     else
         log_info "使用仓库内置的高性能预编译静态资源包。"
     fi
