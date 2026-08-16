@@ -343,8 +343,19 @@ configure_services() {
         if pgrep -x qbittorrent-nox >/dev/null 2>&1; then
             :  # our own freshly-started instance, fine
         else
-            log_error "内部端口 ${INT_PORT} 已被其他进程占用。请换端口重试，例如: ABIT_INT_PORT=8082 bash install.sh"
-            exit 1
+            log_warn "检测到内部端口 ${INT_PORT} 已被其他系统服务占用，正在自动探测可用备用端口..."
+            ORIG_INT_PORT="$INT_PORT"
+            for candidate in $(seq $((INT_PORT + 1)) $((INT_PORT + 20))); do
+                if ! port_in_use "$candidate"; then
+                    INT_PORT="$candidate"
+                    log_success "已自动切换内部通讯端口: ${BOLD}${INT_PORT}${NC} (原 ${ORIG_INT_PORT})"
+                    break
+                fi
+            done
+            if port_in_use "$INT_PORT"; then
+                log_error "未能找到空闲内部端口，请手动指定: ABIT_INT_PORT=8095 bash install.sh"
+                exit 1
+            fi
         fi
     fi
 
