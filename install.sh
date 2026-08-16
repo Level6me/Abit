@@ -301,7 +301,7 @@ with open(conf_path, 'r', encoding='utf-8', errors='ignore') as f:
 def set_pref(content, key, val):
     pattern = rf'({re.escape(key)}\s*=).*'
     if re.search(pattern, content):
-        return re.sub(pattern, rf'\1{val}', content)
+        return re.sub(pattern, lambda m: f"{key}={val}", content)
     else:
         if '[Preferences]' in content:
             return content.replace('[Preferences]', f'[Preferences]\n{key}={val}')
