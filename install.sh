@@ -314,6 +314,11 @@ conf = set_pref(conf, 'WebUI\\CSRFProtection', 'false')
 conf = set_pref(conf, 'WebUI\\LocalHostAuth', 'false')
 conf = set_pref(conf, 'WebUI\\AuthSubnetWhitelistEnabled', 'true')
 conf = set_pref(conf, 'WebUI\\AuthSubnetWhitelist', '0.0.0.0/0, ::/0')
+conf = set_pref(conf, 'WebUI\\Username', 'admin')
+
+# If no password hash is set yet, default to admin:adminadmin
+if 'WebUI\\Password_PBKDF2' not in conf:
+    conf = set_pref(conf, 'WebUI\\Password_PBKDF2', '@ByteArray(ARQ77eY1NUZaQsuDHbIMCA==:0WMRZFaRACxPgn+pHBlESa+vdAc2ctXRwUB2nxGulgnPt9FHvcmNgQZTHaxDYkVZugMBeRegDAHoUGjYzhKoGw==)')
 
 # Clean excessive newlines
 conf = re.sub(r'\n{3,}', '\n\n', conf)
