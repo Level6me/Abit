@@ -421,8 +421,10 @@ import os, re
 conf_path = os.environ["ABIT_CONF_PATH"]
 with open(conf_path, 'r', encoding='utf-8', errors='ignore') as f:
     conf = f.read()
-conf = re.sub(r'WebUI\\AlternativeUIEnabled\s*=.*', 'WebUI\\AlternativeUIEnabled=false', conf)
+conf = re.sub(r'WebUI\\AlternativeUIEnabled\s*=.*', lambda m: 'WebUI\\AlternativeUIEnabled=false', conf)
 conf = re.sub(r'WebUI\\RootFolder\s*=.*\n?', '', conf)
+conf = re.sub(r'WebUI\\AuthSubnetWhitelistEnabled\s*=.*\n?', '', conf)
+conf = re.sub(r'WebUI\\AuthSubnetWhitelist\s*=.*\n?', '', conf)
 with open(conf_path, 'w', encoding='utf-8') as f:
     f.write(conf)
 PYEOF
