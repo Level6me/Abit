@@ -138,7 +138,7 @@ function build() {
     // Sync root/public/dist favicons and app icons
     const iconFiles = [
         'favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png',
-        'apple-touch-icon.png', 'icon-192.png', 'icon-512.png',
+        'apple-touch-icon.png', 'apple-touch-icon-precomposed.png', 'icon-192.png', 'icon-512.png',
         'icon.png', 'icon.svg', 'icon-symbol.svg', 'icon.webp'
     ];
     iconFiles.forEach(file => {

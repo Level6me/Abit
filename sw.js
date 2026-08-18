@@ -3,7 +3,7 @@
  * Provides offline shell caching and enables native PWA installation across browsers.
  */
 
-const CACHE_NAME = 'abit-pwa-v2.0.0';
+const CACHE_NAME = 'abit-pwa-v2.0.1';
 const STATIC_ASSETS = [
     './',
     './index.html',
@@ -12,6 +12,7 @@ const STATIC_ASSETS = [
     './favicon-16x16.png',
     './favicon-32x32.png',
     './apple-touch-icon.png',
+    './apple-touch-icon-precomposed.png',
     './icon-192.png',
     './icon-512.png',
     './assets/icon.svg'
