@@ -36,6 +36,10 @@
     const EN_DICT = {
         // Header
         '总览': 'Overview',
+        '安装应用': 'Install App',
+        '安装 Abit 到本地应用 / 桌面': 'Install Abit as Web App / Desktop',
+        'Abit 已成功安装到主屏幕 / 本地应用列表': 'Abit installed to home screen / app list successfully',
+        '当前浏览器可点击地址栏安装图标或菜单中的“添加到主屏幕”': 'You can install Abit via the browser address bar icon or menu "Add to Home screen"',
         '常规速率': 'Normal',
         '备用速率': 'Alt Speed',
         '切换备用速度限制模式': 'Toggle alternative speed limits',
@@ -814,6 +818,70 @@
             isError,
             isActive
         };
+    }
+
+    // --- Abit Icon Web Component & Vector Assets ---
+    const ABIT_ICON_SVG = `<svg viewBox="0 0 1024 1024" width="100%" height="100%" style="display:block;">
+  <defs>
+    <linearGradient id="abit-ic-bg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#4aa9ff"/>
+      <stop offset="28%" stop-color="#2b8bf4"/>
+      <stop offset="68%" stop-color="#106ce9"/>
+      <stop offset="100%" stop-color="#0246d6"/>
+    </linearGradient>
+    <radialGradient id="abit-ic-top" cx="50%" cy="12%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="abit-ic-ring" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#d8ebff" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#a8d0ff" stop-opacity="0.45"/>
+    </linearGradient>
+    <linearGradient id="abit-ic-glyph" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="42%" stop-color="#eaf3ff" stop-opacity="0.90"/>
+      <stop offset="100%" stop-color="#cbe0ff" stop-opacity="0.75"/>
+    </linearGradient>
+    <filter id="abit-ic-shadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#002d99" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="230" ry="230" fill="url(#abit-ic-bg)"/>
+  <rect width="1024" height="1024" rx="230" ry="230" fill="url(#abit-ic-top)"/>
+  <circle cx="512" cy="512" r="352" fill="none" stroke="url(#abit-ic-ring)" stroke-width="34" filter="url(#abit-ic-shadow)"/>
+  <circle cx="512" cy="512" r="352" fill="none" stroke="#ffffff" stroke-width="4" stroke-opacity="0.45"/>
+  <g filter="url(#abit-ic-shadow)" fill="url(#abit-ic-glyph)">
+    <path d="M 512,246 C 536.3,246 556,265.7 556,290 L 556,482 L 588.6,449.4 C 605.8,432.2 633.7,432.2 650.9,449.4 C 668.1,466.6 668.1,494.5 650.9,511.7 L 538.7,623.9 C 524,638.6 500,638.6 485.3,623.9 L 373.1,511.7 C 355.9,494.5 355.9,466.6 373.1,449.4 C 390.3,432.2 418.2,432.2 435.4,449.4 L 468,482 L 468,290 C 468,265.7 487.7,246 512,246 Z"/>
+    <path d="M 338,584 C 354.6,584 368,597.4 368,614 L 368,628 C 368,645.7 382.3,660 400,660 L 624,660 C 641.7,660 656,645.7 656,628 L 656,614 C 656,597.4 669.4,584 686,584 C 702.6,584 716,597.4 716,614 L 716,632 C 716,680.6 676.6,720 628,720 L 396,720 C 347.4,720 308,680.6 308,632 L 308,614 C 308,597.4 321.4,584 338,584 Z"/>
+  </g>
+</svg>`;
+
+    const ABIT_SYMBOL_SVG = `<svg viewBox="0 0 1024 1024" width="100%" height="100%" fill="currentColor" style="display:block;">
+  <path fill-rule="evenodd" d="M 512,126 C 298.8,126 126,298.8 126,512 C 126,725.2 298.8,898 512,898 C 725.2,898 898,725.2 898,512 C 898,298.8 725.2,126 512,126 Z M 512,194 C 687.6,194 830,336.4 830,512 C 830,687.6 687.6,830 512,830 C 336.4,830 194,687.6 194,512 C 194,336.4 336.4,194 512,194 Z"/>
+  <path d="M 512,246 C 536.3,246 556,265.7 556,290 L 556,482 L 588.6,449.4 C 605.8,432.2 633.7,432.2 650.9,449.4 C 668.1,466.6 668.1,494.5 650.9,511.7 L 538.7,623.9 C 524,638.6 500,638.6 485.3,623.9 L 373.1,511.7 C 355.9,494.5 355.9,466.6 373.1,449.4 C 390.3,432.2 418.2,432.2 435.4,449.4 L 468,482 L 468,290 C 468,265.7 487.7,246 512,246 Z"/>
+  <path d="M 338,584 C 354.6,584 368,597.4 368,614 L 368,628 C 368,645.7 382.3,660 400,660 L 624,660 C 641.7,660 656,645.7 656,628 L 656,614 C 656,597.4 669.4,584 686,584 C 702.6,584 716,597.4 716,614 L 716,632 C 716,680.6 676.6,720 628,720 L 396,720 C 347.4,720 308,680.6 308,632 L 308,614 C 308,597.4 321.4,584 338,584 Z"/>
+</svg>`;
+
+    window.AbitIcon = {
+        appSvg: ABIT_ICON_SVG,
+        symbolSvg: ABIT_SYMBOL_SVG
+    };
+
+    if (typeof customElements !== 'undefined' && !customElements.get('abit-icon')) {
+        customElements.define('abit-icon', class extends HTMLElement {
+            connectedCallback() {
+                const size = this.getAttribute('size') || '36';
+                const variant = this.getAttribute('variant') || 'app';
+                this.style.display = 'inline-block';
+                this.style.width = isNaN(size) ? size : `${size}px`;
+                this.style.height = isNaN(size) ? size : `${size}px`;
+                this.style.lineHeight = '0';
+                this.style.verticalAlign = 'middle';
+                this.innerHTML = variant === 'symbol' ? ABIT_SYMBOL_SVG : ABIT_ICON_SVG;
+            }
+        });
     }
 
 // --- [Module: api.js] ---
@@ -2993,6 +3061,9 @@
         const days = [window.t('星期日'), window.t('星期一'), window.t('星期二'), window.t('星期三'), window.t('星期四'), window.t('星期五'), window.t('星期六')];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
+        // Initialize PWA Service Worker & Install Event Handlers
+        initPwaSupport();
+
         // Bootstrap authentication check (VueTorrent-style probe)
         checkAuthStatus();
     });
@@ -3025,4 +3096,55 @@
             $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
             openLoginModal(true);
         });
+    }
+
+// --- PWA Service Worker & Installation Handlers ---
+    let deferredPwaInstallPrompt = null;
+
+    function initPwaSupport() {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(reg) {
+                        console.log('[Abit PWA] Service Worker registered with scope:', reg.scope);
+                    })
+                    .catch(function(err) {
+                        console.debug('[Abit PWA] Service Worker registration skipped/failed:', err);
+                    });
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPwaInstallPrompt = e;
+            console.log('[Abit PWA] beforeinstallprompt event captured');
+            $('#btn-pwa-install').fadeIn(200).css('display', 'inline-flex');
+        });
+
+        window.addEventListener('appinstalled', function() {
+            console.log('[Abit PWA] App installed successfully');
+            deferredPwaInstallPrompt = null;
+            $('#btn-pwa-install').fadeOut(200);
+            if (typeof showToast === 'function') {
+                showToast(window.t('Abit 已成功安装到主屏幕 / 本地应用列表'));
+            }
+        });
+    }
+
+    function promptPwaInstall() {
+        if (deferredPwaInstallPrompt) {
+            deferredPwaInstallPrompt.prompt();
+            deferredPwaInstallPrompt.userChoice.then(function(choiceResult) {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('[Abit PWA] User accepted installation prompt');
+                } else {
+                    console.log('[Abit PWA] User dismissed installation prompt');
+                }
+                deferredPwaInstallPrompt = null;
+            });
+        } else {
+            if (typeof showToast === 'function') {
+                showToast(window.t('当前浏览器可点击地址栏安装图标或菜单中的“添加到主屏幕”'));
+            }
+        }
     }

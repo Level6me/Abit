@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+  <defs>
+    <!-- Rich iOS Blue Background Gradient -->
+    <linearGradient id="abit-bg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#4aa9ff"/>
+      <stop offset="28%" stop-color="#2b8bf4"/>
+      <stop offset="68%" stop-color="#106ce9"/>
+      <stop offset="100%" stop-color="#0246d6"/>
+    </linearGradient>
+
+    <!-- Top Highlight Ambient Light -->
+    <radialGradient id="abit-top-glow" cx="50%" cy="12%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Frosted Ring Stroke Gradient -->
+    <linearGradient id="abit-ring" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#d8ebff" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#a8d0ff" stop-opacity="0.45"/>
+    </linearGradient>
+
+    <!-- Glass Glyph Fill Gradient -->
+    <linearGradient id="abit-glyph" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="42%" stop-color="#eaf3ff" stop-opacity="0.90"/>
+      <stop offset="100%" stop-color="#cbe0ff" stop-opacity="0.75"/>
+    </linearGradient>
+
+    <!-- Glass 3D Depth Shadow -->
+    <filter id="abit-depth" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#002d99" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+
+  <!-- iOS Squircle Canvas -->
+  <rect width="1024" height="1024" rx="230" ry="230" fill="url(#abit-bg)"/>
+  <rect width="1024" height="1024" rx="230" ry="230" fill="url(#abit-top-glow)"/>
+
+  <!-- Outer Glass Ring -->
+  <circle cx="512" cy="512" r="352" fill="none" stroke="url(#abit-ring)" stroke-width="34" filter="url(#abit-depth)"/>
+  <!-- Specular inner rim -->
+  <circle cx="512" cy="512" r="352" fill="none" stroke="#ffffff" stroke-width="4" stroke-opacity="0.45"/>
+
+  <!-- Center Glassmorphism Arrow & Tray Glyph -->
+  <g filter="url(#abit-depth)" fill="url(#abit-glyph)">
+    <!-- Central Arrow Shaft + Wings Compound Path -->
+    <path d="M 512,246 C 536.3,246 556,265.7 556,290 L 556,482 L 588.6,449.4 C 605.8,432.2 633.7,432.2 650.9,449.4 C 668.1,466.6 668.1,494.5 650.9,511.7 L 538.7,623.9 C 524,638.6 500,638.6 485.3,623.9 L 373.1,511.7 C 355.9,494.5 355.9,466.6 373.1,449.4 C 390.3,432.2 418.2,432.2 435.4,449.4 L 468,482 L 468,290 C 468,265.7 487.7,246 512,246 Z"/>
+
+    <!-- Bottom Rounded Tray Cradle -->
+    <path d="M 338,584 C 354.6,584 368,597.4 368,614 L 368,628 C 368,645.7 382.3,660 400,660 L 624,660 C 641.7,660 656,645.7 656,628 L 656,614 C 656,597.4 669.4,584 686,584 C 702.6,584 716,597.4 716,614 L 716,632 C 716,680.6 676.6,720 628,720 L 396,720 C 347.4,720 308,680.6 308,632 L 308,614 C 308,597.4 321.4,584 338,584 Z"/>
+  </g>
+</svg>

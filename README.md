@@ -1,4 +1,4 @@
-# 🍏 Abit — Apple Style qBittorrent Alternative WebUI
+# <img src="assets/icon.svg" width="36" height="36" style="vertical-align:middle; border-radius:8px;" alt="Abit Logo" /> Abit — Apple Style qBittorrent Alternative WebUI
 
 > **Language:** English (this file) · **中文** ([README.zh-CN.md](README.zh-CN.md))
 
@@ -73,7 +73,8 @@ Abit/
    - Live connection status and DHT node count.
    - Smooth real-time download/upload rate chart.
    - Free disk space and lifetime transfer totals.
-4. **Modern interactions**:
+4. **Modern Interactions & PWA Experience**:
+   - 📲 **Native Progressive Web App (PWA) Support**: Equipped with `manifest.json` and `sw.js` Service Worker, allowing one-click "Add to Home Screen / Install App" on Chrome, Edge, Safari, Android, and iOS for an app-like standalone window.
    - 🌓 Auto / light / dark theme.
    - 🌐 Bilingual UI (简体中文 / English) — the chosen language is persisted automatically.
    - 🗂️ Seamless card grid ↔ compact table views.

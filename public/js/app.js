@@ -141,6 +141,9 @@
         const days = [window.t('星期日'), window.t('星期一'), window.t('星期二'), window.t('星期三'), window.t('星期四'), window.t('星期五'), window.t('星期六')];
         $('#date-now').text(`${now.getMonth() + 1}月${now.getDate()}日 ${days[now.getDay()]}`);
 
+        // Initialize PWA Service Worker & Install Event Handlers
+        initPwaSupport();
+
         // Bootstrap authentication check (VueTorrent-style probe)
         checkAuthStatus();
     });
@@ -174,3 +177,55 @@
             openLoginModal(true);
         });
     }
+
+// --- PWA Service Worker & Installation Handlers ---
+    let deferredPwaInstallPrompt = null;
+
+    function initPwaSupport() {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(reg) {
+                        console.log('[Abit PWA] Service Worker registered with scope:', reg.scope);
+                    })
+                    .catch(function(err) {
+                        console.debug('[Abit PWA] Service Worker registration skipped/failed:', err);
+                    });
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPwaInstallPrompt = e;
+            console.log('[Abit PWA] beforeinstallprompt event captured');
+            $('#btn-pwa-install').fadeIn(200).css('display', 'inline-flex');
+        });
+
+        window.addEventListener('appinstalled', function() {
+            console.log('[Abit PWA] App installed successfully');
+            deferredPwaInstallPrompt = null;
+            $('#btn-pwa-install').fadeOut(200);
+            if (typeof showToast === 'function') {
+                showToast(window.t('Abit 已成功安装到主屏幕 / 本地应用列表'));
+            }
+        });
+    }
+
+    function promptPwaInstall() {
+        if (deferredPwaInstallPrompt) {
+            deferredPwaInstallPrompt.prompt();
+            deferredPwaInstallPrompt.userChoice.then(function(choiceResult) {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('[Abit PWA] User accepted installation prompt');
+                } else {
+                    console.log('[Abit PWA] User dismissed installation prompt');
+                }
+                deferredPwaInstallPrompt = null;
+            });
+        } else {
+            if (typeof showToast === 'function') {
+                showToast(window.t('当前浏览器可点击地址栏安装图标或菜单中的“添加到主屏幕”'));
+            }
+        }
+    }
+

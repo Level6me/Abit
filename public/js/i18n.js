@@ -11,6 +11,10 @@
     const EN_DICT = {
         // Header
         '总览': 'Overview',
+        '安装应用': 'Install App',
+        '安装 Abit 到本地应用 / 桌面': 'Install Abit as Web App / Desktop',
+        'Abit 已成功安装到主屏幕 / 本地应用列表': 'Abit installed to home screen / app list successfully',
+        '当前浏览器可点击地址栏安装图标或菜单中的“添加到主屏幕”': 'You can install Abit via the browser address bar icon or menu "Add to Home screen"',
         '常规速率': 'Normal',
         '备用速率': 'Alt Speed',
         '切换备用速度限制模式': 'Toggle alternative speed limits',

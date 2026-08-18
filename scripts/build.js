@@ -119,8 +119,50 @@ function build() {
     console.log('📂 [4/4] Generating modular multi-file distribution in public/...');
     const publicCssDir = path.join(PUBLIC_DIR, 'css');
     const publicJsDir = path.join(PUBLIC_DIR, 'js');
-    if (!fs.existsSync(publicCssDir)) fs.mkdirSync(publicCssDir, { recursive: true });
-    if (!fs.existsSync(publicJsDir)) fs.mkdirSync(publicJsDir, { recursive: true });
+    const publicAssetsDir = path.join(PUBLIC_DIR, 'assets');
+    const distAssetsDir = path.join(DIST_DIR, 'assets');
+    const srcAssetsDir = path.join(SRC_DIR, 'assets');
+
+    [publicCssDir, publicJsDir, publicAssetsDir, distAssetsDir].forEach(dir => {
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    });
+
+    // Copy assets from src/assets to public/assets and dist/assets
+    if (fs.existsSync(srcAssetsDir)) {
+        fs.readdirSync(srcAssetsDir).forEach(file => {
+            fs.copyFileSync(path.join(srcAssetsDir, file), path.join(publicAssetsDir, file));
+            fs.copyFileSync(path.join(srcAssetsDir, file), path.join(distAssetsDir, file));
+        });
+    }
+
+    // Sync root/public/dist favicons and app icons
+    const iconFiles = [
+        'favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png',
+        'apple-touch-icon.png', 'icon-192.png', 'icon-512.png',
+        'icon.png', 'icon.svg', 'icon-symbol.svg', 'icon.webp'
+    ];
+    iconFiles.forEach(file => {
+        const srcFile = path.join(PUBLIC_DIR, file);
+        if (fs.existsSync(srcFile)) {
+            fs.copyFileSync(srcFile, path.join(DIST_DIR, file));
+            fs.copyFileSync(srcFile, path.join(ROOT_DIR, file));
+        }
+    });
+
+    // Copy manifest.json & sw.js if present
+    const srcManifest = path.join(SRC_DIR, 'manifest.json');
+    if (fs.existsSync(srcManifest)) {
+        fs.copyFileSync(srcManifest, path.join(PUBLIC_DIR, 'manifest.json'));
+        fs.copyFileSync(srcManifest, path.join(DIST_DIR, 'manifest.json'));
+        fs.copyFileSync(srcManifest, path.join(ROOT_DIR, 'manifest.json'));
+    }
+
+    const srcSw = path.join(SRC_DIR, 'sw.js');
+    if (fs.existsSync(srcSw)) {
+        fs.copyFileSync(srcSw, path.join(PUBLIC_DIR, 'sw.js'));
+        fs.copyFileSync(srcSw, path.join(DIST_DIR, 'sw.js'));
+        fs.copyFileSync(srcSw, path.join(ROOT_DIR, 'sw.js'));
+    }
 
     // Copy all individual CSS modules to public/css/
     let publicCssCount = 0;
@@ -173,6 +215,7 @@ function build() {
     console.log(`   ├─ public/index.html & login.html (${formatKB(Buffer.byteLength(publicHtml))})`);
     console.log(`   ├─ public/css/ (${publicCssCount} Granular CSS Files)`);
     console.log(`   ├─ public/js/ (${publicJsCount} Granular JS Files)`);
+    console.log(`   ├─ assets/ & favicons synced`);
     console.log(`   └─ index.html & login.html (${formatKB(Buffer.byteLength(standaloneHtml))})`);
 
     const elapsed = Date.now() - startTime;

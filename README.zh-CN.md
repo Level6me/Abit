@@ -1,4 +1,4 @@
-# 🍏 Abit — Apple Style qBittorrent Alternative WebUI
+# <img src="assets/icon.svg" width="36" height="36" style="vertical-align:middle; border-radius:8px;" alt="Abit Logo" /> Abit — Apple Style qBittorrent Alternative WebUI
 
 > **Language:** English ([README.md](README.md)) · **中文** (本文件)
 
@@ -72,7 +72,8 @@ Abit/
    - qBittorrent 网络连接状态、DHT 节点数实时监控。
    - 实时上传/下载速率平滑曲线趋势图。
    - 磁盘可用空间与历史总传输量统计。
-4. **现代化交互体验**：
+4. **现代化交互与 PWA 体验**：
+   - 📲 **原生 PWA 渐进式 Web 应用支持**：内置 `manifest.json` 与 `sw.js` Service Worker，支持在 Chrome/Edge/Safari/Android/iOS 等设备上一键“添加到主屏幕/安装到本地桌面”，享受沉浸式独立窗口体验。
    - 🌓 自动/浅色/深色模式切换。
    - 🌐 简体中文 / English 双语切换（选择后自动持久化保存）。
    - 🗂️ 网格卡片（Card Grid）与紧凑表格（Table View）双视图无缝切换。

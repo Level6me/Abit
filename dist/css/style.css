@@ -165,10 +165,16 @@ body.modal-open {
 }
 .header-left {
     display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex-shrink: 1;
+}
+.header-title-group {
+    display: flex;
     flex-direction: column;
     justify-content: center;
     min-width: 0;
-    flex-shrink: 1;
 }
 .date-badge {
     font-size: 11px;
@@ -203,8 +209,11 @@ body.modal-open {
         gap: 6px;
         min-height: 44px;
     }
+    .header-left {
+        gap: 8px;
+    }
     .title {
-        font-size: 26px;
+        font-size: 24px;
     }
     .header-actions {
         gap: 5px;
