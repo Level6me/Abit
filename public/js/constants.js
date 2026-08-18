@@ -4,8 +4,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1526';
-const APP_BUILD_TIME = '2026-08-18 15:26:42';
+const APP_VERSION = 'v2026.08.18-1617';
+const APP_BUILD_TIME = '2026-08-18 16:17:45';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)

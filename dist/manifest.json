@@ -17,29 +17,41 @@
   "categories": ["utilities", "productivity"],
   "icons": [
     {
-      "src": "favicon-16x16.png?v=2.0.1",
+      "src": "favicon-16x16.png",
       "sizes": "16x16",
       "type": "image/png"
     },
     {
-      "src": "favicon-32x32.png?v=2.0.1",
+      "src": "favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "icon-192.png?v=2.0.1",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png?v=2.0.1",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "assets/icon.svg?v=2.0.1",
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }
@@ -50,28 +62,28 @@
       "short_name": "新建",
       "description": "快速添加磁力链接或种子文件",
       "url": "./?action=add",
-      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "全网搜索",
       "short_name": "搜索",
       "description": "全网检索海量种子资源",
       "url": "./?action=search",
-      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "全部暂停",
       "short_name": "暂停全部",
       "description": "一键暂停所有活动的下载与做种任务",
       "url": "./?action=pause_all",
-      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "全部开始",
       "short_name": "开始全部",
       "description": "一键恢复所有已暂停的任务",
       "url": "./?action=resume_all",
-      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ],
   "protocol_handlers": [

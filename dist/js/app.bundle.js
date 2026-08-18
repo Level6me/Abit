@@ -625,6 +625,35 @@
         '桌面微型悬浮看板常驻监视。': 'Floating mini HUD on desktop.',
         '本地存储持久化保护 (StorageManager.persist)': 'StorageManager Persistence Protection',
         '防止浏览器清理主题与偏好设置。': 'Prevents browser from evicting theme & settings.',
+
+        // Diagnostics & Test Notifications
+        '📊 当前运行环境与 API 兼容性诊断': '📊 Environment & Native API Compatibility Diagnostics',
+        '🔄 重新检测': '🔄 Re-check',
+        '正在诊断环境兼容性...': 'Diagnosing environment compatibility...',
+        '🔔 测试通知': '🔔 Test Notification',
+        '正常 / 支持': 'Supported / Active',
+        '受限 / 需放行': 'Restricted / Action Needed',
+        '不支持 / 需HTTPS': 'Unsupported / HTTPS Needed',
+        '安全上下文 (HTTPS/Local)': 'Secure Context (HTTPS/Localhost)',
+        'Service Worker 引擎': 'Service Worker Engine',
+        '桌面与系统通知权限': 'Desktop Notification Permission',
+        '屏幕常亮锁 (Wake Lock)': 'Screen Wake Lock',
+        '剪贴板感知 (Clipboard)': 'Async Clipboard API',
+        '图标动态角标 (Badging)': 'Live App Badging',
+        '环境提示': 'Environment Notice',
+        '当前页面运行于普通 HTTP 协议（非 HTTPS / 非 Localhost）。现代浏览器依据 W3C 安全规范，会严格限制 Service Worker 离线安装、系统桌面通知及部分原生 API。': 'Current origin is served over plain HTTP (non-HTTPS / non-localhost). Modern browsers restrict Service Worker installation, desktop notifications, and native APIs on insecure origins per W3C security specifications.',
+        '如何获得 100% 完整体验': 'How to unlock 100% native capabilities',
+        '建议通过 HTTPS 域名或反向代理访问 Abit；或在 Chrome/Edge 中访问': 'We recommend accessing Abit via HTTPS domain or reverse proxy; or in Chrome/Edge open',
+        '将当前地址添加至安全白名单。': 'to add this origin to the insecure-origins whitelist.',
+        '已开启实时速率悬浮看板': 'Floating speed HUD opened',
+        '已关闭悬浮看板': 'Floating HUD closed',
+        '当前浏览器环境不支持 Web Notification API': 'Current browser does not support Web Notification API',
+        '通知权限未允许，请在浏览器地址栏权限中放行通知': 'Notification permission not allowed, please grant permission in browser settings',
+        '恭喜！Abit 原生桌面通知与系统权限已正常就绪。': 'Congratulations! Abit native desktop notifications and system permissions are active and working.',
+        '已成功发送系统测试通知！': 'System test notification sent successfully!',
+        '发送系统通知受限': 'Failed to send notification',
+        '↓ 下载': '↓ DL',
+        '↑ 上传': '↑ UP',
     };
 
     let currentLang = 'zh';
@@ -703,8 +732,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1526';
-const APP_BUILD_TIME = '2026-08-18 15:26:42';
+const APP_VERSION = 'v2026.08.18-1617';
+const APP_BUILD_TIME = '2026-08-18 16:17:45';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -1152,8 +1181,9 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         }
     }
 
-    // 7. Picture-in-Picture (PiP) Floating Speed Monitor
+    // 7. Picture-in-Picture (PiP) Floating Speed Monitor with In-Page Fallback
     let pipWindowInstance = null;
+    let inPageFloatingHudActive = false;
 
     async function togglePictureInPictureMonitor() {
         if ('documentPictureInPicture' in window) {
@@ -1200,35 +1230,129 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                     pipWindowInstance = null;
                 });
                 showToast(window.t('已开启画中画速率悬浮监控'));
+                return;
             } catch (e) {
-                console.debug('[Abit] PiP window error:', e);
-                showToast(window.t('开启画中画监控失败'), false);
+                console.debug('[Abit] Document PiP request failed, falling back to In-Page Floating HUD:', e);
             }
+        }
+
+        // In-Page Mini Floating HUD Fallback (Works on mobile and all non-HTTPS environments)
+        inPageFloatingHudActive = !inPageFloatingHudActive;
+        const hud = $('#mini-pip-floating-hud');
+        if (inPageFloatingHudActive) {
+            hud.fadeIn(200);
+            showToast(window.t('已开启实时速率悬浮看板'));
         } else {
-            showToast(window.t('当前浏览器暂不支持 Document Picture-in-Picture 悬浮监控'), false);
+            hud.fadeOut(200);
+            showToast(window.t('已关闭悬浮看板'));
         }
     }
 
     function updatePipMonitor(dlStr, upStr, activeCnt) {
-        if (!pipWindowInstance || pipWindowInstance.closed) return;
-        try {
-            const pipDoc = pipWindowInstance.document;
-            if (dlStr) {
-                const el = pipDoc.getElementById('pip-dl');
-                if (el) el.innerText = dlStr;
-            }
-            if (upStr) {
-                const el = pipDoc.getElementById('pip-up');
-                if (el) el.innerText = upStr;
-            }
-            if (activeCnt !== undefined) {
-                const el = pipDoc.getElementById('pip-active-cnt');
-                if (el) el.innerText = `${activeCnt} 任务`;
-            }
-        } catch(e) {}
+        // Update Document PiP window if open
+        if (pipWindowInstance && !pipWindowInstance.closed) {
+            try {
+                const pipDoc = pipWindowInstance.document;
+                if (dlStr) {
+                    const el = pipDoc.getElementById('pip-dl');
+                    if (el) el.innerText = dlStr;
+                }
+                if (upStr) {
+                    const el = pipDoc.getElementById('pip-up');
+                    if (el) el.innerText = upStr;
+                }
+                if (activeCnt !== undefined) {
+                    const el = pipDoc.getElementById('pip-active-cnt');
+                    if (el) el.innerText = `${activeCnt} 任务`;
+                }
+            } catch(e) {}
+        }
+
+        // Update In-Page Floating HUD
+        const hud = $('#mini-pip-floating-hud');
+        if (hud.length > 0 && hud.is(':visible')) {
+            if (dlStr) $('#mini-hud-dl').text(dlStr);
+            if (upStr) $('#mini-hud-up').text(upStr);
+            if (activeCnt !== undefined) $('#mini-hud-cnt').text(`${activeCnt} 任务`);
+        }
     }
 
-    // 8. Clipboard Copy Helper
+    // 8. Test Notification Dispatcher
+    function sendTestNotification() {
+        if (!('Notification' in window)) {
+            showToast(window.t('当前浏览器环境不支持 Web Notification API'), false);
+            return;
+        }
+
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission().then(function(perm) {
+                if (perm === 'granted') {
+                    dispatchActualTestNotification();
+                } else {
+                    showToast(window.t('通知权限未允许，请在浏览器地址栏权限中放行通知'), false);
+                }
+            }).catch(function(err) {
+                showToast(window.t('请求通知权限失败') + `: ${err.message}`, false);
+            });
+        } else {
+            dispatchActualTestNotification();
+        }
+    }
+
+    function dispatchActualTestNotification() {
+        const title = '🎉 Abit 通知连接成功';
+        const options = {
+            body: window.t('恭喜！Abit 原生桌面通知与系统权限已正常就绪。'),
+            icon: 'icon-192.png',
+            badge: 'favicon-32x32.png',
+            tag: 'abit-test-notification',
+            renotify: true
+        };
+
+        try {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(function(reg) {
+                    reg.showNotification(title, options);
+                }).catch(function() {
+                    new Notification(title, options);
+                });
+            } else {
+                new Notification(title, options);
+            }
+            showToast(window.t('已成功发送系统测试通知！'));
+            hapticFeedback([20, 50]);
+        } catch (e) {
+            showToast(window.t('发送系统通知受限') + `: ${e.message}`, false);
+        }
+    }
+
+    // 9. PWA Environment Diagnostics Engine
+    function getPwaDiagnostics() {
+        const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        const hasSw = 'serviceWorker' in navigator;
+        const hasNotification = 'Notification' in window;
+        const notifPermission = hasNotification ? Notification.permission : 'unsupported';
+        const hasWakeLock = 'wakeLock' in navigator;
+        const hasClipboard = 'clipboard' in navigator && !!navigator.clipboard.readText;
+        const hasBadging = 'setAppBadge' in navigator;
+        const hasDocPip = 'documentPictureInPicture' in window;
+        const hasStoragePersist = !!(navigator.storage && navigator.storage.persist);
+
+        return {
+            isSecure,
+            hasSw,
+            notifPermission,
+            hasWakeLock,
+            hasClipboard,
+            hasBadging,
+            hasDocPip,
+            hasStoragePersist,
+            protocol: location.protocol,
+            hostname: location.hostname
+        };
+    }
+
+    // 10. Clipboard Copy Helper
     function copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).catch(() => {
@@ -3092,6 +3216,61 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         if (typeof isDiskAlertEnabled === 'function') {
             $('#pwa-pref-diskalert').prop('checked', isDiskAlertEnabled());
         }
+        renderPwaDiagnostics();
+    }
+
+    function renderPwaDiagnostics() {
+        if (typeof getPwaDiagnostics !== 'function') return;
+        const d = getPwaDiagnostics();
+        const container = $('#pwa-diag-container');
+        if (!container.length) return;
+
+        const badgeOk = `<span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--success); font-size:11px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--success);"></span>${window.t('正常 / 支持')}</span>`;
+        const badgeWarn = `<span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--warning); font-size:11px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--warning);"></span>${window.t('受限 / 需放行')}</span>`;
+        const badgeErr = `<span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--danger); font-size:11px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--danger);"></span>${window.t('不支持 / 需HTTPS')}</span>`;
+
+        let html = `
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; margin-top:8px;">
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('安全上下文 (HTTPS/Local)')}</span>
+                    ${d.isSecure ? badgeOk : badgeErr}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('Service Worker 引擎')}</span>
+                    ${d.hasSw ? badgeOk : badgeErr}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('桌面与系统通知权限')}</span>
+                    ${d.notifPermission === 'granted' ? badgeOk : (d.notifPermission === 'default' ? badgeWarn : badgeErr)}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('屏幕常亮锁 (Wake Lock)')}</span>
+                    ${d.hasWakeLock ? badgeOk : badgeErr}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('剪贴板感知 (Clipboard)')}</span>
+                    ${d.hasClipboard ? badgeOk : badgeWarn}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('图标动态角标 (Badging)')}</span>
+                    ${d.hasBadging ? badgeOk : badgeWarn}
+                </div>
+            </div>
+        `;
+
+        if (!d.isSecure) {
+            html += `
+                <div style="margin-top:12px; padding:10px 14px; border-radius:10px; background:rgba(255,149,0,0.1); border:1px solid var(--warning); font-size:12px; line-height:1.6; color:var(--text);">
+                    <strong style="color:var(--warning);">⚠️ ${window.t('环境提示')}：</strong>
+                    ${window.t('当前页面运行于普通 HTTP 协议（非 HTTPS / 非 Localhost）。现代浏览器依据 W3C 安全规范，会严格限制 Service Worker 离线安装、系统桌面通知及部分原生 API。')}
+                    <br>
+                    <strong>💡 ${window.t('如何获得 100% 完整体验')}：</strong>
+                    ${window.t('建议通过 HTTPS 域名或反向代理访问 Abit；或在 Chrome/Edge 中访问')} <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code> ${window.t('将当前地址添加至安全白名单。')}
+                </div>
+            `;
+        }
+
+        container.html(html);
     }
 
     function onTogglePwaNotify(checked) {
@@ -3103,10 +3282,12 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                 } else {
                     showToast(window.t('通知权限被浏览器拦截，请在地址栏设置中允许通知权限'), false);
                 }
+                renderPwaDiagnostics();
             });
         } else {
             setNotificationEnabled(false);
             showToast(window.t('已关闭下载完成系统通知'));
+            renderPwaDiagnostics();
         }
     }
 
@@ -3118,6 +3299,7 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             } else {
                 showToast(window.t('屏幕防休眠已关闭'));
             }
+            renderPwaDiagnostics();
         });
     }
 
@@ -3568,11 +3750,16 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             $('#sys-abit-repo-url').attr('href', APP_REPO_URL).text(APP_REPO_URL);
         }
 
-        // Bootstrap authentication check (VueTorrent-style probe)
+        // Bootstrap authentication check & Parallel fast boot
         checkAuthStatus();
     });
 
     function checkAuthStatus() {
+        // 1. Parallel instantaneous data polling (Eliminates serialized latency)
+        pollFastData();
+        pollSlowData();
+
+        // 2. Query kernel versions concurrently
         $.get('/api/v2/app/version', function(ver) {
             qbtVersion = ver;
             $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
@@ -3584,21 +3771,19 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                 $('#sys-webapi-version-text').text(`v${wver}`);
             });
 
-            // Initial Data Poll
-            pollFastData();
-            pollSlowData();
-
             // Setup recurring timers
             if (fastPollTimer) clearInterval(fastPollTimer);
             if (slowPollTimer) clearInterval(slowPollTimer);
             fastPollTimer = setInterval(pollFastData, 1800);
             slowPollTimer = setInterval(pollSlowData, 15000);
         }).fail(function(err) {
-            if (fastPollTimer) clearInterval(fastPollTimer);
-            if (slowPollTimer) clearInterval(slowPollTimer);
-            $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
-            openLoginModal(true);
+            if (err && err.status === 403) {
+                if (fastPollTimer) clearInterval(fastPollTimer);
+                if (slowPollTimer) clearInterval(slowPollTimer);
+                $('#qbt-dot').addClass('offline');
+                $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
+                openLoginModal(true);
+            }
         });
     }
 

@@ -262,6 +262,61 @@
         if (typeof isDiskAlertEnabled === 'function') {
             $('#pwa-pref-diskalert').prop('checked', isDiskAlertEnabled());
         }
+        renderPwaDiagnostics();
+    }
+
+    function renderPwaDiagnostics() {
+        if (typeof getPwaDiagnostics !== 'function') return;
+        const d = getPwaDiagnostics();
+        const container = $('#pwa-diag-container');
+        if (!container.length) return;
+
+        const badgeOk = `<span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--success); font-size:11px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--success);"></span>${window.t('正常 / 支持')}</span>`;
+        const badgeWarn = `<span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--warning); font-size:11px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--warning);"></span>${window.t('受限 / 需放行')}</span>`;
+        const badgeErr = `<span style="display:inline-flex; align-items:center; gap:4px; font-weight:700; color:var(--danger); font-size:11px;"><span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--danger);"></span>${window.t('不支持 / 需HTTPS')}</span>`;
+
+        let html = `
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; margin-top:8px;">
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('安全上下文 (HTTPS/Local)')}</span>
+                    ${d.isSecure ? badgeOk : badgeErr}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('Service Worker 引擎')}</span>
+                    ${d.hasSw ? badgeOk : badgeErr}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('桌面与系统通知权限')}</span>
+                    ${d.notifPermission === 'granted' ? badgeOk : (d.notifPermission === 'default' ? badgeWarn : badgeErr)}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('屏幕常亮锁 (Wake Lock)')}</span>
+                    ${d.hasWakeLock ? badgeOk : badgeErr}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('剪贴板感知 (Clipboard)')}</span>
+                    ${d.hasClipboard ? badgeOk : badgeWarn}
+                </div>
+                <div style="background:var(--card); border-radius:10px; padding:8px 12px; border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:var(--text-sec);">${window.t('图标动态角标 (Badging)')}</span>
+                    ${d.hasBadging ? badgeOk : badgeWarn}
+                </div>
+            </div>
+        `;
+
+        if (!d.isSecure) {
+            html += `
+                <div style="margin-top:12px; padding:10px 14px; border-radius:10px; background:rgba(255,149,0,0.1); border:1px solid var(--warning); font-size:12px; line-height:1.6; color:var(--text);">
+                    <strong style="color:var(--warning);">⚠️ ${window.t('环境提示')}：</strong>
+                    ${window.t('当前页面运行于普通 HTTP 协议（非 HTTPS / 非 Localhost）。现代浏览器依据 W3C 安全规范，会严格限制 Service Worker 离线安装、系统桌面通知及部分原生 API。')}
+                    <br>
+                    <strong>💡 ${window.t('如何获得 100% 完整体验')}：</strong>
+                    ${window.t('建议通过 HTTPS 域名或反向代理访问 Abit；或在 Chrome/Edge 中访问')} <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code> ${window.t('将当前地址添加至安全白名单。')}
+                </div>
+            `;
+        }
+
+        container.html(html);
     }
 
     function onTogglePwaNotify(checked) {
@@ -273,10 +328,12 @@
                 } else {
                     showToast(window.t('通知权限被浏览器拦截，请在地址栏设置中允许通知权限'), false);
                 }
+                renderPwaDiagnostics();
             });
         } else {
             setNotificationEnabled(false);
             showToast(window.t('已关闭下载完成系统通知'));
+            renderPwaDiagnostics();
         }
     }
 
@@ -288,6 +345,7 @@
             } else {
                 showToast(window.t('屏幕防休眠已关闭'));
             }
+            renderPwaDiagnostics();
         });
     }
 

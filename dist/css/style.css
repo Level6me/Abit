@@ -948,6 +948,41 @@ input:checked + .slider:before { transform: translateX(20px); }
     flex-shrink: 0;
 }
 
+/* Mini Floating Speed HUD */
+.mini-floating-hud {
+    position: fixed;
+    bottom: 84px;
+    right: 20px;
+    z-index: 9998;
+    background: var(--card-translucent);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+    min-width: 180px;
+    user-select: none;
+    animation: bannerSlideDown 0.25s ease;
+}
+.mini-hud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.mini-hud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+}
+.mini-hud-speed {
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 14px;
+    font-weight: 800;
+}
+
 /* --- [Module: torrents.css] --- */
 /* Batch Action Floating Bar */
 .batch-bar {

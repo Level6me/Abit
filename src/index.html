@@ -44,6 +44,25 @@
     </div>
 </div>
 
+<!-- Floating Mini Speed HUD (Picture-in-Picture Fallback) -->
+<div id="mini-pip-floating-hud" class="mini-floating-hud" style="display:none;">
+    <div class="mini-hud-header">
+        <span style="font-weight:800; font-size:10px; letter-spacing:0.5px; color:var(--text-sec);">🍏 ABIT MONITOR</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+            <span id="mini-hud-cnt" style="font-size:10px; font-weight:700; color:var(--accent);">--</span>
+            <button class="icon-btn" onclick="togglePictureInPictureMonitor()" style="width:18px; height:18px; font-size:10px; padding:0; line-height:1;">✖</button>
+        </div>
+    </div>
+    <div class="mini-hud-row">
+        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↓ 下载">↓ 下载</span>
+        <span class="mini-hud-speed" id="mini-hud-dl" style="color:var(--success);">0 B/s</span>
+    </div>
+    <div class="mini-hud-row">
+        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↑ 上传">↑ 上传</span>
+        <span class="mini-hud-speed" id="mini-hud-up" style="color:var(--accent);">0 B/s</span>
+    </div>
+</div>
+
 <!-- Drag and drop full window overlay -->
 <div class="drag-overlay" id="drag-overlay">
     <div data-i18n="📥 松开鼠标以添加 Torrent 种子文件">📥 松开鼠标以添加 Torrent 种子文件</div>
@@ -825,6 +844,17 @@
                 </div>
             </div>
 
+            <!-- PWA Diagnostics Card -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <div style="font-weight:700; font-size:15px;" data-i18n="📊 当前运行环境与 API 兼容性诊断">📊 当前运行环境与 API 兼容性诊断</div>
+                    <button class="btn secondary" style="padding:4px 10px; font-size:11px;" onclick="renderPwaDiagnostics()" data-i18n="🔄 重新检测">🔄 重新检测</button>
+                </div>
+                <div id="pwa-diag-container">
+                    <div style="text-align:center; padding:15px; color:var(--text-sec); font-size:12px;" data-i18n="正在诊断环境兼容性...">正在诊断环境兼容性...</div>
+                </div>
+            </div>
+
             <!-- PWA Features Configuration Card -->
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 原生系统权限与功能配置">🍏 原生系统权限与功能配置</div>
@@ -834,10 +864,13 @@
                         <div class="setting-label" data-i18n="下载完成系统原生通知">下载完成系统原生通知</div>
                         <div class="setting-desc" data-i18n="任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片">任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片</div>
                     </div>
-                    <label class="switch">
-                        <input type="checkbox" id="pwa-pref-notify" onchange="onTogglePwaNotify(this.checked)">
-                        <span class="slider"></span>
-                    </label>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn secondary" style="padding:4px 8px; font-size:11px;" onclick="sendTestNotification()" data-i18n="🔔 测试通知">🔔 测试通知</button>
+                        <label class="switch">
+                            <input type="checkbox" id="pwa-pref-notify" onchange="onTogglePwaNotify(this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="setting-row">

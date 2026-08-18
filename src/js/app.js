@@ -159,11 +159,16 @@
             $('#sys-abit-repo-url').attr('href', APP_REPO_URL).text(APP_REPO_URL);
         }
 
-        // Bootstrap authentication check (VueTorrent-style probe)
+        // Bootstrap authentication check & Parallel fast boot
         checkAuthStatus();
     });
 
     function checkAuthStatus() {
+        // 1. Parallel instantaneous data polling (Eliminates serialized latency)
+        pollFastData();
+        pollSlowData();
+
+        // 2. Query kernel versions concurrently
         $.get('/api/v2/app/version', function(ver) {
             qbtVersion = ver;
             $('#sys-qbt-version-text').text(`qBittorrent ${ver}`);
@@ -175,21 +180,19 @@
                 $('#sys-webapi-version-text').text(`v${wver}`);
             });
 
-            // Initial Data Poll
-            pollFastData();
-            pollSlowData();
-
             // Setup recurring timers
             if (fastPollTimer) clearInterval(fastPollTimer);
             if (slowPollTimer) clearInterval(slowPollTimer);
             fastPollTimer = setInterval(pollFastData, 1800);
             slowPollTimer = setInterval(pollSlowData, 15000);
         }).fail(function(err) {
-            if (fastPollTimer) clearInterval(fastPollTimer);
-            if (slowPollTimer) clearInterval(slowPollTimer);
-            $('#qbt-dot').addClass('offline');
-            $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
-            openLoginModal(true);
+            if (err && err.status === 403) {
+                if (fastPollTimer) clearInterval(fastPollTimer);
+                if (slowPollTimer) clearInterval(slowPollTimer);
+                $('#qbt-dot').addClass('offline');
+                $('#qbt-status-text').text(window.t('未登录 / 需鉴权'));
+                openLoginModal(true);
+            }
         });
     }
 

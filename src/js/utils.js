@@ -378,8 +378,9 @@
         }
     }
 
-    // 7. Picture-in-Picture (PiP) Floating Speed Monitor
+    // 7. Picture-in-Picture (PiP) Floating Speed Monitor with In-Page Fallback
     let pipWindowInstance = null;
+    let inPageFloatingHudActive = false;
 
     async function togglePictureInPictureMonitor() {
         if ('documentPictureInPicture' in window) {
@@ -426,35 +427,129 @@
                     pipWindowInstance = null;
                 });
                 showToast(window.t('已开启画中画速率悬浮监控'));
+                return;
             } catch (e) {
-                console.debug('[Abit] PiP window error:', e);
-                showToast(window.t('开启画中画监控失败'), false);
+                console.debug('[Abit] Document PiP request failed, falling back to In-Page Floating HUD:', e);
             }
+        }
+
+        // In-Page Mini Floating HUD Fallback (Works on mobile and all non-HTTPS environments)
+        inPageFloatingHudActive = !inPageFloatingHudActive;
+        const hud = $('#mini-pip-floating-hud');
+        if (inPageFloatingHudActive) {
+            hud.fadeIn(200);
+            showToast(window.t('已开启实时速率悬浮看板'));
         } else {
-            showToast(window.t('当前浏览器暂不支持 Document Picture-in-Picture 悬浮监控'), false);
+            hud.fadeOut(200);
+            showToast(window.t('已关闭悬浮看板'));
         }
     }
 
     function updatePipMonitor(dlStr, upStr, activeCnt) {
-        if (!pipWindowInstance || pipWindowInstance.closed) return;
-        try {
-            const pipDoc = pipWindowInstance.document;
-            if (dlStr) {
-                const el = pipDoc.getElementById('pip-dl');
-                if (el) el.innerText = dlStr;
-            }
-            if (upStr) {
-                const el = pipDoc.getElementById('pip-up');
-                if (el) el.innerText = upStr;
-            }
-            if (activeCnt !== undefined) {
-                const el = pipDoc.getElementById('pip-active-cnt');
-                if (el) el.innerText = `${activeCnt} 任务`;
-            }
-        } catch(e) {}
+        // Update Document PiP window if open
+        if (pipWindowInstance && !pipWindowInstance.closed) {
+            try {
+                const pipDoc = pipWindowInstance.document;
+                if (dlStr) {
+                    const el = pipDoc.getElementById('pip-dl');
+                    if (el) el.innerText = dlStr;
+                }
+                if (upStr) {
+                    const el = pipDoc.getElementById('pip-up');
+                    if (el) el.innerText = upStr;
+                }
+                if (activeCnt !== undefined) {
+                    const el = pipDoc.getElementById('pip-active-cnt');
+                    if (el) el.innerText = `${activeCnt} 任务`;
+                }
+            } catch(e) {}
+        }
+
+        // Update In-Page Floating HUD
+        const hud = $('#mini-pip-floating-hud');
+        if (hud.length > 0 && hud.is(':visible')) {
+            if (dlStr) $('#mini-hud-dl').text(dlStr);
+            if (upStr) $('#mini-hud-up').text(upStr);
+            if (activeCnt !== undefined) $('#mini-hud-cnt').text(`${activeCnt} 任务`);
+        }
     }
 
-    // 8. Clipboard Copy Helper
+    // 8. Test Notification Dispatcher
+    function sendTestNotification() {
+        if (!('Notification' in window)) {
+            showToast(window.t('当前浏览器环境不支持 Web Notification API'), false);
+            return;
+        }
+
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission().then(function(perm) {
+                if (perm === 'granted') {
+                    dispatchActualTestNotification();
+                } else {
+                    showToast(window.t('通知权限未允许，请在浏览器地址栏权限中放行通知'), false);
+                }
+            }).catch(function(err) {
+                showToast(window.t('请求通知权限失败') + `: ${err.message}`, false);
+            });
+        } else {
+            dispatchActualTestNotification();
+        }
+    }
+
+    function dispatchActualTestNotification() {
+        const title = '🎉 Abit 通知连接成功';
+        const options = {
+            body: window.t('恭喜！Abit 原生桌面通知与系统权限已正常就绪。'),
+            icon: 'icon-192.png',
+            badge: 'favicon-32x32.png',
+            tag: 'abit-test-notification',
+            renotify: true
+        };
+
+        try {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(function(reg) {
+                    reg.showNotification(title, options);
+                }).catch(function() {
+                    new Notification(title, options);
+                });
+            } else {
+                new Notification(title, options);
+            }
+            showToast(window.t('已成功发送系统测试通知！'));
+            hapticFeedback([20, 50]);
+        } catch (e) {
+            showToast(window.t('发送系统通知受限') + `: ${e.message}`, false);
+        }
+    }
+
+    // 9. PWA Environment Diagnostics Engine
+    function getPwaDiagnostics() {
+        const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        const hasSw = 'serviceWorker' in navigator;
+        const hasNotification = 'Notification' in window;
+        const notifPermission = hasNotification ? Notification.permission : 'unsupported';
+        const hasWakeLock = 'wakeLock' in navigator;
+        const hasClipboard = 'clipboard' in navigator && !!navigator.clipboard.readText;
+        const hasBadging = 'setAppBadge' in navigator;
+        const hasDocPip = 'documentPictureInPicture' in window;
+        const hasStoragePersist = !!(navigator.storage && navigator.storage.persist);
+
+        return {
+            isSecure,
+            hasSw,
+            notifPermission,
+            hasWakeLock,
+            hasClipboard,
+            hasBadging,
+            hasDocPip,
+            hasStoragePersist,
+            protocol: location.protocol,
+            hostname: location.hostname
+        };
+    }
+
+    // 10. Clipboard Copy Helper
     function copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).catch(() => {

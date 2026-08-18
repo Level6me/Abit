@@ -1,9 +1,9 @@
 /**
  * Abit — qBittorrent WebUI Service Worker
- * Provides offline shell caching and enables native PWA installation across browsers.
+ * Provides instant shell caching, Stale-While-Revalidate loading and enables PWA installation.
  */
 
-const CACHE_NAME = 'abit-pwa-v2.0.1';
+const CACHE_NAME = 'abit-pwa-v2.0.3';
 const STATIC_ASSETS = [
     './',
     './index.html',
@@ -12,24 +12,25 @@ const STATIC_ASSETS = [
     './favicon-16x16.png',
     './favicon-32x32.png',
     './apple-touch-icon.png',
-    './apple-touch-icon-precomposed.png',
     './icon-192.png',
     './icon-512.png',
-    './assets/icon.svg'
+    './icon.svg'
 ];
 
-// Install: Cache core static assets & activate immediately
+// Install: Pre-cache core shell assets with individual error resilience
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(STATIC_ASSETS).catch(err => {
-                console.warn('[Abit SW] Pre-caching partial assets:', err);
-            });
+            return Promise.allSettled(
+                STATIC_ASSETS.map(url => cache.add(url).catch(err => {
+                    console.debug('[Abit SW] Pre-caching asset skipped:', url);
+                }))
+            );
         }).then(() => self.skipWaiting())
     );
 });
 
-// Activate: Clean up outdated caches
+// Activate: Clean up outdated caches immediately
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
@@ -40,38 +41,38 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch: Pass dynamic qBittorrent API requests directly to network; cache static assets
+// Fetch: Pass dynamic qBittorrent API requests directly to network; use Stale-While-Revalidate for static assets
 self.addEventListener('fetch', event => {
     const request = event.request;
     const url = new URL(request.url);
 
-    // 1. NEVER cache qBittorrent backend API calls, login or action requests
-    if (url.pathname.startsWith('/api/') || request.method !== 'GET') {
+    // 1. NEVER intercept or cache qBittorrent backend API calls, login or POST/PUT/DELETE requests
+    if (url.pathname.includes('/api/') || request.method !== 'GET') {
         return;
     }
 
-    // 2. Static assets & Shell: Network first with Cache fallback
+    // 2. Static Assets: Stale-While-Revalidate (Instant response from cache + background refresh)
     event.respondWith(
-        fetch(request)
-            .then(networkResponse => {
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(request, responseToCache);
-                    });
-                }
-                return networkResponse;
-            })
-            .catch(() => {
-                return caches.match(request).then(cachedResponse => {
-                    if (cachedResponse) {
-                        return cachedResponse;
+        caches.match(request).then(cachedResponse => {
+            const fetchPromise = fetch(request)
+                .then(networkResponse => {
+                    if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME).then(cache => {
+                            cache.put(request, responseToCache);
+                        });
                     }
-                    if (request.headers.get('accept')?.includes('text/html')) {
-                        return caches.match('./index.html');
+                    return networkResponse;
+                })
+                .catch(() => {
+                    if (!cachedResponse && request.headers.get('accept')?.includes('text/html')) {
+                        return caches.match('./index.html') || caches.match('./');
                     }
                 });
-            })
+
+            // Return cached response instantly (0ms) if available, otherwise wait for network
+            return cachedResponse || fetchPromise;
+        })
     );
 });
 
