@@ -535,6 +535,24 @@
         '正在向内核提交恢复官方主题请求...': 'Submitting restore request to kernel...',
         '✅ 已恢复官方默认主题，正在刷新界面...': '✅ Official default theme restored, reloading...',
         '恢复官方主题失败，请检查网络或权限': 'Failed to restore official theme, please check network or permissions',
+
+        // PWA Native Capabilities
+        '🍏 PWA 原生应用与系统能力': '🍏 PWA Native Capabilities & Features',
+        '下载完成系统原生通知': 'Native Notifications on Complete',
+        '任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片': 'Sends a native desktop/mobile notification when a torrent reaches 100%',
+        '屏幕常亮防休眠 (Wake Lock)': 'Keep Screen Awake (Wake Lock)',
+        '前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载': 'Prevents system sleep in foreground to avoid interrupting high-speed downloads',
+        '触感振动反馈 (Taptic Feedback)': 'Haptic / Vibration Feedback',
+        '在移动设备触控交互与任务完成时提供轻微触觉反馈': 'Provides tactile haptic feedback on touch devices and actions',
+        '⚡ 已就绪原生集成：': '⚡ Active Native Integrations:',
+        '磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。': 'Magnet URI scheme (magnet:), Dock/taskbar shortcuts, .torrent file association, and live App Badging.',
+        '已成功开启系统级下载完成通知！': 'System notifications enabled for download completion!',
+        '通知权限被浏览器拦截，请在地址栏设置中允许通知权限': 'Notification permission blocked, please allow notifications in browser settings',
+        '已关闭下载完成系统通知': 'Download completion notifications disabled',
+        '☕ 屏幕常亮防休眠已激活': '☕ Screen Wake Lock active (Preventing sleep)',
+        '屏幕防休眠已关闭': 'Screen Wake Lock disabled',
+        '已暂停全部活动任务': 'All active tasks paused',
+        '已恢复全部任务': 'All tasks resumed',
     };
 
     let currentLang = 'zh';

@@ -244,3 +244,48 @@
             showToast(window.t('恢复官方主题失败，请检查网络或权限'), false);
         });
     }
+
+    // --- PWA Preferences UI Handlers ---
+    function initPwaSettingsUI() {
+        if (typeof isNotificationEnabled === 'function') {
+            $('#pwa-pref-notify').prop('checked', isNotificationEnabled());
+        }
+        if (typeof isWakeLockEnabled === 'function') {
+            $('#pwa-pref-wakelock').prop('checked', isWakeLockEnabled());
+        }
+        if (typeof isHapticEnabled === 'function') {
+            $('#pwa-pref-haptic').prop('checked', isHapticEnabled());
+        }
+    }
+
+    function onTogglePwaNotify(checked) {
+        if (checked) {
+            setNotificationEnabled(true, function(granted) {
+                $('#pwa-pref-notify').prop('checked', granted);
+                if (granted) {
+                    showToast(window.t('已成功开启系统级下载完成通知！'));
+                } else {
+                    showToast(window.t('通知权限被浏览器拦截，请在地址栏设置中允许通知权限'), false);
+                }
+            });
+        } else {
+            setNotificationEnabled(false);
+            showToast(window.t('已关闭下载完成系统通知'));
+        }
+    }
+
+    function onTogglePwaWakeLock(checked) {
+        setWakeLockEnabled(checked).then(function(active) {
+            $('#pwa-pref-wakelock').prop('checked', active);
+            if (active) {
+                showToast(window.t('☕ 屏幕常亮防休眠已激活'));
+            } else {
+                showToast(window.t('屏幕防休眠已关闭'));
+            }
+        });
+    }
+
+    function onTogglePwaHaptic(checked) {
+        setHapticEnabled(checked);
+        if (checked) hapticFeedback([20, 40]);
+    }

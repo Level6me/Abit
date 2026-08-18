@@ -217,6 +217,93 @@
                 showToast(window.t('Abit 已成功安装到主屏幕 / 本地应用列表'));
             }
         });
+
+        // 1. StorageManager Persistence Request (Prevent browser auto-eviction)
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persist().then(function(persistent) {
+                if (persistent) console.log('[Abit PWA] Persistent Storage granted');
+            }).catch(function() {});
+        }
+
+        // 2. Screen Wake Lock Bootstrap
+        if (typeof isWakeLockEnabled === 'function' && isWakeLockEnabled()) {
+            requestScreenWakeLock();
+        }
+
+        // 3. File Handling API (LaunchQueue for double-clicking .torrent files)
+        if ('launchQueue' in window && typeof window.LaunchParams !== 'undefined') {
+            try {
+                window.launchQueue.setConsumer(async function(launchParams) {
+                    if (!launchParams.files || !launchParams.files.length) return;
+                    for (const fileHandle of launchParams.files) {
+                        const file = await fileHandle.getFile();
+                        if (file && (file.name.endsWith('.torrent') || file.type === 'application/x-bittorrent')) {
+                            if (typeof handleSelectedTorrentFile === 'function') {
+                                handleSelectedTorrentFile(file);
+                                break;
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.debug('[Abit PWA] LaunchQueue consumer init error:', e);
+            }
+        }
+
+        // 4. Handle PWA Launch Query Parameters (Shortcuts, Magnet protocol & Share Target)
+        handlePwaLaunchParams();
+    }
+
+    function handlePwaLaunchParams() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const magnetParam = urlParams.get('magnet') || urlParams.get('url') || urlParams.get('text');
+            const actionParam = urlParams.get('action');
+
+            if (magnetParam) {
+                let cleanUrl = decodeURIComponent(magnetParam).trim();
+                // If protocol handler encoded extra prefix, strip it if needed
+                if (cleanUrl.startsWith('magnet:?') || cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+                    setTimeout(function() {
+                        if (typeof openAddModal === 'function') {
+                            openAddModal(cleanUrl);
+                        }
+                    }, 400);
+                }
+            } else if (actionParam === 'add') {
+                setTimeout(function() {
+                    if (typeof openAddModal === 'function') openAddModal();
+                }, 400);
+            } else if (actionParam === 'search') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-search', '搜索', $('.dock-btn:nth-child(3)'));
+                    }
+                }, 400);
+            } else if (actionParam === 'pause_all') {
+                setTimeout(function() {
+                    $.post('/api/v2/torrents/pause', { hashes: 'all' }, function() {
+                        if (typeof showToast === 'function') showToast(window.t('已暂停全部活动任务'));
+                        if (typeof pollFastData === 'function') pollFastData();
+                    });
+                }, 400);
+            } else if (actionParam === 'resume_all') {
+                setTimeout(function() {
+                    $.post('/api/v2/torrents/resume', { hashes: 'all' }, function() {
+                        if (typeof showToast === 'function') showToast(window.t('已恢复全部任务'));
+                        if (typeof pollFastData === 'function') pollFastData();
+                    });
+                }, 400);
+            }
+
+            // Clean up query string from address bar without reloading
+            if (magnetParam || actionParam) {
+                const cleanLocation = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanLocation);
+            }
+        } catch (e) {
+            console.debug('[Abit PWA] Failed to parse launch query params:', e);
+        }
     }
 
     function promptPwaInstall() {

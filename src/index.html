@@ -840,6 +840,51 @@
                 </div>
             </div>
 
+            <!-- PWA Native Capabilities Card -->
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 PWA 原生应用与系统能力">🍏 PWA 原生应用与系统能力</div>
+                
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="下载完成系统原生通知">下载完成系统原生通知</div>
+                        <div class="setting-desc" data-i18n="任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片">任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-notify" onchange="onTogglePwaNotify(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="屏幕常亮防休眠 (Wake Lock)">屏幕常亮防休眠 (Wake Lock)</div>
+                        <div class="setting-desc" data-i18n="前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载">前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-wakelock" onchange="onTogglePwaWakeLock(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="触感振动反馈 (Taptic Feedback)">触感振动反馈 (Taptic Feedback)</div>
+                        <div class="setting-desc" data-i18n="在移动设备触控交互与任务完成时提供轻微触觉反馈">在移动设备触控交互与任务完成时提供轻微触觉反馈</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-haptic" onchange="onTogglePwaHaptic(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin-top:10px; border:1px solid var(--border-subtle);">
+                    <div style="font-size:12px; color:var(--text-sec); line-height:1.5;">
+                        <span style="font-weight:700; color:var(--text);" data-i18n="⚡ 已就绪原生集成：">⚡ 已就绪原生集成：</span>
+                        <span data-i18n="磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。">磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Environment Specs Card (Moved from Security tab) -->
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>

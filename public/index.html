@@ -2038,12 +2038,57 @@ input:checked + .slider:before { transform: translateX(20px); }
                 </div>
             </div>
 
+            <!-- PWA Native Capabilities Card -->
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 PWA 原生应用与系统能力">🍏 PWA 原生应用与系统能力</div>
+                
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="下载完成系统原生通知">下载完成系统原生通知</div>
+                        <div class="setting-desc" data-i18n="任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片">任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-notify" onchange="onTogglePwaNotify(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="屏幕常亮防休眠 (Wake Lock)">屏幕常亮防休眠 (Wake Lock)</div>
+                        <div class="setting-desc" data-i18n="前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载">前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-wakelock" onchange="onTogglePwaWakeLock(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="触感振动反馈 (Taptic Feedback)">触感振动反馈 (Taptic Feedback)</div>
+                        <div class="setting-desc" data-i18n="在移动设备触控交互与任务完成时提供轻微触觉反馈">在移动设备触控交互与任务完成时提供轻微触觉反馈</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-haptic" onchange="onTogglePwaHaptic(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin-top:10px; border:1px solid var(--border-subtle);">
+                    <div style="font-size:12px; color:var(--text-sec); line-height:1.5;">
+                        <span style="font-weight:700; color:var(--text);" data-i18n="⚡ 已就绪原生集成：">⚡ 已就绪原生集成：</span>
+                        <span data-i18n="磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。">磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Environment Specs Card (Moved from Security tab) -->
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1444</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1459</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -2911,6 +2956,24 @@ input:checked + .slider:before { transform: translateX(20px); }
         '正在向内核提交恢复官方主题请求...': 'Submitting restore request to kernel...',
         '✅ 已恢复官方默认主题，正在刷新界面...': '✅ Official default theme restored, reloading...',
         '恢复官方主题失败，请检查网络或权限': 'Failed to restore official theme, please check network or permissions',
+
+        // PWA Native Capabilities
+        '🍏 PWA 原生应用与系统能力': '🍏 PWA Native Capabilities & Features',
+        '下载完成系统原生通知': 'Native Notifications on Complete',
+        '任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片': 'Sends a native desktop/mobile notification when a torrent reaches 100%',
+        '屏幕常亮防休眠 (Wake Lock)': 'Keep Screen Awake (Wake Lock)',
+        '前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载': 'Prevents system sleep in foreground to avoid interrupting high-speed downloads',
+        '触感振动反馈 (Taptic Feedback)': 'Haptic / Vibration Feedback',
+        '在移动设备触控交互与任务完成时提供轻微触觉反馈': 'Provides tactile haptic feedback on touch devices and actions',
+        '⚡ 已就绪原生集成：': '⚡ Active Native Integrations:',
+        '磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。': 'Magnet URI scheme (magnet:), Dock/taskbar shortcuts, .torrent file association, and live App Badging.',
+        '已成功开启系统级下载完成通知！': 'System notifications enabled for download completion!',
+        '通知权限被浏览器拦截，请在地址栏设置中允许通知权限': 'Notification permission blocked, please allow notifications in browser settings',
+        '已关闭下载完成系统通知': 'Download completion notifications disabled',
+        '☕ 屏幕常亮防休眠已激活': '☕ Screen Wake Lock active (Preventing sleep)',
+        '屏幕防休眠已关闭': 'Screen Wake Lock disabled',
+        '已暂停全部活动任务': 'All active tasks paused',
+        '已恢复全部任务': 'All tasks resumed',
     };
 
     let currentLang = 'zh';
@@ -2989,8 +3052,8 @@ input:checked + .slider:before { transform: translateX(20px); }
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1444';
-const APP_BUILD_TIME = '2026-08-18 14:44:53';
+const APP_VERSION = 'v2026.08.18-1459';
+const APP_BUILD_TIME = '2026-08-18 14:59:59';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3247,6 +3310,152 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         });
     }
 
+    // --- PWA Native Capabilities & APIs ---
+    
+    // 1. Taptic / Vibration Haptic Feedback
+    function isHapticEnabled() {
+        return localStorage.getItem('abit_haptic_enabled') !== 'false';
+    }
+
+    function setHapticEnabled(enable) {
+        localStorage.setItem('abit_haptic_enabled', enable ? 'true' : 'false');
+    }
+
+    function hapticFeedback(pattern = 15) {
+        if (!isHapticEnabled()) return;
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate(pattern); } catch (e) {}
+        }
+    }
+
+    // 2. App Badging API (Dock / Taskbar dynamic counter)
+    function updateAppBadge(count) {
+        if ('setAppBadge' in navigator) {
+            if (count > 0) {
+                navigator.setAppBadge(count).catch(() => {});
+            } else {
+                navigator.clearAppBadge().catch(() => {});
+            }
+        }
+    }
+
+    // 3. Web Notifications API
+    const notifiedTorrentsSet = new Set();
+
+    function isNotificationEnabled() {
+        return localStorage.getItem('abit_notify_enabled') === 'true' && ('Notification' in window && Notification.permission === 'granted');
+    }
+
+    function setNotificationEnabled(enable, callback) {
+        if (enable) {
+            requestNotificationPermission(function(granted) {
+                localStorage.setItem('abit_notify_enabled', granted ? 'true' : 'false');
+                if (callback) callback(granted);
+            });
+        } else {
+            localStorage.setItem('abit_notify_enabled', 'false');
+            if (callback) callback(false);
+        }
+    }
+
+    function requestNotificationPermission(callback) {
+        if (!('Notification' in window)) {
+            if (callback) callback(false);
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            if (callback) callback(true);
+            return;
+        }
+        if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(function(permission) {
+                const granted = (permission === 'granted');
+                if (callback) callback(granted);
+            }).catch(function() {
+                if (callback) callback(false);
+            });
+        } else {
+            if (callback) callback(false);
+        }
+    }
+
+    function notifyTorrentCompleted(torrent) {
+        if (!isNotificationEnabled()) return;
+        if (!torrent || !torrent.hash) return;
+        if (notifiedTorrentsSet.has(torrent.hash)) return;
+        notifiedTorrentsSet.add(torrent.hash);
+
+        const title = `🎉 ${window.t('下载完成')}: ${torrent.name}`;
+        const totalSizeStr = formatBytes(torrent.total_size || torrent.size);
+        const options = {
+            body: `${window.t('文件大小')}: ${totalSizeStr} | ${window.t('做种已就绪')}`,
+            icon: 'icon-192.png',
+            badge: 'favicon-32x32.png',
+            tag: `abit-complete-${torrent.hash}`,
+            renotify: true
+        };
+
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(function(reg) {
+                reg.showNotification(title, options);
+            }).catch(function() {
+                try { new Notification(title, options); } catch(e) {}
+            });
+        } else {
+            try { new Notification(title, options); } catch(e) {}
+        }
+        hapticFeedback([30, 60, 30]);
+    }
+
+    // 4. Screen Wake Lock API (Prevent sleep during active downloads)
+    let screenWakeLockInstance = null;
+
+    function isWakeLockEnabled() {
+        return localStorage.getItem('abit_wakelock_enabled') === 'true';
+    }
+
+    async function setWakeLockEnabled(enable) {
+        localStorage.setItem('abit_wakelock_enabled', enable ? 'true' : 'false');
+        if (enable) {
+            return await requestScreenWakeLock();
+        } else {
+            releaseScreenWakeLock();
+            return false;
+        }
+    }
+
+    async function requestScreenWakeLock() {
+        if (!('wakeLock' in navigator)) return false;
+        try {
+            if (!screenWakeLockInstance) {
+                screenWakeLockInstance = await navigator.wakeLock.request('screen');
+                screenWakeLockInstance.addEventListener('release', function() {
+                    screenWakeLockInstance = null;
+                });
+                console.log('[Abit PWA] Screen Wake Lock acquired');
+            }
+            return true;
+        } catch (e) {
+            console.debug('[Abit PWA] Screen Wake Lock request failed:', e);
+            return false;
+        }
+    }
+
+    function releaseScreenWakeLock() {
+        if (screenWakeLockInstance) {
+            screenWakeLockInstance.release().catch(() => {});
+            screenWakeLockInstance = null;
+            console.log('[Abit PWA] Screen Wake Lock released');
+        }
+    }
+
+    // Re-acquire wake lock on visibility change if enabled
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible' && isWakeLockEnabled()) {
+            requestScreenWakeLock();
+        }
+    });
+
 // --- [Module: api.js] ---
 /**
  * @file api.js
@@ -3318,7 +3527,9 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
  * @description Torrent list management, filtering, batch actions, detail drawer, pieces canvas & add modal
  */
 
-// --- Counter Calculation ---
+// --- Counter Calculation & Notification Tracking ---
+    const previousTorrentStates = new Map();
+
     function updateSummaryCounters() {
         let dl = 0, seed = 0, completed = 0, paused = 0, active = 0, queued = 0, err = 0;
         
@@ -3331,6 +3542,13 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             if (s.isActive) active++;
             if (s.isQueued || s.isChecking) queued++;
             if (s.isError) err++;
+
+            // Detect state transition from downloading -> completed
+            const wasDownloading = previousTorrentStates.get(t.hash);
+            if (wasDownloading && (s.isCompleted || t.progress >= 1.0)) {
+                notifyTorrentCompleted(t);
+            }
+            previousTorrentStates.set(t.hash, s.isDownloading);
         });
 
         $('#sum-all, #cnt-all').text(allTorrents.length);
@@ -3341,6 +3559,9 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         $('#cnt-active').text(active);
         $('#cnt-queue').text(queued);
         $('#cnt-err').text(err);
+
+        // Update PWA App Badge (Dock / Taskbar dynamic icon number)
+        updateAppBadge(dl);
     }
 
     // --- Filter & Sorting ---
@@ -4063,7 +4284,12 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
     }
 
     // --- Add Torrent Submission ---
-    function openAddModal() { openModal('add-modal'); }
+    function openAddModal(prefillUrl) {
+        if (prefillUrl) {
+            $('#torrent-urls').val(prefillUrl);
+        }
+        openModal('add-modal');
+    }
 
     function submitAddTorrent() {
         const fileInput = document.getElementById('torrent-file');
@@ -5032,6 +5258,51 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         });
     }
 
+    // --- PWA Preferences UI Handlers ---
+    function initPwaSettingsUI() {
+        if (typeof isNotificationEnabled === 'function') {
+            $('#pwa-pref-notify').prop('checked', isNotificationEnabled());
+        }
+        if (typeof isWakeLockEnabled === 'function') {
+            $('#pwa-pref-wakelock').prop('checked', isWakeLockEnabled());
+        }
+        if (typeof isHapticEnabled === 'function') {
+            $('#pwa-pref-haptic').prop('checked', isHapticEnabled());
+        }
+    }
+
+    function onTogglePwaNotify(checked) {
+        if (checked) {
+            setNotificationEnabled(true, function(granted) {
+                $('#pwa-pref-notify').prop('checked', granted);
+                if (granted) {
+                    showToast(window.t('已成功开启系统级下载完成通知！'));
+                } else {
+                    showToast(window.t('通知权限被浏览器拦截，请在地址栏设置中允许通知权限'), false);
+                }
+            });
+        } else {
+            setNotificationEnabled(false);
+            showToast(window.t('已关闭下载完成系统通知'));
+        }
+    }
+
+    function onTogglePwaWakeLock(checked) {
+        setWakeLockEnabled(checked).then(function(active) {
+            $('#pwa-pref-wakelock').prop('checked', active);
+            if (active) {
+                showToast(window.t('☕ 屏幕常亮防休眠已激活'));
+            } else {
+                showToast(window.t('屏幕防休眠已关闭'));
+            }
+        });
+    }
+
+    function onTogglePwaHaptic(checked) {
+        setHapticEnabled(checked);
+        if (checked) hapticFeedback([20, 40]);
+    }
+
 // --- [Module: ui.js] ---
 /**
  * @file ui.js
@@ -5140,7 +5411,9 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         $(btn).addClass('active');
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
-        } else if (tabId !== 'sys-sub-trackers' && tabId !== 'sys-sub-about') {
+        } else if (tabId === 'sys-sub-about') {
+            if (typeof initPwaSettingsUI === 'function') initPwaSettingsUI();
+        } else if (tabId !== 'sys-sub-trackers') {
             loadAllSystemPreferences();
         }
     }
@@ -5262,10 +5535,7 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 const file = e.dataTransfer.files[0];
                 if (file.name.endsWith('.torrent')) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    document.getElementById('torrent-file').files = dataTransfer.files;
-                    openAddModal();
+                    handleSelectedTorrentFile(file);
                 }
             }
         });
@@ -5273,11 +5543,26 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         // Clipboard listener
         window.addEventListener('paste', function(e) {
             const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-            if (pasteData && pasteData.startsWith('magnet:?')) {
+            if (pasteData && (pasteData.startsWith('magnet:?') || pasteData.startsWith('http://') || pasteData.startsWith('https://'))) {
                 $('#torrent-urls').val(pasteData);
                 openAddModal();
+                hapticFeedback(15);
             }
         });
+    }
+
+    function handleSelectedTorrentFile(file) {
+        if (!file) return;
+        try {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            document.getElementById('torrent-file').files = dataTransfer.files;
+            openAddModal();
+            hapticFeedback(20);
+        } catch (e) {
+            console.debug('[Abit] Failed to set files on input:', e);
+            openAddModal();
+        }
     }
 
 // --- [Module: app.js] ---
@@ -5500,6 +5785,93 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                 showToast(window.t('Abit 已成功安装到主屏幕 / 本地应用列表'));
             }
         });
+
+        // 1. StorageManager Persistence Request (Prevent browser auto-eviction)
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persist().then(function(persistent) {
+                if (persistent) console.log('[Abit PWA] Persistent Storage granted');
+            }).catch(function() {});
+        }
+
+        // 2. Screen Wake Lock Bootstrap
+        if (typeof isWakeLockEnabled === 'function' && isWakeLockEnabled()) {
+            requestScreenWakeLock();
+        }
+
+        // 3. File Handling API (LaunchQueue for double-clicking .torrent files)
+        if ('launchQueue' in window && typeof window.LaunchParams !== 'undefined') {
+            try {
+                window.launchQueue.setConsumer(async function(launchParams) {
+                    if (!launchParams.files || !launchParams.files.length) return;
+                    for (const fileHandle of launchParams.files) {
+                        const file = await fileHandle.getFile();
+                        if (file && (file.name.endsWith('.torrent') || file.type === 'application/x-bittorrent')) {
+                            if (typeof handleSelectedTorrentFile === 'function') {
+                                handleSelectedTorrentFile(file);
+                                break;
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.debug('[Abit PWA] LaunchQueue consumer init error:', e);
+            }
+        }
+
+        // 4. Handle PWA Launch Query Parameters (Shortcuts, Magnet protocol & Share Target)
+        handlePwaLaunchParams();
+    }
+
+    function handlePwaLaunchParams() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const magnetParam = urlParams.get('magnet') || urlParams.get('url') || urlParams.get('text');
+            const actionParam = urlParams.get('action');
+
+            if (magnetParam) {
+                let cleanUrl = decodeURIComponent(magnetParam).trim();
+                // If protocol handler encoded extra prefix, strip it if needed
+                if (cleanUrl.startsWith('magnet:?') || cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+                    setTimeout(function() {
+                        if (typeof openAddModal === 'function') {
+                            openAddModal(cleanUrl);
+                        }
+                    }, 400);
+                }
+            } else if (actionParam === 'add') {
+                setTimeout(function() {
+                    if (typeof openAddModal === 'function') openAddModal();
+                }, 400);
+            } else if (actionParam === 'search') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-search', '搜索', $('.dock-btn:nth-child(3)'));
+                    }
+                }, 400);
+            } else if (actionParam === 'pause_all') {
+                setTimeout(function() {
+                    $.post('/api/v2/torrents/pause', { hashes: 'all' }, function() {
+                        if (typeof showToast === 'function') showToast(window.t('已暂停全部活动任务'));
+                        if (typeof pollFastData === 'function') pollFastData();
+                    });
+                }, 400);
+            } else if (actionParam === 'resume_all') {
+                setTimeout(function() {
+                    $.post('/api/v2/torrents/resume', { hashes: 'all' }, function() {
+                        if (typeof showToast === 'function') showToast(window.t('已恢复全部任务'));
+                        if (typeof pollFastData === 'function') pollFastData();
+                    });
+                }, 400);
+            }
+
+            // Clean up query string from address bar without reloading
+            if (magnetParam || actionParam) {
+                const cleanLocation = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanLocation);
+            }
+        } catch (e) {
+            console.debug('[Abit PWA] Failed to parse launch query params:', e);
+        }
     }
 
     function promptPwaInstall() {

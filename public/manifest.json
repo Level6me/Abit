@@ -6,6 +6,11 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#f2f2f7",
   "theme_color": "#007aff",
@@ -38,5 +43,59 @@
       "sizes": "any",
       "type": "image/svg+xml"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "添加下载",
+      "short_name": "新建",
+      "description": "快速添加磁力链接或种子文件",
+      "url": "./?action=add",
+      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+    },
+    {
+      "name": "全网搜索",
+      "short_name": "搜索",
+      "description": "全网检索海量种子资源",
+      "url": "./?action=search",
+      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+    },
+    {
+      "name": "全部暂停",
+      "short_name": "暂停全部",
+      "description": "一键暂停所有活动的下载与做种任务",
+      "url": "./?action=pause_all",
+      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+    },
+    {
+      "name": "全部开始",
+      "short_name": "开始全部",
+      "description": "一键恢复所有已暂停的任务",
+      "url": "./?action=resume_all",
+      "icons": [{ "src": "icon-192.png?v=2.0.1", "sizes": "192x192" }]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "magnet",
+      "url": "./?magnet=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "name": "BitTorrent 种子文件",
+      "accept": {
+        "application/x-bittorrent": [".torrent"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

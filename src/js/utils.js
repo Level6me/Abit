@@ -186,3 +186,149 @@
             }
         });
     }
+
+    // --- PWA Native Capabilities & APIs ---
+    
+    // 1. Taptic / Vibration Haptic Feedback
+    function isHapticEnabled() {
+        return localStorage.getItem('abit_haptic_enabled') !== 'false';
+    }
+
+    function setHapticEnabled(enable) {
+        localStorage.setItem('abit_haptic_enabled', enable ? 'true' : 'false');
+    }
+
+    function hapticFeedback(pattern = 15) {
+        if (!isHapticEnabled()) return;
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate(pattern); } catch (e) {}
+        }
+    }
+
+    // 2. App Badging API (Dock / Taskbar dynamic counter)
+    function updateAppBadge(count) {
+        if ('setAppBadge' in navigator) {
+            if (count > 0) {
+                navigator.setAppBadge(count).catch(() => {});
+            } else {
+                navigator.clearAppBadge().catch(() => {});
+            }
+        }
+    }
+
+    // 3. Web Notifications API
+    const notifiedTorrentsSet = new Set();
+
+    function isNotificationEnabled() {
+        return localStorage.getItem('abit_notify_enabled') === 'true' && ('Notification' in window && Notification.permission === 'granted');
+    }
+
+    function setNotificationEnabled(enable, callback) {
+        if (enable) {
+            requestNotificationPermission(function(granted) {
+                localStorage.setItem('abit_notify_enabled', granted ? 'true' : 'false');
+                if (callback) callback(granted);
+            });
+        } else {
+            localStorage.setItem('abit_notify_enabled', 'false');
+            if (callback) callback(false);
+        }
+    }
+
+    function requestNotificationPermission(callback) {
+        if (!('Notification' in window)) {
+            if (callback) callback(false);
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            if (callback) callback(true);
+            return;
+        }
+        if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(function(permission) {
+                const granted = (permission === 'granted');
+                if (callback) callback(granted);
+            }).catch(function() {
+                if (callback) callback(false);
+            });
+        } else {
+            if (callback) callback(false);
+        }
+    }
+
+    function notifyTorrentCompleted(torrent) {
+        if (!isNotificationEnabled()) return;
+        if (!torrent || !torrent.hash) return;
+        if (notifiedTorrentsSet.has(torrent.hash)) return;
+        notifiedTorrentsSet.add(torrent.hash);
+
+        const title = `🎉 ${window.t('下载完成')}: ${torrent.name}`;
+        const totalSizeStr = formatBytes(torrent.total_size || torrent.size);
+        const options = {
+            body: `${window.t('文件大小')}: ${totalSizeStr} | ${window.t('做种已就绪')}`,
+            icon: 'icon-192.png',
+            badge: 'favicon-32x32.png',
+            tag: `abit-complete-${torrent.hash}`,
+            renotify: true
+        };
+
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(function(reg) {
+                reg.showNotification(title, options);
+            }).catch(function() {
+                try { new Notification(title, options); } catch(e) {}
+            });
+        } else {
+            try { new Notification(title, options); } catch(e) {}
+        }
+        hapticFeedback([30, 60, 30]);
+    }
+
+    // 4. Screen Wake Lock API (Prevent sleep during active downloads)
+    let screenWakeLockInstance = null;
+
+    function isWakeLockEnabled() {
+        return localStorage.getItem('abit_wakelock_enabled') === 'true';
+    }
+
+    async function setWakeLockEnabled(enable) {
+        localStorage.setItem('abit_wakelock_enabled', enable ? 'true' : 'false');
+        if (enable) {
+            return await requestScreenWakeLock();
+        } else {
+            releaseScreenWakeLock();
+            return false;
+        }
+    }
+
+    async function requestScreenWakeLock() {
+        if (!('wakeLock' in navigator)) return false;
+        try {
+            if (!screenWakeLockInstance) {
+                screenWakeLockInstance = await navigator.wakeLock.request('screen');
+                screenWakeLockInstance.addEventListener('release', function() {
+                    screenWakeLockInstance = null;
+                });
+                console.log('[Abit PWA] Screen Wake Lock acquired');
+            }
+            return true;
+        } catch (e) {
+            console.debug('[Abit PWA] Screen Wake Lock request failed:', e);
+            return false;
+        }
+    }
+
+    function releaseScreenWakeLock() {
+        if (screenWakeLockInstance) {
+            screenWakeLockInstance.release().catch(() => {});
+            screenWakeLockInstance = null;
+            console.log('[Abit PWA] Screen Wake Lock released');
+        }
+    }
+
+    // Re-acquire wake lock on visibility change if enabled
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible' && isWakeLockEnabled()) {
+            requestScreenWakeLock();
+        }
+    });

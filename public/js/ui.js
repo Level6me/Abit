@@ -105,7 +105,9 @@
         $(btn).addClass('active');
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
-        } else if (tabId !== 'sys-sub-trackers' && tabId !== 'sys-sub-about') {
+        } else if (tabId === 'sys-sub-about') {
+            if (typeof initPwaSettingsUI === 'function') initPwaSettingsUI();
+        } else if (tabId !== 'sys-sub-trackers') {
             loadAllSystemPreferences();
         }
     }
@@ -227,10 +229,7 @@
             if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 const file = e.dataTransfer.files[0];
                 if (file.name.endsWith('.torrent')) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    document.getElementById('torrent-file').files = dataTransfer.files;
-                    openAddModal();
+                    handleSelectedTorrentFile(file);
                 }
             }
         });
@@ -238,9 +237,24 @@
         // Clipboard listener
         window.addEventListener('paste', function(e) {
             const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-            if (pasteData && pasteData.startsWith('magnet:?')) {
+            if (pasteData && (pasteData.startsWith('magnet:?') || pasteData.startsWith('http://') || pasteData.startsWith('https://'))) {
                 $('#torrent-urls').val(pasteData);
                 openAddModal();
+                hapticFeedback(15);
             }
         });
+    }
+
+    function handleSelectedTorrentFile(file) {
+        if (!file) return;
+        try {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            document.getElementById('torrent-file').files = dataTransfer.files;
+            openAddModal();
+            hapticFeedback(20);
+        } catch (e) {
+            console.debug('[Abit] Failed to set files on input:', e);
+            openAddModal();
+        }
     }

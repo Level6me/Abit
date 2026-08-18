@@ -3,7 +3,9 @@
  * @description Torrent list management, filtering, batch actions, detail drawer, pieces canvas & add modal
  */
 
-// --- Counter Calculation ---
+// --- Counter Calculation & Notification Tracking ---
+    const previousTorrentStates = new Map();
+
     function updateSummaryCounters() {
         let dl = 0, seed = 0, completed = 0, paused = 0, active = 0, queued = 0, err = 0;
         
@@ -16,6 +18,13 @@
             if (s.isActive) active++;
             if (s.isQueued || s.isChecking) queued++;
             if (s.isError) err++;
+
+            // Detect state transition from downloading -> completed
+            const wasDownloading = previousTorrentStates.get(t.hash);
+            if (wasDownloading && (s.isCompleted || t.progress >= 1.0)) {
+                notifyTorrentCompleted(t);
+            }
+            previousTorrentStates.set(t.hash, s.isDownloading);
         });
 
         $('#sum-all, #cnt-all').text(allTorrents.length);
@@ -26,6 +35,9 @@
         $('#cnt-active').text(active);
         $('#cnt-queue').text(queued);
         $('#cnt-err').text(err);
+
+        // Update PWA App Badge (Dock / Taskbar dynamic icon number)
+        updateAppBadge(dl);
     }
 
     // --- Filter & Sorting ---
@@ -748,7 +760,12 @@
     }
 
     // --- Add Torrent Submission ---
-    function openAddModal() { openModal('add-modal'); }
+    function openAddModal(prefillUrl) {
+        if (prefillUrl) {
+            $('#torrent-urls').val(prefillUrl);
+        }
+        openModal('add-modal');
+    }
 
     function submitAddTorrent() {
         const fileInput = document.getElementById('torrent-file');
