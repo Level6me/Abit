@@ -4,6 +4,25 @@
  */
 
 // --- Data Synchronization ---
+    function syncServerState() {
+        $.getJSON(`/api/v2/sync/maindata?rid=${syncMainDataRid}`, function(data) {
+            if (!data) return;
+            if (data.rid !== undefined) syncMainDataRid = data.rid;
+            if (data.server_state) {
+                if (data.server_state.free_space_on_disk !== undefined) {
+                    lastFreeSpaceOnDisk = data.server_state.free_space_on_disk;
+                    if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
+                        $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+                    } else {
+                        $('#v-disk-free').text('--');
+                    }
+                }
+            }
+        }).fail(function() {
+            syncMainDataRid = 0;
+        });
+    }
+
     function pollFastData() {
         // 1. Transfer Rates & Status
         $.getJSON('/api/v2/transfer/info', function(info) {
@@ -23,7 +42,15 @@
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
-            $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+            
+            if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
+                $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+            } else if (info.free_space_on_disk !== undefined && info.free_space_on_disk >= 0) {
+                lastFreeSpaceOnDisk = info.free_space_on_disk;
+                $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+            } else {
+                $('#v-disk-free').text('--');
+            }
 
             const totalDL = formatBytes(info.dl_info_data);
             const totalUP = formatBytes(info.up_info_data);
@@ -62,6 +89,7 @@
         });
 
         checkAltSpeedMode();
+        syncServerState();
     }
 
 // --- App Init ---

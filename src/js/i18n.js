@@ -514,6 +514,16 @@
         ' 条)': ')',
         '已更新所选任务分类': 'Category updated',
         '确定要卸载搜索插件 ': 'Uninstall search plugin ',
+        '🎨 WebUI 主题与界面管理': '🎨 WebUI Theme & Appearance',
+        '恢复 qBittorrent 官方默认主题': 'Restore qBittorrent official default theme',
+        '关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI': 'Disable Alternative WebUI and switch back to native qBittorrent WebUI',
+        '🔄 恢复官方主题': '🔄 Restore official theme',
+        '恢复官方主题确认': 'Confirm restoring official theme',
+        'restore_theme_confirm_text': 'Are you sure you want to restore the official default qBittorrent WebUI?<br><span style="color:var(--text-sec); font-size:12px;">The system will disable Alternative WebUI and reload to show the native interface.</span>',
+        '确认恢复官方默认主题': 'Confirm restore official theme',
+        '正在向内核提交恢复官方主题请求...': 'Submitting restore request to kernel...',
+        '✅ 已恢复官方默认主题，正在刷新界面...': '✅ Official default theme restored, reloading...',
+        '恢复官方主题失败，请检查网络或权限': 'Failed to restore official theme, please check network or permissions',
     };
 
     let currentLang = 'zh';

@@ -1933,6 +1933,20 @@ input:checked + .slider:before { transform: translateX(20px); }
                 </button>
             </div>
 
+            <!-- WebUI Theme & Fallback Management Card -->
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🎨 WebUI 主题与界面管理">🎨 WebUI 主题与界面管理</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="恢复 qBittorrent 官方默认主题">恢复 qBittorrent 官方默认主题</div>
+                        <div class="setting-desc" data-i18n="关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI">关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI</div>
+                    </div>
+                    <button class="btn secondary" onclick="confirmRestoreOfficialTheme()" style="padding:8px 16px; font-size:13px; white-space:nowrap; border-color:var(--danger); color:var(--danger);" data-i18n="🔄 恢复官方主题">
+                        🔄 恢复官方主题
+                    </button>
+                </div>
+            </div>
+
             <!-- Environment Specs Card -->
             <div class="card">
                 <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
@@ -2080,6 +2094,25 @@ input:checked + .slider:before { transform: translateX(20px); }
                 仅强制重新校验 (不删本地文件)
             </button>
             <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('redownload-confirm-modal')" data-i18n="取消">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 2.2 Safe Restore Official Theme Confirmation Modal -->
+<div class="modal-overlay" id="restore-theme-modal">
+    <div class="modal-card" style="max-width:460px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">🎨</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;" data-i18n="恢复官方主题确认">恢复官方主题确认</div>
+        <div style="font-size:13px; color:var(--text-sec); margin-bottom:18px; line-height:1.5;" id="restore-theme-msg" data-i18n-html="restore_theme_confirm_text">
+            您确定要恢复 qBittorrent 官方默认主题吗？<br><span style="color:var(--text-sec); font-size:12px;">系统将自动关闭 Alternative WebUI 并在保存后刷新页面返回官方原生界面。</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn danger" onclick="executeRestoreOfficialTheme()" data-i18n="确认恢复官方默认主题">
+                确认恢复官方默认主题
+            </button>
+            <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('restore-theme-modal')" data-i18n="取消">
                 取消
             </button>
         </div>
@@ -2793,6 +2826,16 @@ input:checked + .slider:before { transform: translateX(20px); }
         ' 条)': ')',
         '已更新所选任务分类': 'Category updated',
         '确定要卸载搜索插件 ': 'Uninstall search plugin ',
+        '🎨 WebUI 主题与界面管理': '🎨 WebUI Theme & Appearance',
+        '恢复 qBittorrent 官方默认主题': 'Restore qBittorrent official default theme',
+        '关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI': 'Disable Alternative WebUI and switch back to native qBittorrent WebUI',
+        '🔄 恢复官方主题': '🔄 Restore official theme',
+        '恢复官方主题确认': 'Confirm restoring official theme',
+        'restore_theme_confirm_text': 'Are you sure you want to restore the official default qBittorrent WebUI?<br><span style="color:var(--text-sec); font-size:12px;">The system will disable Alternative WebUI and reload to show the native interface.</span>',
+        '确认恢复官方默认主题': 'Confirm restore official theme',
+        '正在向内核提交恢复官方主题请求...': 'Submitting restore request to kernel...',
+        '✅ 已恢复官方默认主题，正在刷新界面...': '✅ Official default theme restored, reloading...',
+        '恢复官方主题失败，请检查网络或权限': 'Failed to restore official theme, please check network or permissions',
     };
 
     let currentLang = 'zh';
@@ -2931,6 +2974,8 @@ input:checked + .slider:before { transform: translateX(20px); }
     let fastPollTimer = null;
     let slowPollTimer = null;
     let rawLogs = [];
+    let syncMainDataRid = 0;
+    let lastFreeSpaceOnDisk = null;
 
 // --- [Module: utils.js] ---
 /**
@@ -2940,7 +2985,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 // --- Helpers ---
     function formatBytes(bytes) {
-        if (!bytes || bytes === 0) return '0 B';
+        if (bytes === undefined || bytes === null || isNaN(bytes) || bytes < 0) return '--';
+        if (bytes === 0) return '0 B';
         const k = 1024;
         const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -4819,6 +4865,29 @@ input:checked + .slider:before { transform: translateX(20px); }
         container.html(html);
     }
 
+    // --- Restore Official WebUI Theme ---
+    function confirmRestoreOfficialTheme() {
+        openModal('restore-theme-modal');
+    }
+
+    function executeRestoreOfficialTheme() {
+        closeModal('restore-theme-modal');
+        showToast(window.t('正在向内核提交恢复官方主题请求...'));
+
+        $.post('/api/v2/app/setPreferences', {
+            json: JSON.stringify({
+                alternative_webui_enabled: false
+            })
+        }, function() {
+            showToast(window.t('✅ 已恢复官方默认主题，正在刷新界面...'));
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        }).fail(function() {
+            showToast(window.t('恢复官方主题失败，请检查网络或权限'), false);
+        });
+    }
+
 // --- [Module: ui.js] ---
 /**
  * @file ui.js
@@ -5074,6 +5143,25 @@ input:checked + .slider:before { transform: translateX(20px); }
  */
 
 // --- Data Synchronization ---
+    function syncServerState() {
+        $.getJSON(`/api/v2/sync/maindata?rid=${syncMainDataRid}`, function(data) {
+            if (!data) return;
+            if (data.rid !== undefined) syncMainDataRid = data.rid;
+            if (data.server_state) {
+                if (data.server_state.free_space_on_disk !== undefined) {
+                    lastFreeSpaceOnDisk = data.server_state.free_space_on_disk;
+                    if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
+                        $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+                    } else {
+                        $('#v-disk-free').text('--');
+                    }
+                }
+            }
+        }).fail(function() {
+            syncMainDataRid = 0;
+        });
+    }
+
     function pollFastData() {
         // 1. Transfer Rates & Status
         $.getJSON('/api/v2/transfer/info', function(info) {
@@ -5093,7 +5181,15 @@ input:checked + .slider:before { transform: translateX(20px); }
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
-            $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+            
+            if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
+                $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+            } else if (info.free_space_on_disk !== undefined && info.free_space_on_disk >= 0) {
+                lastFreeSpaceOnDisk = info.free_space_on_disk;
+                $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+            } else {
+                $('#v-disk-free').text('--');
+            }
 
             const totalDL = formatBytes(info.dl_info_data);
             const totalUP = formatBytes(info.up_info_data);
@@ -5132,6 +5228,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         });
 
         checkAltSpeedMode();
+        syncServerState();
     }
 
 // --- App Init ---

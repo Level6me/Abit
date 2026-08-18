@@ -221,3 +221,26 @@
         });
         container.html(html);
     }
+
+    // --- Restore Official WebUI Theme ---
+    function confirmRestoreOfficialTheme() {
+        openModal('restore-theme-modal');
+    }
+
+    function executeRestoreOfficialTheme() {
+        closeModal('restore-theme-modal');
+        showToast(window.t('正在向内核提交恢复官方主题请求...'));
+
+        $.post('/api/v2/app/setPreferences', {
+            json: JSON.stringify({
+                alternative_webui_enabled: false
+            })
+        }, function() {
+            showToast(window.t('✅ 已恢复官方默认主题，正在刷新界面...'));
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        }).fail(function() {
+            showToast(window.t('恢复官方主题失败，请检查网络或权限'), false);
+        });
+    }

@@ -539,6 +539,16 @@
         ' 条)': ')',
         '已更新所选任务分类': 'Category updated',
         '确定要卸载搜索插件 ': 'Uninstall search plugin ',
+        '🎨 WebUI 主题与界面管理': '🎨 WebUI Theme & Appearance',
+        '恢复 qBittorrent 官方默认主题': 'Restore qBittorrent official default theme',
+        '关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI': 'Disable Alternative WebUI and switch back to native qBittorrent WebUI',
+        '🔄 恢复官方主题': '🔄 Restore official theme',
+        '恢复官方主题确认': 'Confirm restoring official theme',
+        'restore_theme_confirm_text': 'Are you sure you want to restore the official default qBittorrent WebUI?<br><span style="color:var(--text-sec); font-size:12px;">The system will disable Alternative WebUI and reload to show the native interface.</span>',
+        '确认恢复官方默认主题': 'Confirm restore official theme',
+        '正在向内核提交恢复官方主题请求...': 'Submitting restore request to kernel...',
+        '✅ 已恢复官方默认主题，正在刷新界面...': '✅ Official default theme restored, reloading...',
+        '恢复官方主题失败，请检查网络或权限': 'Failed to restore official theme, please check network or permissions',
     };
 
     let currentLang = 'zh';
@@ -677,6 +687,8 @@
     let fastPollTimer = null;
     let slowPollTimer = null;
     let rawLogs = [];
+    let syncMainDataRid = 0;
+    let lastFreeSpaceOnDisk = null;
 
 // --- [Module: utils.js] ---
 /**
@@ -686,7 +698,8 @@
 
 // --- Helpers ---
     function formatBytes(bytes) {
-        if (!bytes || bytes === 0) return '0 B';
+        if (bytes === undefined || bytes === null || isNaN(bytes) || bytes < 0) return '--';
+        if (bytes === 0) return '0 B';
         const k = 1024;
         const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -2565,6 +2578,29 @@
         container.html(html);
     }
 
+    // --- Restore Official WebUI Theme ---
+    function confirmRestoreOfficialTheme() {
+        openModal('restore-theme-modal');
+    }
+
+    function executeRestoreOfficialTheme() {
+        closeModal('restore-theme-modal');
+        showToast(window.t('正在向内核提交恢复官方主题请求...'));
+
+        $.post('/api/v2/app/setPreferences', {
+            json: JSON.stringify({
+                alternative_webui_enabled: false
+            })
+        }, function() {
+            showToast(window.t('✅ 已恢复官方默认主题，正在刷新界面...'));
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        }).fail(function() {
+            showToast(window.t('恢复官方主题失败，请检查网络或权限'), false);
+        });
+    }
+
 // --- [Module: ui.js] ---
 /**
  * @file ui.js
@@ -2820,6 +2856,25 @@
  */
 
 // --- Data Synchronization ---
+    function syncServerState() {
+        $.getJSON(`/api/v2/sync/maindata?rid=${syncMainDataRid}`, function(data) {
+            if (!data) return;
+            if (data.rid !== undefined) syncMainDataRid = data.rid;
+            if (data.server_state) {
+                if (data.server_state.free_space_on_disk !== undefined) {
+                    lastFreeSpaceOnDisk = data.server_state.free_space_on_disk;
+                    if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
+                        $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+                    } else {
+                        $('#v-disk-free').text('--');
+                    }
+                }
+            }
+        }).fail(function() {
+            syncMainDataRid = 0;
+        });
+    }
+
     function pollFastData() {
         // 1. Transfer Rates & Status
         $.getJSON('/api/v2/transfer/info', function(info) {
@@ -2839,7 +2894,15 @@
             };
             $('#v-conn-status').text(statusMap[info.connection_status] || info.connection_status);
             $('#v-dht-nodes').text(`DHT 节点: ${info.dht_nodes}`);
-            $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+            
+            if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
+                $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+            } else if (info.free_space_on_disk !== undefined && info.free_space_on_disk >= 0) {
+                lastFreeSpaceOnDisk = info.free_space_on_disk;
+                $('#v-disk-free').text(formatBytes(info.free_space_on_disk));
+            } else {
+                $('#v-disk-free').text('--');
+            }
 
             const totalDL = formatBytes(info.dl_info_data);
             const totalUP = formatBytes(info.up_info_data);
@@ -2878,6 +2941,7 @@
         });
 
         checkAltSpeedMode();
+        syncServerState();
     }
 
 // --- App Init ---

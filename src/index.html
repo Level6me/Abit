@@ -744,6 +744,20 @@
                 </button>
             </div>
 
+            <!-- WebUI Theme & Fallback Management Card -->
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🎨 WebUI 主题与界面管理">🎨 WebUI 主题与界面管理</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="恢复 qBittorrent 官方默认主题">恢复 qBittorrent 官方默认主题</div>
+                        <div class="setting-desc" data-i18n="关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI">关闭 Alternative WebUI 替代界面并切回 qBittorrent 原生官方 WebUI</div>
+                    </div>
+                    <button class="btn secondary" onclick="confirmRestoreOfficialTheme()" style="padding:8px 16px; font-size:13px; white-space:nowrap; border-color:var(--danger); color:var(--danger);" data-i18n="🔄 恢复官方主题">
+                        🔄 恢复官方主题
+                    </button>
+                </div>
+            </div>
+
             <!-- Environment Specs Card -->
             <div class="card">
                 <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
@@ -891,6 +905,25 @@
                 仅强制重新校验 (不删本地文件)
             </button>
             <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('redownload-confirm-modal')" data-i18n="取消">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 2.2 Safe Restore Official Theme Confirmation Modal -->
+<div class="modal-overlay" id="restore-theme-modal">
+    <div class="modal-card" style="max-width:460px; text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">🎨</div>
+        <div style="font-size:18px; font-weight:800; margin-bottom:8px;" data-i18n="恢复官方主题确认">恢复官方主题确认</div>
+        <div style="font-size:13px; color:var(--text-sec); margin-bottom:18px; line-height:1.5;" id="restore-theme-msg" data-i18n-html="restore_theme_confirm_text">
+            您确定要恢复 qBittorrent 官方默认主题吗？<br><span style="color:var(--text-sec); font-size:12px;">系统将自动关闭 Alternative WebUI 并在保存后刷新页面返回官方原生界面。</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn danger" onclick="executeRestoreOfficialTheme()" data-i18n="确认恢复官方默认主题">
+                确认恢复官方默认主题
+            </button>
+            <button class="btn" style="background:transparent; color:var(--text-sec);" onclick="closeModal('restore-theme-modal')" data-i18n="取消">
                 取消
             </button>
         </div>

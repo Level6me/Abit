@@ -40,3 +40,5 @@
     let fastPollTimer = null;
     let slowPollTimer = null;
     let rawLogs = [];
+    let syncMainDataRid = 0;
+    let lastFreeSpaceOnDisk = null;
