@@ -384,6 +384,13 @@
         '🚪 退出当前登录 (Logout)': '🚪 Logout',
         '🛡️ WebUI 账户密码与安全配置': '🛡️ WebUI credentials & security',
         '🛡️ 账户与安全': '🛡️ Account & security',
+        'ℹ️ 关于': 'ℹ️ About',
+        'ℹ️ 版本与运行环境': 'ℹ️ Version & Environment',
+        '项目版本': 'Project version',
+        '项目地址': 'Project URL',
+        '精致、极速、零依赖的 Apple 风格 qBittorrent WebUI 替代界面': 'A refined, zero-overhead, Apple-styled Alternative WebUI for qBittorrent',
+        'GitHub 仓库': 'GitHub Repository',
+        '检查更新': 'Check for Updates',
         '🧩 已安装的搜索插件 (Search Plugins)': '🧩 Installed search plugins',
         '🧱 下载区块 (Pieces)': '🧱 Pieces',
         '❌ 两次输入的新密码不一致，请重新核对！': '❌ New passwords do not match!',
@@ -629,6 +636,11 @@
  * @file constants.js
  * @description Global constants, preset search plugins repository and definitions
  */
+
+// Application Metadata (Automatically updated during build)
+const APP_VERSION = 'v2026.08.18-1441';
+const APP_BUILD_TIME = '2026-08-18 14:41:37';
+const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
     const PRESET_PLUGINS = [
@@ -2777,7 +2789,7 @@
         $(btn).addClass('active');
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
-        } else if (tabId !== 'sys-sub-trackers') {
+        } else if (tabId !== 'sys-sub-trackers' && tabId !== 'sys-sub-about') {
             loadAllSystemPreferences();
         }
     }
@@ -3063,6 +3075,14 @@
 
         // Initialize PWA Service Worker & Install Event Handlers
         initPwaSupport();
+
+        // Initialize App Metadata & Versions
+        if (typeof APP_VERSION !== 'undefined') {
+            $('#sys-abit-version-text').text(APP_VERSION);
+        }
+        if (typeof APP_REPO_URL !== 'undefined') {
+            $('#sys-abit-repo-url').attr('href', APP_REPO_URL).text(APP_REPO_URL);
+        }
 
         // Bootstrap authentication check (VueTorrent-style probe)
         checkAuthStatus();

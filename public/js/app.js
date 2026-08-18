@@ -144,6 +144,14 @@
         // Initialize PWA Service Worker & Install Event Handlers
         initPwaSupport();
 
+        // Initialize App Metadata & Versions
+        if (typeof APP_VERSION !== 'undefined') {
+            $('#sys-abit-version-text').text(APP_VERSION);
+        }
+        if (typeof APP_REPO_URL !== 'undefined') {
+            $('#sys-abit-repo-url').attr('href', APP_REPO_URL).text(APP_REPO_URL);
+        }
+
         // Bootstrap authentication check (VueTorrent-style probe)
         checkAuthStatus();
     });

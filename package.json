@@ -1,11 +1,12 @@
 {
   "name": "abit",
-  "version": "2.0.0",
+  "version": "2026.08.18-1441",
   "description": "A refined, zero-overhead, Apple-styled Alternative WebUI for qBittorrent",
   "main": "scripts/build.js",
   "scripts": {
     "setup": "bash install.sh",
     "build": "node scripts/build.js",
+    "prepush": "node scripts/build.js",
     "dev": "node scripts/dev.js",
     "dev:dist": "node scripts/dev.js --dist",
     "check": "node scripts/check.js"

@@ -48,6 +48,39 @@ function build() {
     const startTime = Date.now();
     console.log('🍏 Starting build process for Apple Torrent Dashboard (Torrent Omni)...\n');
 
+    // 0. Generate Dynamic Build Version Timestamp
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const versionStr = `v${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+    const buildTimeStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    console.log(`🏷️ Build Version: ${versionStr} (${buildTimeStr})\n`);
+
+    // Update src/js/constants.js with version and build time
+    const constantsPath = path.join(SRC_DIR, 'js', 'constants.js');
+    if (fs.existsSync(constantsPath)) {
+        let constantsContent = fs.readFileSync(constantsPath, 'utf8');
+        if (constantsContent.includes('const APP_VERSION')) {
+            constantsContent = constantsContent
+                .replace(/const APP_VERSION = ['"][^'"]*['"];/, `const APP_VERSION = '${versionStr}';`)
+                .replace(/const APP_BUILD_TIME = ['"][^'"]*['"];/, `const APP_BUILD_TIME = '${buildTimeStr}';`);
+        } else {
+            constantsContent = `// Application Metadata (Automatically updated during build)\nconst APP_VERSION = '${versionStr}';\nconst APP_BUILD_TIME = '${buildTimeStr}';\nconst APP_REPO_URL = 'https://github.com/Level6me/Abit';\n\n` + constantsContent;
+        }
+        fs.writeFileSync(constantsPath, constantsContent);
+    }
+
+    // Update package.json version
+    const pkgPath = path.join(ROOT_DIR, 'package.json');
+    if (fs.existsSync(pkgPath)) {
+        try {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            pkg.version = `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+            fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+        } catch (e) {
+            console.warn('⚠️ Warning: Failed to update package.json version', e.message);
+        }
+    }
+
     // Ensure output directories exist
     [DIST_DIR, path.join(DIST_DIR, 'css'), path.join(DIST_DIR, 'js'), PUBLIC_DIR].forEach(dir => {
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -94,6 +127,7 @@ function build() {
     }
 
     let srcHtml = fs.readFileSync(srcIndexPath, 'utf8');
+    srcHtml = srcHtml.replace(/__APP_VERSION__/g, versionStr);
 
     // Replace modular CSS link tag with inlined CSS
     const inlineCss = `<style>\n${combinedCss.trim()}\n</style>`;
@@ -191,6 +225,7 @@ function build() {
         .join('\n');
 
     let publicHtml = fs.readFileSync(srcIndexPath, 'utf8');
+    publicHtml = publicHtml.replace(/__APP_VERSION__/g, versionStr);
     publicHtml = publicHtml.replace(
         /<link\s+rel="stylesheet"\s+href="[^"]*css\/style\.css"[^>]*>/i,
         `<!-- Modular Granular Stylesheets -->\n${modularCssLinks}`
