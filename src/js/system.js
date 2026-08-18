@@ -256,6 +256,12 @@
         if (typeof isHapticEnabled === 'function') {
             $('#pwa-pref-haptic').prop('checked', isHapticEnabled());
         }
+        if (typeof isClipboardDetectEnabled === 'function') {
+            $('#pwa-pref-clipboard').prop('checked', isClipboardDetectEnabled());
+        }
+        if (typeof isDiskAlertEnabled === 'function') {
+            $('#pwa-pref-diskalert').prop('checked', isDiskAlertEnabled());
+        }
     }
 
     function onTogglePwaNotify(checked) {
@@ -288,4 +294,22 @@
     function onTogglePwaHaptic(checked) {
         setHapticEnabled(checked);
         if (checked) hapticFeedback([20, 40]);
+    }
+
+    function onTogglePwaClipboard(checked) {
+        setClipboardDetectEnabled(checked);
+        if (checked) {
+            showToast(window.t('📋 剪贴板磁力链接智能感知已开启'));
+        } else {
+            showToast(window.t('剪贴板感知已关闭'));
+        }
+    }
+
+    function onTogglePwaDiskAlert(checked) {
+        setDiskAlertEnabled(checked);
+        if (checked) {
+            showToast(window.t('⚠️ 低磁盘空间系统预警已开启'));
+        } else {
+            showToast(window.t('低磁盘空间预警已关闭'));
+        }
     }

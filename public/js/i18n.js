@@ -553,6 +553,31 @@
         '屏幕防休眠已关闭': 'Screen Wake Lock disabled',
         '已暂停全部活动任务': 'All active tasks paused',
         '已恢复全部任务': 'All tasks resumed',
+
+        // Advanced PWA & System Capabilities
+        '检测到剪贴板磁力链接': 'Magnet link detected on clipboard',
+        '📥 立即添加': '📥 Add Now',
+        '悬浮窗': 'PiP HUD',
+        '开启画中画悬浮速率监控': 'Open Picture-in-Picture speed HUD',
+        '已开启画中画速率悬浮监控': 'Picture-in-Picture speed HUD active',
+        '开启画中画监控失败': 'Failed to open Picture-in-Picture HUD',
+        '当前浏览器暂不支持 Document Picture-in-Picture 悬浮监控': 'Current browser does not support Document Picture-in-Picture',
+        '剪贴板磁力链接智能感知': 'Smart Clipboard Magnet Detection',
+        '切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅': 'Auto-detects magnet: links on clipboard when switching to Abit and displays quick-add banner',
+        '磁盘剩余容量不足预警': 'Low Disk Space Notification Alert',
+        '当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错': 'Sends system notification when download disk has less than 5GB to prevent write errors',
+        '📋 剪贴板磁力链接智能感知已开启': '📋 Smart clipboard magnet detection enabled',
+        '剪贴板感知已关闭': 'Clipboard detection disabled',
+        '⚠️ 低磁盘空间系统预警已开启': '⚠️ Low disk space alerts enabled',
+        '低磁盘空间预警已关闭': 'Low disk space alerts disabled',
+        '磁盘空间不足警告': 'Low Disk Space Warning',
+        '当前可用空间仅剩': 'Current available free space is only',
+        '请及时清理或扩容以避免下载任务报错中断': 'Please free up disk space to prevent task download errors',
+        '分享此种子/磁力链接': 'Share torrent / magnet link',
+        '已复制磁力链接至剪贴板': 'Magnet URI copied to clipboard',
+        '网络连接已恢复': 'Network connection restored',
+        '网络已断开，进入离线快照模式': 'Network disconnected, switched to offline snapshot mode',
+        '离线模式 (只读快照)': 'Offline (Read-only Snapshot)',
     };
 
     let currentLang = 'zh';

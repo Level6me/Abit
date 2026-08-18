@@ -578,6 +578,31 @@
         '屏幕防休眠已关闭': 'Screen Wake Lock disabled',
         '已暂停全部活动任务': 'All active tasks paused',
         '已恢复全部任务': 'All tasks resumed',
+
+        // Advanced PWA & System Capabilities
+        '检测到剪贴板磁力链接': 'Magnet link detected on clipboard',
+        '📥 立即添加': '📥 Add Now',
+        '悬浮窗': 'PiP HUD',
+        '开启画中画悬浮速率监控': 'Open Picture-in-Picture speed HUD',
+        '已开启画中画速率悬浮监控': 'Picture-in-Picture speed HUD active',
+        '开启画中画监控失败': 'Failed to open Picture-in-Picture HUD',
+        '当前浏览器暂不支持 Document Picture-in-Picture 悬浮监控': 'Current browser does not support Document Picture-in-Picture',
+        '剪贴板磁力链接智能感知': 'Smart Clipboard Magnet Detection',
+        '切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅': 'Auto-detects magnet: links on clipboard when switching to Abit and displays quick-add banner',
+        '磁盘剩余容量不足预警': 'Low Disk Space Notification Alert',
+        '当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错': 'Sends system notification when download disk has less than 5GB to prevent write errors',
+        '📋 剪贴板磁力链接智能感知已开启': '📋 Smart clipboard magnet detection enabled',
+        '剪贴板感知已关闭': 'Clipboard detection disabled',
+        '⚠️ 低磁盘空间系统预警已开启': '⚠️ Low disk space alerts enabled',
+        '低磁盘空间预警已关闭': 'Low disk space alerts disabled',
+        '磁盘空间不足警告': 'Low Disk Space Warning',
+        '当前可用空间仅剩': 'Current available free space is only',
+        '请及时清理或扩容以避免下载任务报错中断': 'Please free up disk space to prevent task download errors',
+        '分享此种子/磁力链接': 'Share torrent / magnet link',
+        '已复制磁力链接至剪贴板': 'Magnet URI copied to clipboard',
+        '网络连接已恢复': 'Network connection restored',
+        '网络已断开，进入离线快照模式': 'Network disconnected, switched to offline snapshot mode',
+        '离线模式 (只读快照)': 'Offline (Read-only Snapshot)',
     };
 
     let currentLang = 'zh';
@@ -656,8 +681,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1459';
-const APP_BUILD_TIME = '2026-08-18 14:59:59';
+const APP_VERSION = 'v2026.08.18-1514';
+const APP_BUILD_TIME = '2026-08-18 15:14:47';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -1059,6 +1084,149 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             requestScreenWakeLock();
         }
     });
+
+    // 5. Smart Clipboard Magnet Detection
+    function isClipboardDetectEnabled() {
+        return localStorage.getItem('abit_clip_detect_enabled') !== 'false';
+    }
+
+    function setClipboardDetectEnabled(enable) {
+        localStorage.setItem('abit_clip_detect_enabled', enable ? 'true' : 'false');
+    }
+
+    // 6. Low Disk Space Alert
+    function isDiskAlertEnabled() {
+        return localStorage.getItem('abit_disk_alert_enabled') !== 'false';
+    }
+
+    function setDiskAlertEnabled(enable) {
+        localStorage.setItem('abit_disk_alert_enabled', enable ? 'true' : 'false');
+    }
+
+    let hasWarnedLowDisk = false;
+    function checkLowDiskSpaceNotification(freeBytes) {
+        if (!isDiskAlertEnabled() || !isNotificationEnabled()) return;
+        if (freeBytes === null || freeBytes === undefined || freeBytes < 0) return;
+
+        const threshold = 5 * 1024 * 1024 * 1024; // 5 GB
+        if (freeBytes < threshold && !hasWarnedLowDisk) {
+            hasWarnedLowDisk = true;
+            const freeStr = formatBytes(freeBytes);
+            const title = `⚠️ ${window.t('磁盘空间不足警告')}`;
+            const options = {
+                body: `${window.t('当前可用空间仅剩')} ${freeStr}，${window.t('请及时清理或扩容以避免下载任务报错中断')}`,
+                icon: 'icon-192.png',
+                badge: 'favicon-32x32.png',
+                tag: 'abit-disk-space-warning',
+                renotify: true
+            };
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => {});
+            } else {
+                try { new Notification(title, options); } catch(e) {}
+            }
+        } else if (freeBytes >= threshold * 1.5) {
+            hasWarnedLowDisk = false;
+        }
+    }
+
+    // 7. Picture-in-Picture (PiP) Floating Speed Monitor
+    let pipWindowInstance = null;
+
+    async function togglePictureInPictureMonitor() {
+        if ('documentPictureInPicture' in window) {
+            if (pipWindowInstance && !pipWindowInstance.closed) {
+                pipWindowInstance.close();
+                pipWindowInstance = null;
+                return;
+            }
+            try {
+                pipWindowInstance = await window.documentPictureInPicture.requestWindow({
+                    width: 280,
+                    height: 140
+                });
+                const pipDoc = pipWindowInstance.document;
+                pipDoc.title = 'Abit 实时速率';
+                const style = pipDoc.createElement('style');
+                style.textContent = `
+                    * { box-sizing: border-box; }
+                    body {
+                        margin: 0;
+                        padding: 14px;
+                        background: #1c1c1e;
+                        color: #ffffff;
+                        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+                        user-select: none;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        height: 100vh;
+                    }
+                    .pip-header { font-size: 10px; font-weight: 800; color: #8e8e93; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .pip-row { display: flex; justify-content: space-between; align-items: baseline; }
+                    .pip-label { font-size: 11px; font-weight: 600; color: #a1a1a6; }
+                    .pip-speed-dl { font-size: 17px; font-weight: 800; color: #30d158; font-family: ui-monospace, SFMono-Regular, monospace; }
+                    .pip-speed-up { font-size: 17px; font-weight: 800; color: #0a84ff; font-family: ui-monospace, SFMono-Regular, monospace; }
+                `;
+                pipDoc.head.appendChild(style);
+                pipDoc.body.innerHTML = `
+                    <div class="pip-header"><span>🍏 ABIT SPEED</span><span id="pip-active-cnt">--</span></div>
+                    <div class="pip-row"><span class="pip-label">↓ 下载速率</span><span class="pip-speed-dl" id="pip-dl">0 B/s</span></div>
+                    <div class="pip-row"><span class="pip-label">↑ 上传速率</span><span class="pip-speed-up" id="pip-up">0 B/s</span></div>
+                `;
+                pipWindowInstance.addEventListener('pagehide', function() {
+                    pipWindowInstance = null;
+                });
+                showToast(window.t('已开启画中画速率悬浮监控'));
+            } catch (e) {
+                console.debug('[Abit] PiP window error:', e);
+                showToast(window.t('开启画中画监控失败'), false);
+            }
+        } else {
+            showToast(window.t('当前浏览器暂不支持 Document Picture-in-Picture 悬浮监控'), false);
+        }
+    }
+
+    function updatePipMonitor(dlStr, upStr, activeCnt) {
+        if (!pipWindowInstance || pipWindowInstance.closed) return;
+        try {
+            const pipDoc = pipWindowInstance.document;
+            if (dlStr) {
+                const el = pipDoc.getElementById('pip-dl');
+                if (el) el.innerText = dlStr;
+            }
+            if (upStr) {
+                const el = pipDoc.getElementById('pip-up');
+                if (el) el.innerText = upStr;
+            }
+            if (activeCnt !== undefined) {
+                const el = pipDoc.getElementById('pip-active-cnt');
+                if (el) el.innerText = `${activeCnt} 任务`;
+            }
+        } catch(e) {}
+    }
+
+    // 8. Clipboard Copy Helper
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => {
+                fallbackCopyText(text);
+            });
+        } else {
+            fallbackCopyText(text);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta);
+    }
 
 // --- [Module: api.js] ---
 /**
@@ -1659,11 +1827,34 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         const name = torrent ? torrent.name : window.t('种子详情');
         $('#detail-title').text(name);
         $('#detail-hash').text(`Hash: ${hash}`);
+        $('#btn-share-torrent').show();
         openModal('detail-modal');
 
         refreshActiveDetailSubTab();
         if (detailRefreshTimer) clearInterval(detailRefreshTimer);
         detailRefreshTimer = setInterval(refreshActiveDetailSubTab, 1800);
+    }
+
+    function shareCurrentTorrent() {
+        const torrent = allTorrents.find(t => t.hash === activeDetailHash);
+        if (!torrent) return;
+        const magnetUri = torrent.magnet_uri || `magnet:?xt=urn:btih:${torrent.hash}&dn=${encodeURIComponent(torrent.name)}`;
+        if (navigator.share) {
+            navigator.share({
+                title: torrent.name,
+                text: `[Abit 种子分享] ${torrent.name} (${formatBytes(torrent.total_size || torrent.size)})`,
+                url: magnetUri
+            }).catch(err => {
+                if (err.name !== 'AbortError') {
+                    copyToClipboard(magnetUri);
+                    showToast(window.t('已复制磁力链接至剪贴板'));
+                }
+            });
+        } else {
+            copyToClipboard(magnetUri);
+            showToast(window.t('已复制磁力链接至剪贴板'));
+        }
+        hapticFeedback(15);
     }
 
     function switchDetailTab(tabId, btn) {
@@ -2873,6 +3064,12 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         if (typeof isHapticEnabled === 'function') {
             $('#pwa-pref-haptic').prop('checked', isHapticEnabled());
         }
+        if (typeof isClipboardDetectEnabled === 'function') {
+            $('#pwa-pref-clipboard').prop('checked', isClipboardDetectEnabled());
+        }
+        if (typeof isDiskAlertEnabled === 'function') {
+            $('#pwa-pref-diskalert').prop('checked', isDiskAlertEnabled());
+        }
     }
 
     function onTogglePwaNotify(checked) {
@@ -2905,6 +3102,24 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
     function onTogglePwaHaptic(checked) {
         setHapticEnabled(checked);
         if (checked) hapticFeedback([20, 40]);
+    }
+
+    function onTogglePwaClipboard(checked) {
+        setClipboardDetectEnabled(checked);
+        if (checked) {
+            showToast(window.t('📋 剪贴板磁力链接智能感知已开启'));
+        } else {
+            showToast(window.t('剪贴板感知已关闭'));
+        }
+    }
+
+    function onTogglePwaDiskAlert(checked) {
+        setDiskAlertEnabled(checked);
+        if (checked) {
+            showToast(window.t('⚠️ 低磁盘空间系统预警已开启'));
+        } else {
+            showToast(window.t('低磁盘空间预警已关闭'));
+        }
     }
 
 // --- [Module: ui.js] ---
@@ -3185,6 +3400,9 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                     lastFreeSpaceOnDisk = data.server_state.free_space_on_disk;
                     if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
                         $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+                        if (typeof checkLowDiskSpaceNotification === 'function') {
+                            checkLowDiskSpaceNotification(lastFreeSpaceOnDisk);
+                        }
                     } else {
                         $('#v-disk-free').text('--');
                     }
@@ -3206,6 +3424,10 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             const upSpeed = formatBytes(info.up_info_speed);
             $('#v-dl-speed').text(dlSpeed + '/s');
             $('#v-up-speed').text(upSpeed + '/s');
+
+            if (typeof updatePipMonitor === 'function') {
+                updatePipMonitor(dlSpeed + '/s', upSpeed + '/s', allTorrents.length);
+            }
 
             const statusMap = {
                 "connected": window.t('🟢 连接就绪'),
@@ -3495,3 +3717,74 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             }
         }
     }
+
+    // --- Smart Clipboard Magnet Detection ---
+    let lastDetectedClipboardMagnet = '';
+    let clipboardBannerTimer = null;
+
+    function checkClipboardForMagnet() {
+        if (typeof isClipboardDetectEnabled === 'function' && !isClipboardDetectEnabled()) return;
+        if (!navigator.clipboard || !navigator.clipboard.readText) return;
+        if ($('.modal-overlay.active').length > 0) return;
+
+        navigator.clipboard.readText().then(function(text) {
+            if (!text) return;
+            const trimmed = text.trim();
+            if (trimmed.startsWith('magnet:?xt=') && trimmed !== lastDetectedClipboardMagnet) {
+                lastDetectedClipboardMagnet = trimmed;
+                showClipboardBanner(trimmed);
+            }
+        }).catch(function() {});
+    }
+
+    function showClipboardBanner(magnetUrl) {
+        $('#clipboard-detected-url').text(magnetUrl);
+        $('#clipboard-smart-banner').fadeIn(200);
+        if (typeof hapticFeedback === 'function') hapticFeedback(15);
+
+        if (clipboardBannerTimer) clearTimeout(clipboardBannerTimer);
+        clipboardBannerTimer = setTimeout(function() {
+            $('#clipboard-smart-banner').fadeOut(200);
+        }, 8000);
+    }
+
+    function acceptClipboardMagnet() {
+        const url = $('#clipboard-detected-url').text();
+        $('#clipboard-smart-banner').hide();
+        if (url) {
+            if (typeof openAddModal === 'function') {
+                openAddModal(url);
+            }
+        }
+    }
+
+    function dismissClipboardBanner() {
+        $('#clipboard-smart-banner').fadeOut(150);
+        if (clipboardBannerTimer) clearTimeout(clipboardBannerTimer);
+    }
+
+    // Window Focus & Visibility Listener for Clipboard Check
+    window.addEventListener('focus', function() {
+        setTimeout(checkClipboardForMagnet, 300);
+    });
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            setTimeout(checkClipboardForMagnet, 300);
+        }
+    });
+
+    // Network Online / Offline Listeners
+    window.addEventListener('online', function() {
+        $('#qbt-dot').removeClass('offline');
+        $('#qbt-status-text').text(window.t('已在线'));
+        if (typeof showToast === 'function') showToast(window.t('网络连接已恢复'), true);
+        pollFastData();
+        pollSlowData();
+    });
+
+    window.addEventListener('offline', function() {
+        $('#qbt-dot').addClass('offline');
+        $('#qbt-status-text').text(window.t('离线模式 (只读快照)'));
+        if (typeof showToast === 'function') showToast(window.t('网络已断开，进入离线快照模式'), false);
+    });

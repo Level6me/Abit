@@ -332,3 +332,146 @@
             requestScreenWakeLock();
         }
     });
+
+    // 5. Smart Clipboard Magnet Detection
+    function isClipboardDetectEnabled() {
+        return localStorage.getItem('abit_clip_detect_enabled') !== 'false';
+    }
+
+    function setClipboardDetectEnabled(enable) {
+        localStorage.setItem('abit_clip_detect_enabled', enable ? 'true' : 'false');
+    }
+
+    // 6. Low Disk Space Alert
+    function isDiskAlertEnabled() {
+        return localStorage.getItem('abit_disk_alert_enabled') !== 'false';
+    }
+
+    function setDiskAlertEnabled(enable) {
+        localStorage.setItem('abit_disk_alert_enabled', enable ? 'true' : 'false');
+    }
+
+    let hasWarnedLowDisk = false;
+    function checkLowDiskSpaceNotification(freeBytes) {
+        if (!isDiskAlertEnabled() || !isNotificationEnabled()) return;
+        if (freeBytes === null || freeBytes === undefined || freeBytes < 0) return;
+
+        const threshold = 5 * 1024 * 1024 * 1024; // 5 GB
+        if (freeBytes < threshold && !hasWarnedLowDisk) {
+            hasWarnedLowDisk = true;
+            const freeStr = formatBytes(freeBytes);
+            const title = `⚠️ ${window.t('磁盘空间不足警告')}`;
+            const options = {
+                body: `${window.t('当前可用空间仅剩')} ${freeStr}，${window.t('请及时清理或扩容以避免下载任务报错中断')}`,
+                icon: 'icon-192.png',
+                badge: 'favicon-32x32.png',
+                tag: 'abit-disk-space-warning',
+                renotify: true
+            };
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => {});
+            } else {
+                try { new Notification(title, options); } catch(e) {}
+            }
+        } else if (freeBytes >= threshold * 1.5) {
+            hasWarnedLowDisk = false;
+        }
+    }
+
+    // 7. Picture-in-Picture (PiP) Floating Speed Monitor
+    let pipWindowInstance = null;
+
+    async function togglePictureInPictureMonitor() {
+        if ('documentPictureInPicture' in window) {
+            if (pipWindowInstance && !pipWindowInstance.closed) {
+                pipWindowInstance.close();
+                pipWindowInstance = null;
+                return;
+            }
+            try {
+                pipWindowInstance = await window.documentPictureInPicture.requestWindow({
+                    width: 280,
+                    height: 140
+                });
+                const pipDoc = pipWindowInstance.document;
+                pipDoc.title = 'Abit 实时速率';
+                const style = pipDoc.createElement('style');
+                style.textContent = `
+                    * { box-sizing: border-box; }
+                    body {
+                        margin: 0;
+                        padding: 14px;
+                        background: #1c1c1e;
+                        color: #ffffff;
+                        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+                        user-select: none;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        height: 100vh;
+                    }
+                    .pip-header { font-size: 10px; font-weight: 800; color: #8e8e93; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.5px; }
+                    .pip-row { display: flex; justify-content: space-between; align-items: baseline; }
+                    .pip-label { font-size: 11px; font-weight: 600; color: #a1a1a6; }
+                    .pip-speed-dl { font-size: 17px; font-weight: 800; color: #30d158; font-family: ui-monospace, SFMono-Regular, monospace; }
+                    .pip-speed-up { font-size: 17px; font-weight: 800; color: #0a84ff; font-family: ui-monospace, SFMono-Regular, monospace; }
+                `;
+                pipDoc.head.appendChild(style);
+                pipDoc.body.innerHTML = `
+                    <div class="pip-header"><span>🍏 ABIT SPEED</span><span id="pip-active-cnt">--</span></div>
+                    <div class="pip-row"><span class="pip-label">↓ 下载速率</span><span class="pip-speed-dl" id="pip-dl">0 B/s</span></div>
+                    <div class="pip-row"><span class="pip-label">↑ 上传速率</span><span class="pip-speed-up" id="pip-up">0 B/s</span></div>
+                `;
+                pipWindowInstance.addEventListener('pagehide', function() {
+                    pipWindowInstance = null;
+                });
+                showToast(window.t('已开启画中画速率悬浮监控'));
+            } catch (e) {
+                console.debug('[Abit] PiP window error:', e);
+                showToast(window.t('开启画中画监控失败'), false);
+            }
+        } else {
+            showToast(window.t('当前浏览器暂不支持 Document Picture-in-Picture 悬浮监控'), false);
+        }
+    }
+
+    function updatePipMonitor(dlStr, upStr, activeCnt) {
+        if (!pipWindowInstance || pipWindowInstance.closed) return;
+        try {
+            const pipDoc = pipWindowInstance.document;
+            if (dlStr) {
+                const el = pipDoc.getElementById('pip-dl');
+                if (el) el.innerText = dlStr;
+            }
+            if (upStr) {
+                const el = pipDoc.getElementById('pip-up');
+                if (el) el.innerText = upStr;
+            }
+            if (activeCnt !== undefined) {
+                const el = pipDoc.getElementById('pip-active-cnt');
+                if (el) el.innerText = `${activeCnt} 任务`;
+            }
+        } catch(e) {}
+    }
+
+    // 8. Clipboard Copy Helper
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => {
+                fallbackCopyText(text);
+            });
+        } else {
+            fallbackCopyText(text);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta);
+    }

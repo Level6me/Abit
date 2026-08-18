@@ -13,6 +13,9 @@
                     lastFreeSpaceOnDisk = data.server_state.free_space_on_disk;
                     if (lastFreeSpaceOnDisk !== null && lastFreeSpaceOnDisk >= 0) {
                         $('#v-disk-free').text(formatBytes(lastFreeSpaceOnDisk));
+                        if (typeof checkLowDiskSpaceNotification === 'function') {
+                            checkLowDiskSpaceNotification(lastFreeSpaceOnDisk);
+                        }
                     } else {
                         $('#v-disk-free').text('--');
                     }
@@ -34,6 +37,10 @@
             const upSpeed = formatBytes(info.up_info_speed);
             $('#v-dl-speed').text(dlSpeed + '/s');
             $('#v-up-speed').text(upSpeed + '/s');
+
+            if (typeof updatePipMonitor === 'function') {
+                updatePipMonitor(dlSpeed + '/s', upSpeed + '/s', allTorrents.length);
+            }
 
             const statusMap = {
                 "connected": window.t('🟢 连接就绪'),
@@ -323,4 +330,75 @@
             }
         }
     }
+
+    // --- Smart Clipboard Magnet Detection ---
+    let lastDetectedClipboardMagnet = '';
+    let clipboardBannerTimer = null;
+
+    function checkClipboardForMagnet() {
+        if (typeof isClipboardDetectEnabled === 'function' && !isClipboardDetectEnabled()) return;
+        if (!navigator.clipboard || !navigator.clipboard.readText) return;
+        if ($('.modal-overlay.active').length > 0) return;
+
+        navigator.clipboard.readText().then(function(text) {
+            if (!text) return;
+            const trimmed = text.trim();
+            if (trimmed.startsWith('magnet:?xt=') && trimmed !== lastDetectedClipboardMagnet) {
+                lastDetectedClipboardMagnet = trimmed;
+                showClipboardBanner(trimmed);
+            }
+        }).catch(function() {});
+    }
+
+    function showClipboardBanner(magnetUrl) {
+        $('#clipboard-detected-url').text(magnetUrl);
+        $('#clipboard-smart-banner').fadeIn(200);
+        if (typeof hapticFeedback === 'function') hapticFeedback(15);
+
+        if (clipboardBannerTimer) clearTimeout(clipboardBannerTimer);
+        clipboardBannerTimer = setTimeout(function() {
+            $('#clipboard-smart-banner').fadeOut(200);
+        }, 8000);
+    }
+
+    function acceptClipboardMagnet() {
+        const url = $('#clipboard-detected-url').text();
+        $('#clipboard-smart-banner').hide();
+        if (url) {
+            if (typeof openAddModal === 'function') {
+                openAddModal(url);
+            }
+        }
+    }
+
+    function dismissClipboardBanner() {
+        $('#clipboard-smart-banner').fadeOut(150);
+        if (clipboardBannerTimer) clearTimeout(clipboardBannerTimer);
+    }
+
+    // Window Focus & Visibility Listener for Clipboard Check
+    window.addEventListener('focus', function() {
+        setTimeout(checkClipboardForMagnet, 300);
+    });
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            setTimeout(checkClipboardForMagnet, 300);
+        }
+    });
+
+    // Network Online / Offline Listeners
+    window.addEventListener('online', function() {
+        $('#qbt-dot').removeClass('offline');
+        $('#qbt-status-text').text(window.t('已在线'));
+        if (typeof showToast === 'function') showToast(window.t('网络连接已恢复'), true);
+        pollFastData();
+        pollSlowData();
+    });
+
+    window.addEventListener('offline', function() {
+        $('#qbt-dot').addClass('offline');
+        $('#qbt-status-text').text(window.t('离线模式 (只读快照)'));
+        if (typeof showToast === 'function') showToast(window.t('网络已断开，进入离线快照模式'), false);
+    });
 

@@ -24,17 +24,32 @@
     <!-- Third-party libraries are bundled locally (no CDN dependency) -->
     <!-- Modular Stylesheet -->
     <!-- Modular Granular Stylesheets -->
-    <link rel="stylesheet" href="css/variables.css?v=1787036399521">
-    <link rel="stylesheet" href="css/base.css?v=1787036399521">
-    <link rel="stylesheet" href="css/layout.css?v=1787036399521">
-    <link rel="stylesheet" href="css/components.css?v=1787036399521">
-    <link rel="stylesheet" href="css/torrents.css?v=1787036399521">
-    <link rel="stylesheet" href="css/dock.css?v=1787036399521">
-    <link rel="stylesheet" href="css/modal.css?v=1787036399521">
+    <link rel="stylesheet" href="css/variables.css?v=1787037287147">
+    <link rel="stylesheet" href="css/base.css?v=1787037287147">
+    <link rel="stylesheet" href="css/layout.css?v=1787037287147">
+    <link rel="stylesheet" href="css/components.css?v=1787037287147">
+    <link rel="stylesheet" href="css/torrents.css?v=1787037287147">
+    <link rel="stylesheet" href="css/dock.css?v=1787037287147">
+    <link rel="stylesheet" href="css/modal.css?v=1787037287147">
 </head>
 <body>
 <!-- Global Toast Container -->
 <div class="toast-container" id="toast-container"></div>
+
+<!-- Floating Smart Clipboard Banner -->
+<div id="clipboard-smart-banner" class="clipboard-banner" style="display:none;">
+    <div class="clipboard-banner-content">
+        <span class="clipboard-banner-icon">📋</span>
+        <div class="clipboard-banner-text">
+            <div class="clipboard-banner-title" data-i18n="检测到剪贴板磁力链接">检测到剪贴板磁力链接</div>
+            <div class="clipboard-banner-sub" id="clipboard-detected-url">magnet:?xt=...</div>
+        </div>
+    </div>
+    <div class="clipboard-banner-actions">
+        <button class="pill-btn accent" onclick="acceptClipboardMagnet()" data-i18n="📥 立即添加">📥 立即添加</button>
+        <button class="icon-btn" onclick="dismissClipboardBanner()" style="width:24px; height:24px;">✖</button>
+    </div>
+</div>
 
 <!-- Drag and drop full window overlay -->
 <div class="drag-overlay" id="drag-overlay">
@@ -51,6 +66,12 @@
             </div>
         </div>
         <div class="header-actions">
+            <!-- Picture-in-Picture Floating Speed Monitor Button -->
+            <button class="pill-btn" id="btn-pip-monitor" onclick="togglePictureInPictureMonitor()" data-i18n-title="开启画中画悬浮速率监控" title="开启画中画悬浮速率监控">
+                <span>🖥️</span>
+                <span data-i18n="悬浮窗">悬浮窗</span>
+            </button>
+
             <!-- PWA Install Button (Shown on installable browsers or on demand) -->
             <button class="pill-btn" id="btn-pwa-install" onclick="promptPwaInstall()" style="display:none;" data-i18n-title="安装 Abit 到本地应用 / 桌面" title="安装 Abit 到本地应用 / 桌面">
                 <span>📲</span>
@@ -884,6 +905,28 @@
                     </label>
                 </div>
 
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="剪贴板磁力链接智能感知">剪贴板磁力链接智能感知</div>
+                        <div class="setting-desc" data-i18n="切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅">切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-clipboard" onchange="onTogglePwaClipboard(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="磁盘剩余容量不足预警">磁盘剩余容量不足预警</div>
+                        <div class="setting-desc" data-i18n="当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错">当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-diskalert" onchange="onTogglePwaDiskAlert(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin-top:10px; border:1px solid var(--border-subtle);">
                     <div style="font-size:12px; color:var(--text-sec); line-height:1.5;">
                         <span style="font-weight:700; color:var(--text);" data-i18n="⚡ 已就绪原生集成：">⚡ 已就绪原生集成：</span>
@@ -897,7 +940,7 @@
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1459</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1514</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -931,7 +974,10 @@
                 <div style="font-size:17px; font-weight:800; line-height:1.3; word-break:break-all;" id="detail-title" data-i18n="种子详情">种子详情</div>
                 <div style="font-size:11px; color:var(--text-sec); font-family:monospace; margin-top:2px;" id="detail-hash"></div>
             </div>
-            <button class="icon-btn" onclick="closeDetailModal()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+            <div style="display:flex; gap:6px; align-items:center;">
+                <button class="icon-btn" id="btn-share-torrent" onclick="shareCurrentTorrent()" title="分享此种子/磁力链接" data-i18n-title="分享此种子/磁力链接" style="display:none;"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button>
+                <button class="icon-btn" onclick="closeDetailModal()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+            </div>
         </div>
 
         <div class="tab-bar" style="margin-bottom:16px;">
@@ -1202,19 +1248,19 @@
 </div>
 
     <!-- Modular Application Scripts -->
-    <script src="js/vendor_jquery.min.js?v=1787036399521"></script>
-    <script src="js/vendor_chart.umd.min.js?v=1787036399521"></script>
-    <script src="js/i18n.js?v=1787036399521"></script>
-    <script src="js/constants.js?v=1787036399521"></script>
-    <script src="js/state.js?v=1787036399521"></script>
-    <script src="js/utils.js?v=1787036399521"></script>
-    <script src="js/api.js?v=1787036399521"></script>
-    <script src="js/chart.js?v=1787036399521"></script>
-    <script src="js/torrents.js?v=1787036399521"></script>
-    <script src="js/search.js?v=1787036399521"></script>
-    <script src="js/rss.js?v=1787036399521"></script>
-    <script src="js/system.js?v=1787036399521"></script>
-    <script src="js/ui.js?v=1787036399521"></script>
-    <script src="js/app.js?v=1787036399521"></script>
+    <script src="js/vendor_jquery.min.js?v=1787037287147"></script>
+    <script src="js/vendor_chart.umd.min.js?v=1787037287147"></script>
+    <script src="js/i18n.js?v=1787037287147"></script>
+    <script src="js/constants.js?v=1787037287147"></script>
+    <script src="js/state.js?v=1787037287147"></script>
+    <script src="js/utils.js?v=1787037287147"></script>
+    <script src="js/api.js?v=1787037287147"></script>
+    <script src="js/chart.js?v=1787037287147"></script>
+    <script src="js/torrents.js?v=1787037287147"></script>
+    <script src="js/search.js?v=1787037287147"></script>
+    <script src="js/rss.js?v=1787037287147"></script>
+    <script src="js/system.js?v=1787037287147"></script>
+    <script src="js/ui.js?v=1787037287147"></script>
+    <script src="js/app.js?v=1787037287147"></script>
 </body>
 </html>

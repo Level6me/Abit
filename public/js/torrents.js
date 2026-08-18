@@ -531,11 +531,34 @@
         const name = torrent ? torrent.name : window.t('种子详情');
         $('#detail-title').text(name);
         $('#detail-hash').text(`Hash: ${hash}`);
+        $('#btn-share-torrent').show();
         openModal('detail-modal');
 
         refreshActiveDetailSubTab();
         if (detailRefreshTimer) clearInterval(detailRefreshTimer);
         detailRefreshTimer = setInterval(refreshActiveDetailSubTab, 1800);
+    }
+
+    function shareCurrentTorrent() {
+        const torrent = allTorrents.find(t => t.hash === activeDetailHash);
+        if (!torrent) return;
+        const magnetUri = torrent.magnet_uri || `magnet:?xt=urn:btih:${torrent.hash}&dn=${encodeURIComponent(torrent.name)}`;
+        if (navigator.share) {
+            navigator.share({
+                title: torrent.name,
+                text: `[Abit 种子分享] ${torrent.name} (${formatBytes(torrent.total_size || torrent.size)})`,
+                url: magnetUri
+            }).catch(err => {
+                if (err.name !== 'AbortError') {
+                    copyToClipboard(magnetUri);
+                    showToast(window.t('已复制磁力链接至剪贴板'));
+                }
+            });
+        } else {
+            copyToClipboard(magnetUri);
+            showToast(window.t('已复制磁力链接至剪贴板'));
+        }
+        hapticFeedback(15);
     }
 
     function switchDetailTab(tabId, btn) {

@@ -163,6 +163,21 @@ body.modal-open {
     min-height: 52px;
     width: 100%;
 }
+
+/* Window Controls Overlay Support for Desktop PWA */
+@media (display-mode: window-controls-overlay) {
+    .header {
+        padding-top: env(titlebar-area-y, 0);
+        padding-left: env(titlebar-area-x, 0);
+        padding-right: calc(100vw - env(titlebar-area-x, 0) - env(titlebar-area-width, 100vw));
+        app-region: drag;
+        -webkit-app-region: drag;
+    }
+    .header-actions, .header-actions *, .btn, .icon-btn, input, button, select, a {
+        app-region: no-drag;
+        -webkit-app-region: no-drag;
+    }
+}
 .header-left {
     display: flex;
     align-items: center;
@@ -855,6 +870,66 @@ input:checked + .slider:before { transform: translateX(20px); }
     color: var(--text-sec);
     padding: 0 4px;
     font-size: 12px;
+}
+
+/* Floating Smart Clipboard Banner */
+.clipboard-banner {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--card-translucent);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 10px 16px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+    max-width: 90vw;
+    width: 480px;
+    animation: bannerSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes bannerSlideDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+.clipboard-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+.clipboard-banner-icon {
+    font-size: 20px;
+}
+.clipboard-banner-text {
+    min-width: 0;
+    flex: 1;
+}
+.clipboard-banner-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+.clipboard-banner-sub {
+    font-size: 11px;
+    color: var(--text-sec);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: monospace;
+}
+.clipboard-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 /* --- [Module: torrents.css] --- */

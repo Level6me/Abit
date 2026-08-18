@@ -1,6 +1,6 @@
 {
   "name": "abit",
-  "version": "2026.08.18-1459",
+  "version": "2026.08.18-1514",
   "description": "A refined, zero-overhead, Apple-styled Alternative WebUI for qBittorrent",
   "main": "scripts/build.js",
   "scripts": {
