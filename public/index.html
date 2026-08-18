@@ -244,24 +244,40 @@ body.modal-open {
     flex-shrink: 0;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 680px) {
     .header {
         margin: 6px 0 12px 0;
-        gap: 6px;
+        gap: 8px;
         min-height: 44px;
     }
     .header-left {
-        gap: 8px;
+        gap: 6px;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+    .date-badge {
+        font-size: 11px;
+        letter-spacing: 0;
+        white-space: nowrap;
     }
     .title {
         font-size: 24px;
     }
     .header-actions {
-        gap: 5px;
+        gap: 6px;
+        flex-shrink: 0;
     }
-    .pill-btn {
-        padding: 5px 8px;
-        font-size: 11px;
+    .header-actions .pill-btn {
+        padding: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        justify-content: center;
+        gap: 0;
+        font-size: 14px;
+    }
+    .header-actions .pill-btn .pill-text {
+        display: none !important;
     }
 }
 
@@ -1335,31 +1351,31 @@ input:checked + .slider:before { transform: translateX(20px); }
             <!-- Picture-in-Picture Floating Speed Monitor Button -->
             <button class="pill-btn" id="btn-pip-monitor" onclick="togglePictureInPictureMonitor()" data-i18n-title="开启画中画悬浮速率监控" title="开启画中画悬浮速率监控">
                 <span>🖥️</span>
-                <span data-i18n="悬浮窗">悬浮窗</span>
+                <span class="pill-text" data-i18n="悬浮窗">悬浮窗</span>
             </button>
 
             <!-- PWA Install Button (Shown on installable browsers or on demand) -->
             <button class="pill-btn" id="btn-pwa-install" onclick="promptPwaInstall()" style="display:none;" data-i18n-title="安装 Abit 到本地应用 / 桌面" title="安装 Abit 到本地应用 / 桌面">
                 <span>📲</span>
-                <span data-i18n="安装应用">安装应用</span>
+                <span class="pill-text" data-i18n="安装应用">安装应用</span>
             </button>
 
             <!-- Alt Speed Mode Button (Turtle 🐢) -->
             <button class="pill-btn" id="btn-alt-speed" onclick="toggleAltSpeedMode()" data-i18n-title="切换备用速度限制模式" title="切换备用速度限制模式">
                 <span id="alt-speed-icon">⚡</span>
-                <span id="alt-speed-label" data-i18n="常规速率">常规速率</span>
+                <span id="alt-speed-label" class="pill-text" data-i18n="常规速率">常规速率</span>
             </button>
 
             <!-- Theme Toggle Button -->
             <button class="pill-btn" id="btn-theme-toggle" onclick="cycleTheme()" data-i18n-title="切换明暗主题" title="切换明暗主题">
                 <span id="theme-icon">🌓</span>
-                <span id="theme-label" data-i18n="自动">自动</span>
+                <span id="theme-label" class="pill-text" data-i18n="自动">自动</span>
             </button>
 
             <!-- Language Toggle Button -->
             <button class="pill-btn" id="btn-lang-toggle" onclick="toggleLang()" data-i18n-title="语言切换 / Language" title="语言切换 / Language">
                 <span>🌐</span>
-                <span id="lang-label" data-i18n="中 / EN">中 / EN</span>
+                <span id="lang-label" class="pill-text" data-i18n="中 / EN">中 / EN</span>
             </button>
         </div>
     </div>
@@ -1370,12 +1386,12 @@ input:checked + .slider:before { transform: translateX(20px); }
             <div class="card">
                 <div class="val-sub" style="color:var(--success);" data-i18n="↓ 实时下载速度">↓ 实时下载速度</div>
                 <div class="val-big" id="v-dl-speed" style="color:var(--success);">0 B/s</div>
-                <div class="val-sub" id="v-dl-count" style="margin-top:4px;" data-i18n="活跃下载: ">活跃下载: 0</div>
+                <div class="val-sub" id="v-dl-count" style="margin-top:4px;"><span data-i18n="活跃下载: ">活跃下载: </span><span id="v-dl-count-num">0</span></div>
             </div>
             <div class="card">
                 <div class="val-sub" style="color:var(--accent);" data-i18n="↑ 实时上传速度">↑ 实时上传速度</div>
                 <div class="val-big" id="v-up-speed" style="color:var(--accent);">0 B/s</div>
-                <div class="val-sub" id="v-up-count" style="margin-top:4px;" data-i18n="活跃做种: ">活跃做种: 0</div>
+                <div class="val-sub" id="v-up-count" style="margin-top:4px;"><span data-i18n="活跃做种: ">活跃做种: </span><span id="v-up-count-num">0</span></div>
             </div>
             <div class="card">
                 <div class="val-sub" data-i18n="网络连接与 DHT">网络连接与 DHT</div>
@@ -2206,7 +2222,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1514</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1518</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -3198,8 +3214,8 @@ input:checked + .slider:before { transform: translateX(20px); }
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1514';
-const APP_BUILD_TIME = '2026-08-18 15:14:47';
+const APP_VERSION = 'v2026.08.18-1518';
+const APP_BUILD_TIME = '2026-08-18 15:18:11';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3841,8 +3857,8 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         });
 
         $('#sum-all, #cnt-all').text(allTorrents.length);
-        $('#sum-dl, #cnt-dl, #v-dl-count').text(dl);
-        $('#sum-seed, #cnt-seed, #v-up-count').text(seed);
+        $('#sum-dl, #cnt-dl, #v-dl-count-num').text(dl);
+        $('#sum-seed, #cnt-seed, #v-up-count-num').text(seed);
         $('#sum-completed, #cnt-completed').text(completed);
         $('#sum-pause, #cnt-pause').text(paused);
         $('#cnt-active').text(active);

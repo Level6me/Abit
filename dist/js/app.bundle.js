@@ -681,8 +681,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1514';
-const APP_BUILD_TIME = '2026-08-18 15:14:47';
+const APP_VERSION = 'v2026.08.18-1518';
+const APP_BUILD_TIME = '2026-08-18 15:18:11';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -1324,8 +1324,8 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         });
 
         $('#sum-all, #cnt-all').text(allTorrents.length);
-        $('#sum-dl, #cnt-dl, #v-dl-count').text(dl);
-        $('#sum-seed, #cnt-seed, #v-up-count').text(seed);
+        $('#sum-dl, #cnt-dl, #v-dl-count-num').text(dl);
+        $('#sum-seed, #cnt-seed, #v-up-count-num').text(seed);
         $('#sum-completed, #cnt-completed').text(completed);
         $('#sum-pause, #cnt-pause').text(paused);
         $('#cnt-active').text(active);

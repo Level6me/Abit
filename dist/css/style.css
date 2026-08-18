@@ -218,24 +218,40 @@ body.modal-open {
     flex-shrink: 0;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 680px) {
     .header {
         margin: 6px 0 12px 0;
-        gap: 6px;
+        gap: 8px;
         min-height: 44px;
     }
     .header-left {
-        gap: 8px;
+        gap: 6px;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+    .date-badge {
+        font-size: 11px;
+        letter-spacing: 0;
+        white-space: nowrap;
     }
     .title {
         font-size: 24px;
     }
     .header-actions {
-        gap: 5px;
+        gap: 6px;
+        flex-shrink: 0;
     }
-    .pill-btn {
-        padding: 5px 8px;
-        font-size: 11px;
+    .header-actions .pill-btn {
+        padding: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        justify-content: center;
+        gap: 0;
+        font-size: 14px;
+    }
+    .header-actions .pill-btn .pill-text {
+        display: none !important;
     }
 }
 

@@ -28,8 +28,8 @@
         });
 
         $('#sum-all, #cnt-all').text(allTorrents.length);
-        $('#sum-dl, #cnt-dl, #v-dl-count').text(dl);
-        $('#sum-seed, #cnt-seed, #v-up-count').text(seed);
+        $('#sum-dl, #cnt-dl, #v-dl-count-num').text(dl);
+        $('#sum-seed, #cnt-seed, #v-up-count-num').text(seed);
         $('#sum-completed, #cnt-completed').text(completed);
         $('#sum-pause, #cnt-pause').text(paused);
         $('#cnt-active').text(active);
