@@ -603,6 +603,28 @@
         '网络连接已恢复': 'Network connection restored',
         '网络已断开，进入离线快照模式': 'Network disconnected, switched to offline snapshot mode',
         '离线模式 (只读快照)': 'Offline (Read-only Snapshot)',
+
+        // PWA Dedicated Tab
+        '🍏 PWA': '🍏 PWA',
+        'Abit 渐进式 Web 原生应用': 'Abit Progressive Web App',
+        '基于现代 Web 规范构建的原生级 qBittorrent 客户端': 'Native-level qBittorrent client built on modern Web standards',
+        '安装到本地应用 / 桌面': 'Install to Desktop / Local App',
+        '🍏 原生系统权限与功能配置': '🍏 Native System Permissions & Settings',
+        '⚡ 已激活的系统原生能力：': '⚡ Active Native Capabilities:',
+        '磁力链接协议接管 (magnet:)': 'Magnet URI Scheme (magnet:)',
+        '网页点击磁力链接直接唤起 Abit。': 'Clicking magnet links in browser launches Abit directly.',
+        '种子文件双击关联 (.torrent)': 'Torrent File Association (.torrent)',
+        '本地文件双击通过 Abit 快速打开。': 'Double-clicking .torrent opens fast in Abit.',
+        '桌面与 Dock 动态数字角标 (App Badging)': 'Live App Badging on Dock / Taskbar',
+        '实时显示活跃下载任务数。': 'Displays active download count in real time.',
+        '图标右键原生快捷菜单 (Shortcuts)': 'Native App Shortcuts Menu',
+        '快速添加任务、全网搜索、全部暂停或全部恢复。': 'Quick Add, Search, Pause All or Resume All.',
+        '沉浸式窗口栏融合 (Window Controls Overlay)': 'Window Controls Overlay Integration',
+        '桌面端无边框窗口融合与拖拽移动。': 'Frameless desktop integration with window dragging.',
+        '画中画实时速率悬浮监控 (Document PiP)': 'Picture-in-Picture Speed HUD (Document PiP)',
+        '桌面微型悬浮看板常驻监视。': 'Floating mini HUD on desktop.',
+        '本地存储持久化保护 (StorageManager.persist)': 'StorageManager Persistence Protection',
+        '防止浏览器清理主题与偏好设置。': 'Prevents browser from evicting theme & settings.',
     };
 
     let currentLang = 'zh';
@@ -681,8 +703,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.08.18-1518';
-const APP_BUILD_TIME = '2026-08-18 15:18:11';
+const APP_VERSION = 'v2026.08.18-1526';
+const APP_BUILD_TIME = '2026-08-18 15:26:42';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3230,9 +3252,9 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         $(btn).addClass('active');
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
-        } else if (tabId === 'sys-sub-about') {
+        } else if (tabId === 'sys-sub-pwa') {
             if (typeof initPwaSettingsUI === 'function') initPwaSettingsUI();
-        } else if (tabId !== 'sys-sub-trackers') {
+        } else if (tabId !== 'sys-sub-trackers' && tabId !== 'sys-sub-about') {
             loadAllSystemPreferences();
         }
     }

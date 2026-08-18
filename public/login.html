@@ -24,13 +24,13 @@
     <!-- Third-party libraries are bundled locally (no CDN dependency) -->
     <!-- Modular Stylesheet -->
     <!-- Modular Granular Stylesheets -->
-    <link rel="stylesheet" href="css/variables.css?v=1787037491998">
-    <link rel="stylesheet" href="css/base.css?v=1787037491998">
-    <link rel="stylesheet" href="css/layout.css?v=1787037491998">
-    <link rel="stylesheet" href="css/components.css?v=1787037491998">
-    <link rel="stylesheet" href="css/torrents.css?v=1787037491998">
-    <link rel="stylesheet" href="css/dock.css?v=1787037491998">
-    <link rel="stylesheet" href="css/modal.css?v=1787037491998">
+    <link rel="stylesheet" href="css/variables.css?v=1787038002089">
+    <link rel="stylesheet" href="css/base.css?v=1787038002089">
+    <link rel="stylesheet" href="css/layout.css?v=1787038002089">
+    <link rel="stylesheet" href="css/components.css?v=1787038002089">
+    <link rel="stylesheet" href="css/torrents.css?v=1787038002089">
+    <link rel="stylesheet" href="css/dock.css?v=1787038002089">
+    <link rel="stylesheet" href="css/modal.css?v=1787038002089">
 </head>
 <body>
 <!-- Global Toast Container -->
@@ -417,6 +417,7 @@
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-network', this)" data-i18n="🌐 网络与连接">🌐 网络与连接</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-bittorrent', this)" data-i18n="🎯 做种与BT">🎯 做种与BT</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-security', this)" data-i18n="🛡️ 账户与安全">🛡️ 账户与安全</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-pwa', this)" data-i18n="🍏 PWA">🍏 PWA</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-logs', this)" data-i18n="📜 运行日志">📜 运行日志</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-trackers', this)" data-i18n="🌍 全局Tracker">🌍 全局Tracker</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-about', this)" data-i18n="ℹ️ 关于">ℹ️ 关于</div>
@@ -810,6 +811,101 @@
             </div>
         </div>
 
+        <!-- 6. PWA Native Capabilities Sub-Tab -->
+        <div id="sys-sub-pwa" class="sys-sub-content" style="display:none;">
+            <!-- PWA App Install & Status Hero Card -->
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, rgba(0,122,255,0.15), rgba(88,86,214,0.15)); border:1px solid var(--border);">
+                        <img src="icon.svg" style="width:34px; height:34px; border-radius:8px;" alt="Abit Logo" onerror="this.src='apple-touch-icon.png'">
+                    </div>
+                    <div>
+                        <div style="font-weight:800; font-size:16px; margin-bottom:2px;" data-i18n="Abit 渐进式 Web 原生应用">Abit 渐进式 Web 原生应用</div>
+                        <div style="font-size:12px; color:var(--text-sec);" data-i18n="基于现代 Web 规范构建的原生级 qBittorrent 客户端">基于现代 Web 规范构建的原生级 qBittorrent 客户端</div>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn" onclick="promptPwaInstall()" style="padding:8px 18px; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+                        <span>📲</span>
+                        <span data-i18n="安装到本地应用 / 桌面">安装到本地应用 / 桌面</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PWA Features Configuration Card -->
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 原生系统权限与功能配置">🍏 原生系统权限与功能配置</div>
+                
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="下载完成系统原生通知">下载完成系统原生通知</div>
+                        <div class="setting-desc" data-i18n="任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片">任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-notify" onchange="onTogglePwaNotify(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="屏幕常亮防休眠 (Wake Lock)">屏幕常亮防休眠 (Wake Lock)</div>
+                        <div class="setting-desc" data-i18n="前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载">前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-wakelock" onchange="onTogglePwaWakeLock(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="触感振动反馈 (Taptic Feedback)">触感振动反馈 (Taptic Feedback)</div>
+                        <div class="setting-desc" data-i18n="在移动设备触控交互与任务完成时提供轻微触觉反馈">在移动设备触控交互与任务完成时提供轻微触觉反馈</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-haptic" onchange="onTogglePwaHaptic(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="剪贴板磁力链接智能感知">剪贴板磁力链接智能感知</div>
+                        <div class="setting-desc" data-i18n="切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅">切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-clipboard" onchange="onTogglePwaClipboard(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="磁盘剩余容量不足预警">磁盘剩余容量不足预警</div>
+                        <div class="setting-desc" data-i18n="当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错">当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pwa-pref-diskalert" onchange="onTogglePwaDiskAlert(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div style="background:var(--card-sec); border-radius:12px; padding:14px 16px; margin-top:12px; border:1px solid var(--border-subtle);">
+                    <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:6px;" data-i18n="⚡ 已激活的系统原生能力：">⚡ 已激活的系统原生能力：</div>
+                    <div style="font-size:12px; color:var(--text-sec); line-height:1.7;">
+                        • <strong data-i18n="磁力链接协议接管 (magnet:)">磁力链接协议接管 (magnet:)</strong>：<span data-i18n="网页点击磁力链接直接唤起 Abit。">网页点击磁力链接直接唤起 Abit。</span><br>
+                        • <strong data-i18n="种子文件双击关联 (.torrent)">种子文件双击关联 (.torrent)</strong>：<span data-i18n="本地文件双击通过 Abit 快速打开。">本地文件双击通过 Abit 快速打开。</span><br>
+                        • <strong data-i18n="桌面与 Dock 动态数字角标 (App Badging)">桌面与 Dock 动态数字角标 (App Badging)</strong>：<span data-i18n="实时显示活跃下载任务数。">实时显示活跃下载任务数。</span><br>
+                        • <strong data-i18n="图标右键原生快捷菜单 (Shortcuts)">图标右键原生快捷菜单 (Shortcuts)</strong>：<span data-i18n="快速添加任务、全网搜索、全部暂停或全部恢复。">快速添加任务、全网搜索、全部暂停或全部恢复。</span><br>
+                        • <strong data-i18n="沉浸式窗口栏融合 (Window Controls Overlay)">沉浸式窗口栏融合 (Window Controls Overlay)</strong>：<span data-i18n="桌面端无边框窗口融合与拖拽移动。">桌面端无边框窗口融合与拖拽移动。</span><br>
+                        • <strong data-i18n="画中画实时速率悬浮监控 (Document PiP)">画中画实时速率悬浮监控 (Document PiP)</strong>：<span data-i18n="桌面微型悬浮看板常驻监视。">桌面微型悬浮看板常驻监视。</span><br>
+                        • <strong data-i18n="本地存储持久化保护 (StorageManager.persist)">本地存储持久化保护 (StorageManager.persist)</strong>：<span data-i18n="防止浏览器清理主题与偏好设置。">防止浏览器清理主题与偏好设置。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- System Logs Sub-Tab -->
         <div id="sys-sub-logs" class="sys-sub-content" style="display:none;">
             <div class="card">
@@ -868,79 +964,12 @@
                 </div>
             </div>
 
-            <!-- PWA Native Capabilities Card -->
-            <div class="card">
-                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 PWA 原生应用与系统能力">🍏 PWA 原生应用与系统能力</div>
-                
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-label" data-i18n="下载完成系统原生通知">下载完成系统原生通知</div>
-                        <div class="setting-desc" data-i18n="任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片">任务下载达到 100% 时向桌面/移动端发送系统级原生通知卡片</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="pwa-pref-notify" onchange="onTogglePwaNotify(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-label" data-i18n="屏幕常亮防休眠 (Wake Lock)">屏幕常亮防休眠 (Wake Lock)</div>
-                        <div class="setting-desc" data-i18n="前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载">前台运行时保持屏幕常亮，防止系统进入节能休眠中断高速下载</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="pwa-pref-wakelock" onchange="onTogglePwaWakeLock(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-label" data-i18n="触感振动反馈 (Taptic Feedback)">触感振动反馈 (Taptic Feedback)</div>
-                        <div class="setting-desc" data-i18n="在移动设备触控交互与任务完成时提供轻微触觉反馈">在移动设备触控交互与任务完成时提供轻微触觉反馈</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="pwa-pref-haptic" onchange="onTogglePwaHaptic(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-label" data-i18n="剪贴板磁力链接智能感知">剪贴板磁力链接智能感知</div>
-                        <div class="setting-desc" data-i18n="切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅">切回页面时自动检测剪贴板中的 magnet: 链接并弹出快速添加横幅</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="pwa-pref-clipboard" onchange="onTogglePwaClipboard(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-label" data-i18n="磁盘剩余容量不足预警">磁盘剩余容量不足预警</div>
-                        <div class="setting-desc" data-i18n="当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错">当下载盘剩余空间低于 5GB 时向系统发送告警通知，防止任务写满出错</div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="pwa-pref-diskalert" onchange="onTogglePwaDiskAlert(this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin-top:10px; border:1px solid var(--border-subtle);">
-                    <div style="font-size:12px; color:var(--text-sec); line-height:1.5;">
-                        <span style="font-weight:700; color:var(--text);" data-i18n="⚡ 已就绪原生集成：">⚡ 已就绪原生集成：</span>
-                        <span data-i18n="磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。">磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。</span>
-                    </div>
-                </div>
-            </div>
-
             <!-- Environment Specs Card (Moved from Security tab) -->
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1518</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.08.18-1526</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -1248,19 +1277,19 @@
 </div>
 
     <!-- Modular Application Scripts -->
-    <script src="js/vendor_jquery.min.js?v=1787037491998"></script>
-    <script src="js/vendor_chart.umd.min.js?v=1787037491998"></script>
-    <script src="js/i18n.js?v=1787037491998"></script>
-    <script src="js/constants.js?v=1787037491998"></script>
-    <script src="js/state.js?v=1787037491998"></script>
-    <script src="js/utils.js?v=1787037491998"></script>
-    <script src="js/api.js?v=1787037491998"></script>
-    <script src="js/chart.js?v=1787037491998"></script>
-    <script src="js/torrents.js?v=1787037491998"></script>
-    <script src="js/search.js?v=1787037491998"></script>
-    <script src="js/rss.js?v=1787037491998"></script>
-    <script src="js/system.js?v=1787037491998"></script>
-    <script src="js/ui.js?v=1787037491998"></script>
-    <script src="js/app.js?v=1787037491998"></script>
+    <script src="js/vendor_jquery.min.js?v=1787038002089"></script>
+    <script src="js/vendor_chart.umd.min.js?v=1787038002089"></script>
+    <script src="js/i18n.js?v=1787038002089"></script>
+    <script src="js/constants.js?v=1787038002089"></script>
+    <script src="js/state.js?v=1787038002089"></script>
+    <script src="js/utils.js?v=1787038002089"></script>
+    <script src="js/api.js?v=1787038002089"></script>
+    <script src="js/chart.js?v=1787038002089"></script>
+    <script src="js/torrents.js?v=1787038002089"></script>
+    <script src="js/search.js?v=1787038002089"></script>
+    <script src="js/rss.js?v=1787038002089"></script>
+    <script src="js/system.js?v=1787038002089"></script>
+    <script src="js/ui.js?v=1787038002089"></script>
+    <script src="js/app.js?v=1787038002089"></script>
 </body>
 </html>

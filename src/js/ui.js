@@ -105,9 +105,9 @@
         $(btn).addClass('active');
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
-        } else if (tabId === 'sys-sub-about') {
+        } else if (tabId === 'sys-sub-pwa') {
             if (typeof initPwaSettingsUI === 'function') initPwaSettingsUI();
-        } else if (tabId !== 'sys-sub-trackers') {
+        } else if (tabId !== 'sys-sub-trackers' && tabId !== 'sys-sub-about') {
             loadAllSystemPreferences();
         }
     }

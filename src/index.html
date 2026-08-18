@@ -410,6 +410,7 @@
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-network', this)" data-i18n="🌐 网络与连接">🌐 网络与连接</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-bittorrent', this)" data-i18n="🎯 做种与BT">🎯 做种与BT</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-security', this)" data-i18n="🛡️ 账户与安全">🛡️ 账户与安全</div>
+                <div class="tab-item" onclick="switchSysSubTab('sys-sub-pwa', this)" data-i18n="🍏 PWA">🍏 PWA</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-logs', this)" data-i18n="📜 运行日志">📜 运行日志</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-trackers', this)" data-i18n="🌍 全局Tracker">🌍 全局Tracker</div>
                 <div class="tab-item" onclick="switchSysSubTab('sys-sub-about', this)" data-i18n="ℹ️ 关于">ℹ️ 关于</div>
@@ -803,67 +804,30 @@
             </div>
         </div>
 
-        <!-- System Logs Sub-Tab -->
-        <div id="sys-sub-logs" class="sys-sub-content" style="display:none;">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1;">
-                        <span style="font-weight:700; font-size:15px;" data-i18n="内核实时日志">内核实时日志</span>
-                        <select class="select-custom" id="log-filter-type" onchange="filterLogEntries()" style="padding:4px 8px; font-size:12px;">
-                            <option value="all" data-i18n-opt="全部级别">全部级别</option>
-                            <option value="1" data-i18n-opt="普通 Normal">普通 Normal</option>
-                            <option value="2" data-i18n-opt="信息 Info">信息 Info</option>
-                            <option value="4" data-i18n-opt="警告 Warning">警告 Warning</option>
-                            <option value="8" data-i18n-opt="严重 Critical">严重 Critical</option>
-                        </select>
-                        <input class="input-box" id="log-search-input" data-i18n-ph="🔍 过滤日志关键字..." placeholder="🔍 过滤日志关键字..." oninput="filterLogEntries()" style="padding:4px 10px; font-size:12px; width:180px;">
+        <!-- 6. PWA Native Capabilities Sub-Tab -->
+        <div id="sys-sub-pwa" class="sys-sub-content" style="display:none;">
+            <!-- PWA App Install & Status Hero Card -->
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, rgba(0,122,255,0.15), rgba(88,86,214,0.15)); border:1px solid var(--border);">
+                        <img src="icon.svg" style="width:34px; height:34px; border-radius:8px;" alt="Abit Logo" onerror="this.src='apple-touch-icon.png'">
                     </div>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="copySystemLogs()" data-i18n="📋 复制日志">📋 复制日志</button>
-                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="fetchSystemLogs()" data-i18n="🔄 刷新">🔄 刷新</button>
+                    <div>
+                        <div style="font-weight:800; font-size:16px; margin-bottom:2px;" data-i18n="Abit 渐进式 Web 原生应用">Abit 渐进式 Web 原生应用</div>
+                        <div style="font-size:12px; color:var(--text-sec);" data-i18n="基于现代 Web 规范构建的原生级 qBittorrent 客户端">基于现代 Web 规范构建的原生级 qBittorrent 客户端</div>
                     </div>
                 </div>
-                <div id="sys-logs-container" style="max-height:480px; overflow-y:auto; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; background:var(--card-sec); border-radius:12px; padding:12px;">
-                    <span data-i18n="加载日志中...">加载日志中...</span>
+                <div>
+                    <button class="btn" onclick="promptPwaInstall()" style="padding:8px 18px; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+                        <span>📲</span>
+                        <span data-i18n="安装到本地应用 / 桌面">安装到本地应用 / 桌面</span>
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Trackers Sub-Tab -->
-        <div id="sys-sub-trackers" class="sys-sub-content" style="display:none;">
+            <!-- PWA Features Configuration Card -->
             <div class="card">
-                <div style="font-weight:700; font-size:15px; margin-bottom:8px;" data-i18n="🌐 全局批量添加 Trackers">🌐 全局批量添加 Trackers</div>
-                <div class="val-sub" style="margin-bottom:10px;" data-i18n="单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：">单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：</div>
-                <textarea class="input-box" id="global-tracker-urls" rows="5" placeholder="udp://tracker.opentrackr.org:1337/announce&#10;http://tracker.openbittorrent.com:80/announce&#10;https://tracker.tamersunion.org:443/announce" style="margin-bottom:10px; font-family:monospace; font-size:12px;"></textarea>
-                <button class="btn" onclick="submitAddTrackers(true)" data-i18n="一键为所有任务批量补充 Trackers">一键为所有任务批量补充 Trackers</button>
-            </div>
-        </div>
-
-        <!-- 8. About Sub-Tab -->
-        <div id="sys-sub-about" class="sys-sub-content" style="display:none;">
-            <!-- Brand Info Card -->
-            <div class="card" style="text-align:center; padding:28px 20px 22px 20px;">
-                <div style="display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:18px; margin-bottom:12px; background:linear-gradient(135deg, rgba(0,122,255,0.12), rgba(88,86,214,0.12)); border:1px solid var(--border);">
-                    <img src="icon.svg" style="width:44px; height:44px; border-radius:10px;" alt="Abit Logo" onerror="this.src='apple-touch-icon.png'">
-                </div>
-                <div style="font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:4px;">Abit</div>
-                <div style="font-size:13px; color:var(--text-sec); max-width:480px; margin:0 auto 16px auto;" data-i18n="精致、极速、零依赖的 Apple 风格 qBittorrent WebUI 替代界面">
-                    精致、极速、零依赖的 Apple 风格 qBittorrent WebUI 替代界面
-                </div>
-                <div style="display:inline-flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;">
-                    <a href="https://github.com/Level6me/Abit" target="_blank" rel="noopener noreferrer" class="btn secondary" style="padding:8px 16px; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                        <span data-i18n="GitHub 仓库">GitHub 仓库</span>
-                    </a>
-                    <a href="https://github.com/Level6me/Abit/releases" target="_blank" rel="noopener noreferrer" class="btn" style="padding:8px 16px; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                        <span data-i18n="检查更新">检查更新</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PWA Native Capabilities Card -->
-            <div class="card">
-                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 PWA 原生应用与系统能力">🍏 PWA 原生应用与系统能力</div>
+                <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="🍏 原生系统权限与功能配置">🍏 原生系统权限与功能配置</div>
                 
                 <div class="setting-row">
                     <div>
@@ -920,11 +884,76 @@
                     </label>
                 </div>
 
-                <div style="background:var(--card-sec); border-radius:12px; padding:12px 14px; margin-top:10px; border:1px solid var(--border-subtle);">
-                    <div style="font-size:12px; color:var(--text-sec); line-height:1.5;">
-                        <span style="font-weight:700; color:var(--text);" data-i18n="⚡ 已就绪原生集成：">⚡ 已就绪原生集成：</span>
-                        <span data-i18n="磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。">磁力链接协议关联 (magnet:)、右键 Dock 快捷动作、.torrent 文件双击打开与桌面应用动态数字角标。</span>
+                <div style="background:var(--card-sec); border-radius:12px; padding:14px 16px; margin-top:12px; border:1px solid var(--border-subtle);">
+                    <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:6px;" data-i18n="⚡ 已激活的系统原生能力：">⚡ 已激活的系统原生能力：</div>
+                    <div style="font-size:12px; color:var(--text-sec); line-height:1.7;">
+                        • <strong data-i18n="磁力链接协议接管 (magnet:)">磁力链接协议接管 (magnet:)</strong>：<span data-i18n="网页点击磁力链接直接唤起 Abit。">网页点击磁力链接直接唤起 Abit。</span><br>
+                        • <strong data-i18n="种子文件双击关联 (.torrent)">种子文件双击关联 (.torrent)</strong>：<span data-i18n="本地文件双击通过 Abit 快速打开。">本地文件双击通过 Abit 快速打开。</span><br>
+                        • <strong data-i18n="桌面与 Dock 动态数字角标 (App Badging)">桌面与 Dock 动态数字角标 (App Badging)</strong>：<span data-i18n="实时显示活跃下载任务数。">实时显示活跃下载任务数。</span><br>
+                        • <strong data-i18n="图标右键原生快捷菜单 (Shortcuts)">图标右键原生快捷菜单 (Shortcuts)</strong>：<span data-i18n="快速添加任务、全网搜索、全部暂停或全部恢复。">快速添加任务、全网搜索、全部暂停或全部恢复。</span><br>
+                        • <strong data-i18n="沉浸式窗口栏融合 (Window Controls Overlay)">沉浸式窗口栏融合 (Window Controls Overlay)</strong>：<span data-i18n="桌面端无边框窗口融合与拖拽移动。">桌面端无边框窗口融合与拖拽移动。</span><br>
+                        • <strong data-i18n="画中画实时速率悬浮监控 (Document PiP)">画中画实时速率悬浮监控 (Document PiP)</strong>：<span data-i18n="桌面微型悬浮看板常驻监视。">桌面微型悬浮看板常驻监视。</span><br>
+                        • <strong data-i18n="本地存储持久化保护 (StorageManager.persist)">本地存储持久化保护 (StorageManager.persist)</strong>：<span data-i18n="防止浏览器清理主题与偏好设置。">防止浏览器清理主题与偏好设置。</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Sub-Tab -->
+        <div id="sys-sub-logs" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; flex:1;">
+                        <span style="font-weight:700; font-size:15px;" data-i18n="内核实时日志">内核实时日志</span>
+                        <select class="select-custom" id="log-filter-type" onchange="filterLogEntries()" style="padding:4px 8px; font-size:12px;">
+                            <option value="all" data-i18n-opt="全部级别">全部级别</option>
+                            <option value="1" data-i18n-opt="普通 Normal">普通 Normal</option>
+                            <option value="2" data-i18n-opt="信息 Info">信息 Info</option>
+                            <option value="4" data-i18n-opt="警告 Warning">警告 Warning</option>
+                            <option value="8" data-i18n-opt="严重 Critical">严重 Critical</option>
+                        </select>
+                        <input class="input-box" id="log-search-input" data-i18n-ph="🔍 过滤日志关键字..." placeholder="🔍 过滤日志关键字..." oninput="filterLogEntries()" style="padding:4px 10px; font-size:12px; width:180px;">
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="copySystemLogs()" data-i18n="📋 复制日志">📋 复制日志</button>
+                        <button class="btn secondary" style="padding:6px 12px; font-size:12px;" onclick="fetchSystemLogs()" data-i18n="🔄 刷新">🔄 刷新</button>
+                    </div>
+                </div>
+                <div id="sys-logs-container" style="max-height:480px; overflow-y:auto; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; background:var(--card-sec); border-radius:12px; padding:12px;">
+                    <span data-i18n="加载日志中...">加载日志中...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trackers Sub-Tab -->
+        <div id="sys-sub-trackers" class="sys-sub-content" style="display:none;">
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:8px;" data-i18n="🌐 全局批量添加 Trackers">🌐 全局批量添加 Trackers</div>
+                <div class="val-sub" style="margin-bottom:10px;" data-i18n="单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：">单次批量向当前所有种子任务注入最新可用 Tracker 列表（支持换行隔开多个 URL）：</div>
+                <textarea class="input-box" id="global-tracker-urls" rows="5" placeholder="udp://tracker.opentrackr.org:1337/announce&#10;http://tracker.openbittorrent.com:80/announce&#10;https://tracker.tamersunion.org:443/announce" style="margin-bottom:10px; font-family:monospace; font-size:12px;"></textarea>
+                <button class="btn" onclick="submitAddTrackers(true)" data-i18n="一键为所有任务批量补充 Trackers">一键为所有任务批量补充 Trackers</button>
+            </div>
+        </div>
+
+        <!-- 8. About Sub-Tab -->
+        <div id="sys-sub-about" class="sys-sub-content" style="display:none;">
+            <!-- Brand Info Card -->
+            <div class="card" style="text-align:center; padding:28px 20px 22px 20px;">
+                <div style="display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:18px; margin-bottom:12px; background:linear-gradient(135deg, rgba(0,122,255,0.12), rgba(88,86,214,0.12)); border:1px solid var(--border);">
+                    <img src="icon.svg" style="width:44px; height:44px; border-radius:10px;" alt="Abit Logo" onerror="this.src='apple-touch-icon.png'">
+                </div>
+                <div style="font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:4px;">Abit</div>
+                <div style="font-size:13px; color:var(--text-sec); max-width:480px; margin:0 auto 16px auto;" data-i18n="精致、极速、零依赖的 Apple 风格 qBittorrent WebUI 替代界面">
+                    精致、极速、零依赖的 Apple 风格 qBittorrent WebUI 替代界面
+                </div>
+                <div style="display:inline-flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;">
+                    <a href="https://github.com/Level6me/Abit" target="_blank" rel="noopener noreferrer" class="btn secondary" style="padding:8px 16px; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                        <span data-i18n="GitHub 仓库">GitHub 仓库</span>
+                    </a>
+                    <a href="https://github.com/Level6me/Abit/releases" target="_blank" rel="noopener noreferrer" class="btn" style="padding:8px 16px; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                        <span data-i18n="检查更新">检查更新</span>
+                    </a>
                 </div>
             </div>
 
