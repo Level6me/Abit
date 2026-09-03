@@ -371,3 +371,25 @@
             showToast(window.t('低磁盘空间预警已关闭'));
         }
     }
+
+    function forceClearPwaCache() {
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                return Promise.all(names.map(function(name) { return caches.delete(name); }));
+            }).then(function() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        for (let reg of regs) reg.unregister();
+                    });
+                }
+                showToast(window.t('正在强制清除旧缓存并同步最新版本...'));
+                setTimeout(function() {
+                    window.location.reload(true);
+                }, 500);
+            }).catch(function() {
+                window.location.reload(true);
+            });
+        } else {
+            window.location.reload(true);
+        }
+    }

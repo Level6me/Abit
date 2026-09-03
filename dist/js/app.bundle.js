@@ -732,8 +732,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.03-1853';
-const APP_BUILD_TIME = '2026-09-03 18:53:09';
+const APP_VERSION = 'v2026.09.03-1903';
+const APP_BUILD_TIME = '2026-09-03 19:03:45';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3481,6 +3481,28 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             showToast(window.t('⚠️ 低磁盘空间系统预警已开启'));
         } else {
             showToast(window.t('低磁盘空间预警已关闭'));
+        }
+    }
+
+    function forceClearPwaCache() {
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                return Promise.all(names.map(function(name) { return caches.delete(name); }));
+            }).then(function() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        for (let reg of regs) reg.unregister();
+                    });
+                }
+                showToast(window.t('正在强制清除旧缓存并同步最新版本...'));
+                setTimeout(function() {
+                    window.location.reload(true);
+                }, 500);
+            }).catch(function() {
+                window.location.reload(true);
+            });
+        } else {
+            window.location.reload(true);
         }
     }
 

@@ -2261,7 +2261,11 @@ input:checked + .slider:before { transform: translateX(20px); }
                         • <strong data-i18n="沉浸式窗口栏融合 (Window Controls Overlay)">沉浸式窗口栏融合 (Window Controls Overlay)</strong>：<span data-i18n="桌面端无边框窗口融合与拖拽移动。">桌面端无边框窗口融合与拖拽移动。</span><br>
                         • <strong data-i18n="画中画实时速率悬浮监控 (Document PiP)">画中画实时速率悬浮监控 (Document PiP)</strong>：<span data-i18n="桌面微型悬浮看板常驻监视。">桌面微型悬浮看板常驻监视。</span><br>
                         • <strong data-i18n="本地存储持久化保护 (StorageManager.persist)">本地存储持久化保护 (StorageManager.persist)</strong>：<span data-i18n="防止浏览器清理主题与偏好设置。">防止浏览器清理主题与偏好设置。</span>
-                    </div>
+                </div>
+                <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn secondary" onclick="forceClearPwaCache()" style="font-size:12px; padding:7px 14px;" data-i18n-title="清除本地旧缓存并强制重新同步最新代码">
+                        <span data-i18n="🧹 清除本地旧缓存并强制同步最新代码">🧹 清除本地旧缓存并强制同步最新代码</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -2329,7 +2333,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1853</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1903</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -3372,8 +3376,8 @@ input:checked + .slider:before { transform: translateX(20px); }
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.03-1853';
-const APP_BUILD_TIME = '2026-09-03 18:53:09';
+const APP_VERSION = 'v2026.09.03-1903';
+const APP_BUILD_TIME = '2026-09-03 19:03:45';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -6121,6 +6125,28 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             showToast(window.t('⚠️ 低磁盘空间系统预警已开启'));
         } else {
             showToast(window.t('低磁盘空间预警已关闭'));
+        }
+    }
+
+    function forceClearPwaCache() {
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                return Promise.all(names.map(function(name) { return caches.delete(name); }));
+            }).then(function() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        for (let reg of regs) reg.unregister();
+                    });
+                }
+                showToast(window.t('正在强制清除旧缓存并同步最新版本...'));
+                setTimeout(function() {
+                    window.location.reload(true);
+                }, 500);
+            }).catch(function() {
+                window.location.reload(true);
+            });
+        } else {
+            window.location.reload(true);
         }
     }
 

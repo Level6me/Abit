@@ -81,6 +81,17 @@ function build() {
         }
     }
 
+    // Update sw.js with cache busting version
+    const srcSwPath = path.join(SRC_DIR, 'sw.js');
+    if (fs.existsSync(srcSwPath)) {
+        let swContent = fs.readFileSync(srcSwPath, 'utf8');
+        swContent = swContent.replace(/const CACHE_NAME = ['"][^'"]*['"];/, `const CACHE_NAME = 'abit-pwa-${versionStr}';`);
+        fs.writeFileSync(srcSwPath, swContent);
+        fs.writeFileSync(path.join(ROOT_DIR, 'sw.js'), swContent);
+        fs.writeFileSync(path.join(DIST_DIR, 'sw.js'), swContent);
+        fs.writeFileSync(path.join(PUBLIC_DIR, 'sw.js'), swContent);
+    }
+
     // Ensure output directories exist
     [DIST_DIR, path.join(DIST_DIR, 'css'), path.join(DIST_DIR, 'js'), PUBLIC_DIR].forEach(dir => {
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
