@@ -551,28 +551,38 @@ input:checked + .slider:before { transform: translateX(20px); }
     bottom: 84px;
     right: 20px;
     z-index: 9998;
-    background: rgba(24, 24, 28, 0.78);
+    background: var(--card-translucent, rgba(255, 255, 255, 0.88));
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 14px;
-    padding: 8px 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    min-width: 170px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
     user-select: none;
     animation: bannerSlideDown 0.25s ease;
 }
+.mini-hud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.mini-hud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+}
 .mini-hud-speed {
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 800;
 }
 
 /* Mini Standalone Window Mode (?mode=mini) */
 body.mini-mode {
-    background: rgba(20, 20, 24, 0.85) !important;
-    backdrop-filter: blur(28px) !important;
-    -webkit-backdrop-filter: blur(28px) !important;
+    background: var(--card, #ffffff) !important;
     overflow: hidden !important;
     user-select: none !important;
     margin: 0 !important;
@@ -593,8 +603,8 @@ body.mini-mode #mini-standalone-hud {
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
-    padding: 9px 12px;
+    padding: 12px 14px;
     box-sizing: border-box;
-    color: #fff;
-    background: rgba(20, 20, 24, 0.85);
+    color: var(--text, #1c1c1e);
+    background: var(--card, #ffffff);
 }

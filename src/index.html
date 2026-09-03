@@ -46,46 +46,36 @@
 
 <!-- Floating Mini Speed HUD (Picture-in-Picture Fallback) -->
 <div id="mini-pip-floating-hud" class="mini-floating-hud" style="display:none;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <div style="display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--text-sec);">
-            <span style="width:6px; height:6px; border-radius:50%; background:var(--success); display:inline-block; box-shadow:0 0 6px var(--success);"></span>
-            <span>Abit</span>
-        </div>
+    <div class="mini-hud-header">
+        <span style="font-weight:800; font-size:10px; letter-spacing:0.5px; color:var(--text-sec);">🍏 ABIT MONITOR</span>
         <div style="display:flex; align-items:center; gap:6px;">
-            <span id="mini-hud-cnt" style="font-size:10px; font-weight:600; padding:1px 6px; border-radius:8px; background:var(--border); color:var(--text-sec);">--</span>
-            <button class="icon-btn" onclick="togglePictureInPictureMonitor()" style="width:16px; height:16px; font-size:9px; padding:0; line-height:1;">✖</button>
+            <span id="mini-hud-cnt" style="font-size:10px; font-weight:700; color:var(--accent);">0 任务</span>
+            <button class="icon-btn" onclick="togglePictureInPictureMonitor()" style="width:18px; height:18px; font-size:10px; padding:0; line-height:1;">✖</button>
         </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-        <div style="display:flex; align-items:baseline; gap:3px;">
-            <span style="font-size:11px; font-weight:800; color:var(--success);">↓</span>
-            <span class="mini-hud-speed" id="mini-hud-dl" style="color:var(--success); font-size:13px;">0 B/s</span>
-        </div>
-        <div style="display:flex; align-items:baseline; gap:3px;">
-            <span style="font-size:11px; font-weight:800; color:var(--accent);">↑</span>
-            <span class="mini-hud-speed" id="mini-hud-up" style="color:var(--accent); font-size:13px;">0 B/s</span>
-        </div>
+    <div class="mini-hud-row">
+        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↓ 下载">↓ 下载</span>
+        <span class="mini-hud-speed" id="mini-hud-dl" style="color:var(--success);">0 B/s</span>
+    </div>
+    <div class="mini-hud-row">
+        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↑ 上传">↑ 上传</span>
+        <span class="mini-hud-speed" id="mini-hud-up" style="color:var(--accent);">0 B/s</span>
     </div>
 </div>
 
 <!-- Standalone Mini Window HUD Container (?mode=mini) -->
 <div id="mini-standalone-hud" style="display:none;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <div style="display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:rgba(255,255,255,0.75);">
-            <span style="width:6px; height:6px; border-radius:50%; background:#30d158; display:inline-block; box-shadow:0 0 6px rgba(48,209,88,0.6);"></span>
-            <span>Abit</span>
-        </div>
-        <span id="mini-win-cnt" style="font-size:10px; font-weight:600; padding:1px 6px; border-radius:8px; background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.7);">0 任务</span>
+    <div class="mini-hud-header">
+        <span style="font-weight:800; font-size:10px; letter-spacing:0.5px; color:var(--text-sec);">🍏 ABIT MONITOR</span>
+        <span id="mini-win-cnt" style="font-size:10px; font-weight:700; color:var(--accent);">0 任务</span>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <div style="display:flex; align-items:baseline; gap:3px;">
-            <span style="font-size:11px; font-weight:800; color:#30d158;">↓</span>
-            <span style="font-size:15px; font-weight:800; color:#30d158; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:-0.5px;" id="mini-win-dl">0 B/s</span>
-        </div>
-        <div style="display:flex; align-items:baseline; gap:3px;">
-            <span style="font-size:11px; font-weight:800; color:#0a84ff;">↑</span>
-            <span style="font-size:15px; font-weight:800; color:#0a84ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:-0.5px;" id="mini-win-up">0 B/s</span>
-        </div>
+    <div class="mini-hud-row">
+        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↓ 下载">↓ 下载</span>
+        <span class="mini-hud-speed" id="mini-win-dl" style="color:var(--success); font-size:15px;">0 B/s</span>
+    </div>
+    <div class="mini-hud-row">
+        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↑ 上传">↑ 上传</span>
+        <span class="mini-hud-speed" id="mini-win-up" style="color:var(--accent); font-size:15px;">0 B/s</span>
     </div>
 </div>
 <script>

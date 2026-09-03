@@ -18,6 +18,7 @@
     --purple: #af52de;
     --purple-bg: rgba(175,82,222,0.12);
     --dock: rgba(255,255,255,0.85);
+    --card-translucent: rgba(255, 255, 255, 0.88);
     --border: rgba(120,120,128,0.15);
     --border-subtle: rgba(120,120,128,0.08);
     --modal-bg: rgba(255,255,255,0.95);
@@ -38,6 +39,7 @@
         --text-ter: #636366;
         --accent-bg: rgba(0,122,255,0.18);
         --dock: rgba(28,28,30,0.88);
+        --card-translucent: rgba(28, 28, 30, 0.88);
         --border: rgba(255,255,255,0.12);
         --border-subtle: rgba(255,255,255,0.06);
         --modal-bg: rgba(28,28,30,0.96);
