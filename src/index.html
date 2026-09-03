@@ -63,6 +63,27 @@
     </div>
 </div>
 
+<!-- Standalone Mini Window HUD Container (?mode=mini) -->
+<div id="mini-standalone-hud" style="display:none;">
+    <div style="font-size:11px; font-weight:800; color:#8e8e93; display:flex; justify-content:space-between; text-transform:uppercase; letter-spacing:0.5px;">
+        <span>🍏 ABIT SPEED</span><span id="mini-win-cnt" style="color:var(--accent);">--</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:10px;">
+        <span style="font-size:12px; font-weight:600; color:#a1a1a6;" data-i18n="↓ 下载速率">↓ 下载速率</span>
+        <span style="font-size:22px; font-weight:800; color:#30d158; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" id="mini-win-dl">0 B/s</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:6px;">
+        <span style="font-size:12px; font-weight:600; color:#a1a1a6;" data-i18n="↑ 上传速率">↑ 上传速率</span>
+        <span style="font-size:22px; font-weight:800; color:#0a84ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" id="mini-win-up">0 B/s</span>
+    </div>
+</div>
+<script>
+    if (window.location.search.indexOf('mode=mini') !== -1) {
+        document.body.classList.add('mini-mode');
+        document.title = 'Abit 实时速率';
+    }
+</script>
+
 <!-- Drag and drop full window overlay -->
 <div class="drag-overlay" id="drag-overlay">
     <div data-i18n="📥 松开鼠标以添加 Torrent 种子文件">📥 松开鼠标以添加 Torrent 种子文件</div>

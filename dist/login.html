@@ -1009,6 +1009,35 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-weight: 800;
 }
 
+/* Mini Standalone Window Mode (?mode=mini) */
+body.mini-mode {
+    background: #1c1c1e !important;
+    overflow: hidden !important;
+    user-select: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100vh !important;
+}
+body.mini-mode header,
+body.mini-mode .dock-bar,
+body.mini-mode .tab-content,
+body.mini-mode .drag-overlay,
+body.mini-mode #mini-pip-floating-hud,
+body.mini-mode .modal,
+body.mini-mode .bottom-spacer {
+    display: none !important;
+}
+body.mini-mode #mini-standalone-hud {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 14px 18px;
+    box-sizing: border-box;
+    color: #fff;
+    background: #1c1c1e;
+}
+
 /* --- [Module: torrents.css] --- */
 /* Batch Action Floating Bar */
 .batch-bar {
@@ -1386,6 +1415,27 @@ input:checked + .slider:before { transform: translateX(20px); }
         <span class="mini-hud-speed" id="mini-hud-up" style="color:var(--accent);">0 B/s</span>
     </div>
 </div>
+
+<!-- Standalone Mini Window HUD Container (?mode=mini) -->
+<div id="mini-standalone-hud" style="display:none;">
+    <div style="font-size:11px; font-weight:800; color:#8e8e93; display:flex; justify-content:space-between; text-transform:uppercase; letter-spacing:0.5px;">
+        <span>🍏 ABIT SPEED</span><span id="mini-win-cnt" style="color:var(--accent);">--</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:10px;">
+        <span style="font-size:12px; font-weight:600; color:#a1a1a6;" data-i18n="↓ 下载速率">↓ 下载速率</span>
+        <span style="font-size:22px; font-weight:800; color:#30d158; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" id="mini-win-dl">0 B/s</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:6px;">
+        <span style="font-size:12px; font-weight:600; color:#a1a1a6;" data-i18n="↑ 上传速率">↑ 上传速率</span>
+        <span style="font-size:22px; font-weight:800; color:#0a84ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" id="mini-win-up">0 B/s</span>
+    </div>
+</div>
+<script>
+    if (window.location.search.indexOf('mode=mini') !== -1) {
+        document.body.classList.add('mini-mode');
+        document.title = 'Abit 实时速率';
+    }
+</script>
 
 <!-- Drag and drop full window overlay -->
 <div class="drag-overlay" id="drag-overlay">
@@ -2333,7 +2383,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1903</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1912</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -3376,8 +3426,8 @@ input:checked + .slider:before { transform: translateX(20px); }
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.03-1903';
-const APP_BUILD_TIME = '2026-09-03 19:03:45';
+const APP_VERSION = 'v2026.09.03-1912';
+const APP_BUILD_TIME = '2026-09-03 19:12:39';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3934,46 +3984,15 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             }
         }
 
-        // 2. 次选：Safari macOS / Firefox 原生 Canvas 视频流画中画 (系统全局置顶悬浮)
-        if (document.pictureInPictureEnabled || (pipVideoElement && pipVideoElement.webkitSupportsPresentationMode && pipVideoElement.webkitSupportsPresentationMode('picture-in-picture'))) {
-            if (document.pictureInPictureElement) {
-                try { await document.exitPictureInPicture(); } catch(e) {}
+        // 2. 次选：非 Chromium 环境（如 Safari Web App）打开独立的桌面迷你测速小窗
+        try {
+            const miniWin = window.open('./?mode=mini', 'AbitMiniHUD', 'width=300,height=160,menubar=no,toolbar=no,location=no,status=no,resizable=no');
+            if (miniWin && !miniWin.closed) {
+                showToast(window.t('已开启独立桌面微型测速小窗'));
                 return;
             }
-            try {
-                if (!pipCanvasElement) {
-                    pipCanvasElement = document.createElement('canvas');
-                    pipCanvasElement.width = 320;
-                    pipCanvasElement.height = 160;
-                    pipCanvasCtx = pipCanvasElement.getContext('2d');
-                }
-                drawPipCanvas('0 B/s', '0 B/s', 0);
-
-                if (!pipVideoElement) {
-                    pipVideoElement = document.createElement('video');
-                    pipVideoElement.muted = true;
-                    pipVideoElement.autoplay = true;
-                    pipVideoElement.playsInline = true;
-                    pipVideoElement.style.position = 'fixed';
-                    pipVideoElement.style.top = '-9999px';
-                    pipVideoElement.style.left = '-9999px';
-                    pipVideoElement.style.width = '1px';
-                    pipVideoElement.style.height = '1px';
-                    pipVideoElement.style.opacity = '0';
-                    document.body.appendChild(pipVideoElement);
-                }
-
-                const stream = pipCanvasElement.captureStream ? pipCanvasElement.captureStream(10) : (pipCanvasElement.mozCaptureStream ? pipCanvasElement.mozCaptureStream(10) : null);
-                if (stream) {
-                    pipVideoElement.srcObject = stream;
-                    await pipVideoElement.play();
-                    await pipVideoElement.requestPictureInPicture();
-                    showToast(window.t('已开启画中画速率悬浮监控 (系统全局置顶)'));
-                    return;
-                }
-            } catch (err) {
-                console.debug('[Abit] Canvas Video PiP request failed, falling back to In-Page HUD:', err);
-            }
+        } catch (err) {
+            console.debug('[Abit] Open standalone mini window failed:', err);
         }
 
         // 3. 兜底：页内迷你悬浮看板 (仅限页面内)
@@ -4019,6 +4038,14 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             if (dlStr) $('#mini-hud-dl').text(dlStr);
             if (upStr) $('#mini-hud-up').text(upStr);
             if (activeCnt !== undefined) $('#mini-hud-cnt').text(`${activeCnt} 任务`);
+        }
+
+        // 4. 更新独立桌面小窗 HUD (?mode=mini)
+        const standaloneHud = $('#mini-standalone-hud');
+        if (standaloneHud.length > 0 && standaloneHud.is(':visible')) {
+            if (dlStr) $('#mini-win-dl').text(dlStr);
+            if (upStr) $('#mini-win-up').text(upStr);
+            if (activeCnt !== undefined) $('#mini-win-cnt').text(`${activeCnt} 任务`);
         }
     }
 

@@ -487,46 +487,15 @@
             }
         }
 
-        // 2. 次选：Safari macOS / Firefox 原生 Canvas 视频流画中画 (系统全局置顶悬浮)
-        if (document.pictureInPictureEnabled || (pipVideoElement && pipVideoElement.webkitSupportsPresentationMode && pipVideoElement.webkitSupportsPresentationMode('picture-in-picture'))) {
-            if (document.pictureInPictureElement) {
-                try { await document.exitPictureInPicture(); } catch(e) {}
+        // 2. 次选：非 Chromium 环境（如 Safari Web App）打开独立的桌面迷你测速小窗
+        try {
+            const miniWin = window.open('./?mode=mini', 'AbitMiniHUD', 'width=300,height=160,menubar=no,toolbar=no,location=no,status=no,resizable=no');
+            if (miniWin && !miniWin.closed) {
+                showToast(window.t('已开启独立桌面微型测速小窗'));
                 return;
             }
-            try {
-                if (!pipCanvasElement) {
-                    pipCanvasElement = document.createElement('canvas');
-                    pipCanvasElement.width = 320;
-                    pipCanvasElement.height = 160;
-                    pipCanvasCtx = pipCanvasElement.getContext('2d');
-                }
-                drawPipCanvas('0 B/s', '0 B/s', 0);
-
-                if (!pipVideoElement) {
-                    pipVideoElement = document.createElement('video');
-                    pipVideoElement.muted = true;
-                    pipVideoElement.autoplay = true;
-                    pipVideoElement.playsInline = true;
-                    pipVideoElement.style.position = 'fixed';
-                    pipVideoElement.style.top = '-9999px';
-                    pipVideoElement.style.left = '-9999px';
-                    pipVideoElement.style.width = '1px';
-                    pipVideoElement.style.height = '1px';
-                    pipVideoElement.style.opacity = '0';
-                    document.body.appendChild(pipVideoElement);
-                }
-
-                const stream = pipCanvasElement.captureStream ? pipCanvasElement.captureStream(10) : (pipCanvasElement.mozCaptureStream ? pipCanvasElement.mozCaptureStream(10) : null);
-                if (stream) {
-                    pipVideoElement.srcObject = stream;
-                    await pipVideoElement.play();
-                    await pipVideoElement.requestPictureInPicture();
-                    showToast(window.t('已开启画中画速率悬浮监控 (系统全局置顶)'));
-                    return;
-                }
-            } catch (err) {
-                console.debug('[Abit] Canvas Video PiP request failed, falling back to In-Page HUD:', err);
-            }
+        } catch (err) {
+            console.debug('[Abit] Open standalone mini window failed:', err);
         }
 
         // 3. 兜底：页内迷你悬浮看板 (仅限页面内)
@@ -572,6 +541,14 @@
             if (dlStr) $('#mini-hud-dl').text(dlStr);
             if (upStr) $('#mini-hud-up').text(upStr);
             if (activeCnt !== undefined) $('#mini-hud-cnt').text(`${activeCnt} 任务`);
+        }
+
+        // 4. 更新独立桌面小窗 HUD (?mode=mini)
+        const standaloneHud = $('#mini-standalone-hud');
+        if (standaloneHud.length > 0 && standaloneHud.is(':visible')) {
+            if (dlStr) $('#mini-win-dl').text(dlStr);
+            if (upStr) $('#mini-win-up').text(upStr);
+            if (activeCnt !== undefined) $('#mini-win-cnt').text(`${activeCnt} 任务`);
         }
     }
 

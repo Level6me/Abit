@@ -983,6 +983,35 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-weight: 800;
 }
 
+/* Mini Standalone Window Mode (?mode=mini) */
+body.mini-mode {
+    background: #1c1c1e !important;
+    overflow: hidden !important;
+    user-select: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100vh !important;
+}
+body.mini-mode header,
+body.mini-mode .dock-bar,
+body.mini-mode .tab-content,
+body.mini-mode .drag-overlay,
+body.mini-mode #mini-pip-floating-hud,
+body.mini-mode .modal,
+body.mini-mode .bottom-spacer {
+    display: none !important;
+}
+body.mini-mode #mini-standalone-hud {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 14px 18px;
+    box-sizing: border-box;
+    color: #fff;
+    background: #1c1c1e;
+}
+
 /* --- [Module: torrents.css] --- */
 /* Batch Action Floating Bar */
 .batch-bar {
