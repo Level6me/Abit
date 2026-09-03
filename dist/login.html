@@ -980,38 +980,28 @@ input:checked + .slider:before { transform: translateX(20px); }
     bottom: 84px;
     right: 20px;
     z-index: 9998;
-    background: var(--card-translucent);
+    background: rgba(24, 24, 28, 0.78);
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 12px 14px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
-    min-width: 180px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    padding: 8px 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    min-width: 170px;
     user-select: none;
     animation: bannerSlideDown 0.25s ease;
 }
-.mini-hud-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-.mini-hud-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 4px;
-}
 .mini-hud-speed {
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
 }
 
 /* Mini Standalone Window Mode (?mode=mini) */
 body.mini-mode {
-    background: #1c1c1e !important;
+    background: rgba(20, 20, 24, 0.85) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
     overflow: hidden !important;
     user-select: none !important;
     margin: 0 !important;
@@ -1032,10 +1022,10 @@ body.mini-mode #mini-standalone-hud {
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
-    padding: 14px 18px;
+    padding: 9px 12px;
     box-sizing: border-box;
     color: #fff;
-    background: #1c1c1e;
+    background: rgba(20, 20, 24, 0.85);
 }
 
 /* --- [Module: torrents.css] --- */
@@ -1399,35 +1389,46 @@ body.mini-mode #mini-standalone-hud {
 
 <!-- Floating Mini Speed HUD (Picture-in-Picture Fallback) -->
 <div id="mini-pip-floating-hud" class="mini-floating-hud" style="display:none;">
-    <div class="mini-hud-header">
-        <span style="font-weight:800; font-size:10px; letter-spacing:0.5px; color:var(--text-sec);">🍏 ABIT MONITOR</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div style="display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--text-sec);">
+            <span style="width:6px; height:6px; border-radius:50%; background:var(--success); display:inline-block; box-shadow:0 0 6px var(--success);"></span>
+            <span>Abit</span>
+        </div>
         <div style="display:flex; align-items:center; gap:6px;">
-            <span id="mini-hud-cnt" style="font-size:10px; font-weight:700; color:var(--accent);">--</span>
-            <button class="icon-btn" onclick="togglePictureInPictureMonitor()" style="width:18px; height:18px; font-size:10px; padding:0; line-height:1;">✖</button>
+            <span id="mini-hud-cnt" style="font-size:10px; font-weight:600; padding:1px 6px; border-radius:8px; background:var(--border); color:var(--text-sec);">--</span>
+            <button class="icon-btn" onclick="togglePictureInPictureMonitor()" style="width:16px; height:16px; font-size:9px; padding:0; line-height:1;">✖</button>
         </div>
     </div>
-    <div class="mini-hud-row">
-        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↓ 下载">↓ 下载</span>
-        <span class="mini-hud-speed" id="mini-hud-dl" style="color:var(--success);">0 B/s</span>
-    </div>
-    <div class="mini-hud-row">
-        <span style="font-size:11px; color:var(--text-sec);" data-i18n="↑ 上传">↑ 上传</span>
-        <span class="mini-hud-speed" id="mini-hud-up" style="color:var(--accent);">0 B/s</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:baseline; gap:3px;">
+            <span style="font-size:11px; font-weight:800; color:var(--success);">↓</span>
+            <span class="mini-hud-speed" id="mini-hud-dl" style="color:var(--success); font-size:13px;">0 B/s</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:3px;">
+            <span style="font-size:11px; font-weight:800; color:var(--accent);">↑</span>
+            <span class="mini-hud-speed" id="mini-hud-up" style="color:var(--accent); font-size:13px;">0 B/s</span>
+        </div>
     </div>
 </div>
 
 <!-- Standalone Mini Window HUD Container (?mode=mini) -->
 <div id="mini-standalone-hud" style="display:none;">
-    <div style="font-size:11px; font-weight:800; color:#8e8e93; display:flex; justify-content:space-between; text-transform:uppercase; letter-spacing:0.5px;">
-        <span>🍏 ABIT SPEED</span><span id="mini-win-cnt" style="color:var(--accent);">--</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div style="display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:rgba(255,255,255,0.75);">
+            <span style="width:6px; height:6px; border-radius:50%; background:#30d158; display:inline-block; box-shadow:0 0 6px rgba(48,209,88,0.6);"></span>
+            <span>Abit</span>
+        </div>
+        <span id="mini-win-cnt" style="font-size:10px; font-weight:600; padding:1px 6px; border-radius:8px; background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.7);">0 任务</span>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:10px;">
-        <span style="font-size:12px; font-weight:600; color:#a1a1a6;" data-i18n="↓ 下载速率">↓ 下载速率</span>
-        <span style="font-size:22px; font-weight:800; color:#30d158; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" id="mini-win-dl">0 B/s</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:6px;">
-        <span style="font-size:12px; font-weight:600; color:#a1a1a6;" data-i18n="↑ 上传速率">↑ 上传速率</span>
-        <span style="font-size:22px; font-weight:800; color:#0a84ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" id="mini-win-up">0 B/s</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:baseline; gap:3px;">
+            <span style="font-size:11px; font-weight:800; color:#30d158;">↓</span>
+            <span style="font-size:15px; font-weight:800; color:#30d158; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:-0.5px;" id="mini-win-dl">0 B/s</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:3px;">
+            <span style="font-size:11px; font-weight:800; color:#0a84ff;">↑</span>
+            <span style="font-size:15px; font-weight:800; color:#0a84ff; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:-0.5px;" id="mini-win-up">0 B/s</span>
+        </div>
     </div>
 </div>
 <script>
@@ -2383,7 +2384,7 @@ body.mini-mode #mini-standalone-hud {
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1912</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1920</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -3426,8 +3427,8 @@ body.mini-mode #mini-standalone-hud {
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.03-1912';
-const APP_BUILD_TIME = '2026-09-03 19:12:39';
+const APP_VERSION = 'v2026.09.03-1920';
+const APP_BUILD_TIME = '2026-09-03 19:20:58';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3942,18 +3943,20 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             }
             try {
                 pipWindowInstance = await window.documentPictureInPicture.requestWindow({
-                    width: 280,
-                    height: 140
+                    width: 220,
+                    height: 75
                 });
                 const pipDoc = pipWindowInstance.document;
                 pipDoc.title = 'Abit 实时速率';
                 const style = pipDoc.createElement('style');
                 style.textContent = `
-                    * { box-sizing: border-box; }
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
                     body {
                         margin: 0;
-                        padding: 14px;
-                        background: #1c1c1e;
+                        padding: 9px 12px;
+                        background: rgba(20, 20, 24, 0.85);
+                        backdrop-filter: blur(28px);
+                        -webkit-backdrop-filter: blur(28px);
                         color: #ffffff;
                         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
                         user-select: none;
@@ -3962,17 +3965,84 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                         justify-content: space-between;
                         height: 100vh;
                     }
-                    .pip-header { font-size: 10px; font-weight: 800; color: #8e8e93; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.5px; }
-                    .pip-row { display: flex; justify-content: space-between; align-items: baseline; }
-                    .pip-label { font-size: 11px; font-weight: 600; color: #a1a1a6; }
-                    .pip-speed-dl { font-size: 17px; font-weight: 800; color: #30d158; font-family: ui-monospace, SFMono-Regular, monospace; }
-                    .pip-speed-up { font-size: 17px; font-weight: 800; color: #0a84ff; font-family: ui-monospace, SFMono-Regular, monospace; }
+                    .pip-top {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .pip-brand {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        font-size: 11px;
+                        font-weight: 700;
+                        letter-spacing: 0.3px;
+                        color: rgba(255, 255, 255, 0.75);
+                    }
+                    .pip-dot {
+                        width: 6px;
+                        height: 6px;
+                        border-radius: 50%;
+                        background: #30d158;
+                        box-shadow: 0 0 6px rgba(48, 209, 88, 0.6);
+                    }
+                    .pip-badge {
+                        font-size: 10px;
+                        font-weight: 600;
+                        padding: 1px 6px;
+                        border-radius: 8px;
+                        background: rgba(255, 255, 255, 0.12);
+                        color: rgba(255, 255, 255, 0.7);
+                        font-variant-numeric: tabular-nums;
+                    }
+                    .pip-speeds {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .pip-speed-col {
+                        display: flex;
+                        align-items: baseline;
+                        gap: 3px;
+                    }
+                    .pip-arrow {
+                        font-size: 11px;
+                        font-weight: 800;
+                    }
+                    .pip-speed-dl {
+                        font-size: 15px;
+                        font-weight: 800;
+                        color: #30d158;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                        letter-spacing: -0.5px;
+                        text-shadow: 0 0 8px rgba(48, 209, 88, 0.25);
+                    }
+                    .pip-speed-up {
+                        font-size: 15px;
+                        font-weight: 800;
+                        color: #0a84ff;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                        letter-spacing: -0.5px;
+                        text-shadow: 0 0 8px rgba(10, 132, 255, 0.25);
+                    }
                 `;
                 pipDoc.head.appendChild(style);
                 pipDoc.body.innerHTML = `
-                    <div class="pip-header"><span>🍏 ABIT SPEED</span><span id="pip-active-cnt">--</span></div>
-                    <div class="pip-row"><span class="pip-label">↓ 下载速率</span><span class="pip-speed-dl" id="pip-dl">0 B/s</span></div>
-                    <div class="pip-row"><span class="pip-label">↑ 上传速率</span><span class="pip-speed-up" id="pip-up">0 B/s</span></div>
+                    <div class="pip-top">
+                        <div class="pip-brand"><span class="pip-dot"></span><span>Abit</span></div>
+                        <span class="pip-badge" id="pip-active-cnt">0 任务</span>
+                    </div>
+                    <div class="pip-speeds">
+                        <div class="pip-speed-col">
+                            <span class="pip-arrow" style="color:#30d158">↓</span>
+                            <span class="pip-speed-dl" id="pip-dl">0 B/s</span>
+                        </div>
+                        <div class="pip-speed-col">
+                            <span class="pip-arrow" style="color:#0a84ff">↑</span>
+                            <span class="pip-speed-up" id="pip-up">0 B/s</span>
+                        </div>
+                    </div>
                 `;
                 pipWindowInstance.addEventListener('pagehide', function() {
                     pipWindowInstance = null;
@@ -3986,7 +4056,7 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
         // 2. 次选：非 Chromium 环境（如 Safari Web App）打开独立的桌面迷你测速小窗
         try {
-            const miniWin = window.open('./?mode=mini', 'AbitMiniHUD', 'width=300,height=160,menubar=no,toolbar=no,location=no,status=no,resizable=no');
+            const miniWin = window.open('./?mode=mini', 'AbitMiniHUD', 'width=220,height=75,menubar=no,toolbar=no,location=no,status=no,resizable=no');
             if (miniWin && !miniWin.closed) {
                 showToast(window.t('已开启独立桌面微型测速小窗'));
                 return;

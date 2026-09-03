@@ -732,8 +732,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.03-1912';
-const APP_BUILD_TIME = '2026-09-03 19:12:39';
+const APP_VERSION = 'v2026.09.03-1920';
+const APP_BUILD_TIME = '2026-09-03 19:20:58';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -1248,18 +1248,20 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             }
             try {
                 pipWindowInstance = await window.documentPictureInPicture.requestWindow({
-                    width: 280,
-                    height: 140
+                    width: 220,
+                    height: 75
                 });
                 const pipDoc = pipWindowInstance.document;
                 pipDoc.title = 'Abit 实时速率';
                 const style = pipDoc.createElement('style');
                 style.textContent = `
-                    * { box-sizing: border-box; }
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
                     body {
                         margin: 0;
-                        padding: 14px;
-                        background: #1c1c1e;
+                        padding: 9px 12px;
+                        background: rgba(20, 20, 24, 0.85);
+                        backdrop-filter: blur(28px);
+                        -webkit-backdrop-filter: blur(28px);
                         color: #ffffff;
                         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
                         user-select: none;
@@ -1268,17 +1270,84 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                         justify-content: space-between;
                         height: 100vh;
                     }
-                    .pip-header { font-size: 10px; font-weight: 800; color: #8e8e93; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.5px; }
-                    .pip-row { display: flex; justify-content: space-between; align-items: baseline; }
-                    .pip-label { font-size: 11px; font-weight: 600; color: #a1a1a6; }
-                    .pip-speed-dl { font-size: 17px; font-weight: 800; color: #30d158; font-family: ui-monospace, SFMono-Regular, monospace; }
-                    .pip-speed-up { font-size: 17px; font-weight: 800; color: #0a84ff; font-family: ui-monospace, SFMono-Regular, monospace; }
+                    .pip-top {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .pip-brand {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        font-size: 11px;
+                        font-weight: 700;
+                        letter-spacing: 0.3px;
+                        color: rgba(255, 255, 255, 0.75);
+                    }
+                    .pip-dot {
+                        width: 6px;
+                        height: 6px;
+                        border-radius: 50%;
+                        background: #30d158;
+                        box-shadow: 0 0 6px rgba(48, 209, 88, 0.6);
+                    }
+                    .pip-badge {
+                        font-size: 10px;
+                        font-weight: 600;
+                        padding: 1px 6px;
+                        border-radius: 8px;
+                        background: rgba(255, 255, 255, 0.12);
+                        color: rgba(255, 255, 255, 0.7);
+                        font-variant-numeric: tabular-nums;
+                    }
+                    .pip-speeds {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .pip-speed-col {
+                        display: flex;
+                        align-items: baseline;
+                        gap: 3px;
+                    }
+                    .pip-arrow {
+                        font-size: 11px;
+                        font-weight: 800;
+                    }
+                    .pip-speed-dl {
+                        font-size: 15px;
+                        font-weight: 800;
+                        color: #30d158;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                        letter-spacing: -0.5px;
+                        text-shadow: 0 0 8px rgba(48, 209, 88, 0.25);
+                    }
+                    .pip-speed-up {
+                        font-size: 15px;
+                        font-weight: 800;
+                        color: #0a84ff;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                        letter-spacing: -0.5px;
+                        text-shadow: 0 0 8px rgba(10, 132, 255, 0.25);
+                    }
                 `;
                 pipDoc.head.appendChild(style);
                 pipDoc.body.innerHTML = `
-                    <div class="pip-header"><span>🍏 ABIT SPEED</span><span id="pip-active-cnt">--</span></div>
-                    <div class="pip-row"><span class="pip-label">↓ 下载速率</span><span class="pip-speed-dl" id="pip-dl">0 B/s</span></div>
-                    <div class="pip-row"><span class="pip-label">↑ 上传速率</span><span class="pip-speed-up" id="pip-up">0 B/s</span></div>
+                    <div class="pip-top">
+                        <div class="pip-brand"><span class="pip-dot"></span><span>Abit</span></div>
+                        <span class="pip-badge" id="pip-active-cnt">0 任务</span>
+                    </div>
+                    <div class="pip-speeds">
+                        <div class="pip-speed-col">
+                            <span class="pip-arrow" style="color:#30d158">↓</span>
+                            <span class="pip-speed-dl" id="pip-dl">0 B/s</span>
+                        </div>
+                        <div class="pip-speed-col">
+                            <span class="pip-arrow" style="color:#0a84ff">↑</span>
+                            <span class="pip-speed-up" id="pip-up">0 B/s</span>
+                        </div>
+                    </div>
                 `;
                 pipWindowInstance.addEventListener('pagehide', function() {
                     pipWindowInstance = null;
@@ -1292,7 +1361,7 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
         // 2. 次选：非 Chromium 环境（如 Safari Web App）打开独立的桌面迷你测速小窗
         try {
-            const miniWin = window.open('./?mode=mini', 'AbitMiniHUD', 'width=300,height=160,menubar=no,toolbar=no,location=no,status=no,resizable=no');
+            const miniWin = window.open('./?mode=mini', 'AbitMiniHUD', 'width=220,height=75,menubar=no,toolbar=no,location=no,status=no,resizable=no');
             if (miniWin && !miniWin.closed) {
                 showToast(window.t('已开启独立桌面微型测速小窗'));
                 return;
