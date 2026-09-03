@@ -94,11 +94,15 @@
   ],
   "file_handlers": [
     {
-      "action": "./",
+      "action": "./?action=add",
       "name": "BitTorrent 种子文件",
       "accept": {
-        "application/x-bittorrent": [".torrent"]
-      }
+        "application/x-bittorrent": [".torrent"],
+        "application/x-torrent": [".torrent"]
+      },
+      "icons": [
+        { "src": "icon-192.png", "sizes": "192x192" }
+      ]
     }
   ],
   "share_target": {

@@ -240,17 +240,21 @@
             requestScreenWakeLock();
         }
 
-        // 3. File Handling API (LaunchQueue for double-clicking .torrent files)
-        if ('launchQueue' in window && typeof window.LaunchParams !== 'undefined') {
+        // 3. File Handling API & LaunchParams TargetURL (Shortcuts & Double-clicking .torrent files)
+        if ('launchQueue' in window) {
             try {
                 window.launchQueue.setConsumer(async function(launchParams) {
-                    if (!launchParams.files || !launchParams.files.length) return;
-                    for (const fileHandle of launchParams.files) {
-                        const file = await fileHandle.getFile();
-                        if (file && (file.name.endsWith('.torrent') || file.type === 'application/x-bittorrent')) {
-                            if (typeof handleSelectedTorrentFile === 'function') {
-                                handleSelectedTorrentFile(file);
-                                break;
+                    if (launchParams.targetURL) {
+                        handlePwaLaunchParams(launchParams.targetURL);
+                    }
+                    if (launchParams.files && launchParams.files.length) {
+                        for (const fileHandle of launchParams.files) {
+                            const file = await fileHandle.getFile();
+                            if (file && (file.name.endsWith('.torrent') || file.type === 'application/x-bittorrent' || file.type === 'application/x-torrent')) {
+                                if (typeof handleSelectedTorrentFile === 'function') {
+                                    handleSelectedTorrentFile(file);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -261,14 +265,22 @@
         }
 
         // 4. Handle PWA Launch Query Parameters (Shortcuts, Magnet protocol & Share Target)
-        handlePwaLaunchParams();
+        handlePwaLaunchParams(window.location.href);
+
+        window.addEventListener('popstate', function() {
+            handlePwaLaunchParams(window.location.href);
+        });
     }
 
-    function handlePwaLaunchParams() {
+    function handlePwaLaunchParams(targetUrlStr) {
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const magnetParam = urlParams.get('magnet') || urlParams.get('url') || urlParams.get('text');
-            const actionParam = urlParams.get('action');
+            const urlObj = targetUrlStr ? new URL(targetUrlStr, window.location.href) : new URL(window.location.href);
+            const urlParams = urlObj.searchParams;
+            const hashStr = urlObj.hash ? urlObj.hash.substring(1) : '';
+            const hashParams = new URLSearchParams(hashStr);
+
+            const magnetParam = urlParams.get('magnet') || urlParams.get('url') || urlParams.get('text') || hashParams.get('magnet');
+            const actionParam = urlParams.get('action') || hashParams.get('action');
 
             if (magnetParam) {
                 let cleanUrl = decodeURIComponent(magnetParam).trim();
@@ -278,32 +290,32 @@
                         if (typeof openAddModal === 'function') {
                             openAddModal(cleanUrl);
                         }
-                    }, 400);
+                    }, 300);
                 }
             } else if (actionParam === 'add') {
                 setTimeout(function() {
                     if (typeof openAddModal === 'function') openAddModal();
-                }, 400);
+                }, 300);
             } else if (actionParam === 'search') {
                 setTimeout(function() {
                     if (typeof switchTab === 'function') {
                         switchTab('p-search', '搜索', $('.dock-btn:nth-child(3)'));
                     }
-                }, 400);
+                }, 300);
             } else if (actionParam === 'pause_all') {
                 setTimeout(function() {
                     $.post('/api/v2/torrents/pause', { hashes: 'all' }, function() {
                         if (typeof showToast === 'function') showToast(window.t('已暂停全部活动任务'));
                         if (typeof pollFastData === 'function') pollFastData();
                     });
-                }, 400);
+                }, 300);
             } else if (actionParam === 'resume_all') {
                 setTimeout(function() {
                     $.post('/api/v2/torrents/resume', { hashes: 'all' }, function() {
                         if (typeof showToast === 'function') showToast(window.t('已恢复全部任务'));
                         if (typeof pollFastData === 'function') pollFastData();
                     });
-                }, 400);
+                }, 300);
             }
 
             // Clean up query string from address bar without reloading

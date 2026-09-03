@@ -34,6 +34,11 @@
         $('#sum-pause, #cnt-pause').text(paused);
         $('#sum-active, #cnt-active').text(active);
         $('#sum-err, #cnt-err').text(err);
+        if (err > 0) {
+            $('#sum-err').css('color', 'var(--danger)');
+        } else {
+            $('#sum-err').css('color', 'var(--text-sec)');
+        }
         $('#cnt-queue').text(queued);
 
         // Update PWA App Badge (Dock / Taskbar dynamic icon number)

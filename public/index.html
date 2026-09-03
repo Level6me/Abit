@@ -422,7 +422,7 @@ body.modal-open {
 }
 
 .bottom-spacer {
-    height: 80px;
+    height: calc(100px + env(safe-area-inset-bottom, 20px));
     width: 100%;
 }
 
@@ -1477,7 +1477,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         <!-- Task Status Summary Card -->
         <div class="card">
             <div style="font-weight:700; font-size:15px; margin-bottom:12px;"><span data-i18n="📊 任务状态汇总">📊 任务状态汇总</span> <span class="val-sub" style="font-weight:normal; margin-left:4px;" data-i18n="(点击快速跳转筛选)">(点击快速跳转筛选)</span></div>
-            <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(68px, 1fr)); text-align:center; padding:6px 0; gap:10px 6px;">
                 <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" data-i18n-title="点击查看全部任务" title="点击查看全部任务">
                     <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
                     <div class="val-sub" data-i18n="全部任务">全部任务</div>
@@ -1503,8 +1503,8 @@ input:checked + .slider:before { transform: translateX(20px); }
                     <div class="val-sub" data-i18n="活动中">活动中</div>
                 </div>
                 <div class="stat-interactive" onclick="jumpToTorrentFilter('error')" data-i18n-title="点击查看出错任务" title="点击查看出错任务">
-                    <div class="val-big" id="sum-err" style="color:var(--danger);">0</div>
-                    <div class="val-sub" data-i18n="⚠️ 错误">⚠️ 错误</div>
+                    <div class="val-big" id="sum-err" style="color:var(--text-sec);">0</div>
+                    <div class="val-sub" data-i18n="异常 / 出错">异常 / 出错</div>
                 </div>
             </div>
         </div>
@@ -2329,7 +2329,7 @@ input:checked + .slider:before { transform: translateX(20px); }
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-0927</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1852</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -3372,8 +3372,8 @@ input:checked + .slider:before { transform: translateX(20px); }
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.03-0927';
-const APP_BUILD_TIME = '2026-09-03 09:27:29';
+const APP_VERSION = 'v2026.09.03-1852';
+const APP_BUILD_TIME = '2026-09-03 18:52:37';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3821,11 +3821,65 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         }
     }
 
-    // 7. Picture-in-Picture (PiP) Floating Speed Monitor with In-Page Fallback
+    // 7. Picture-in-Picture (PiP) Floating Speed Monitor with Document PiP & Canvas Video PiP
     let pipWindowInstance = null;
+    let pipVideoElement = null;
+    let pipCanvasElement = null;
+    let pipCanvasCtx = null;
     let inPageFloatingHudActive = false;
 
+    function drawPipCanvas(dlStr, upStr, activeCnt) {
+        if (!pipCanvasCtx || !pipCanvasElement) return;
+        const ctx = pipCanvasCtx;
+        const w = pipCanvasElement.width;
+        const h = pipCanvasElement.height;
+
+        // Background
+        ctx.fillStyle = '#1c1c1e';
+        ctx.fillRect(0, 0, w, h);
+
+        // Header
+        ctx.fillStyle = '#8e8e93';
+        ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillText('🍏 ABIT SPEED', 16, 26);
+
+        const countText = `${activeCnt !== undefined ? activeCnt : 0} 任务`;
+        const countWidth = ctx.measureText(countText).width;
+        ctx.fillText(countText, w - 16 - countWidth, 26);
+
+        // Separator line
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(16, 36);
+        ctx.lineTo(w - 16, 36);
+        ctx.stroke();
+
+        // Download Row
+        ctx.fillStyle = '#a1a1a6';
+        ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('↓ 下载速率', 16, 75);
+
+        ctx.fillStyle = '#30d158';
+        ctx.font = 'bold 22px ui-monospace, SFMono-Regular, Menlo, monospace';
+        const dlText = dlStr || '0 B/s';
+        const dlWidth = ctx.measureText(dlText).width;
+        ctx.fillText(dlText, w - 16 - dlWidth, 75);
+
+        // Upload Row
+        ctx.fillStyle = '#a1a1a6';
+        ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('↑ 上传速率', 16, 125);
+
+        ctx.fillStyle = '#0a84ff';
+        ctx.font = 'bold 22px ui-monospace, SFMono-Regular, Menlo, monospace';
+        const upText = upStr || '0 B/s';
+        const upWidth = ctx.measureText(upText).width;
+        ctx.fillText(upText, w - 16 - upWidth, 125);
+    }
+
     async function togglePictureInPictureMonitor() {
+        // 1. 首选：Chromium 专有 Document Picture-in-Picture (DOM 全局悬浮置顶)
         if ('documentPictureInPicture' in window) {
             if (pipWindowInstance && !pipWindowInstance.closed) {
                 pipWindowInstance.close();
@@ -3869,14 +3923,56 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                 pipWindowInstance.addEventListener('pagehide', function() {
                     pipWindowInstance = null;
                 });
-                showToast(window.t('已开启画中画速率悬浮监控'));
+                showToast(window.t('已开启画中画速率悬浮监控 (系统全局置顶)'));
                 return;
             } catch (e) {
-                console.debug('[Abit] Document PiP request failed, falling back to In-Page Floating HUD:', e);
+                console.debug('[Abit] Document PiP request failed:', e);
             }
         }
 
-        // In-Page Mini Floating HUD Fallback (Works on mobile and all non-HTTPS environments)
+        // 2. 次选：Safari macOS / Firefox 原生 Canvas 视频流画中画 (系统全局置顶悬浮)
+        if (document.pictureInPictureEnabled || (pipVideoElement && pipVideoElement.webkitSupportsPresentationMode && pipVideoElement.webkitSupportsPresentationMode('picture-in-picture'))) {
+            if (document.pictureInPictureElement) {
+                try { await document.exitPictureInPicture(); } catch(e) {}
+                return;
+            }
+            try {
+                if (!pipCanvasElement) {
+                    pipCanvasElement = document.createElement('canvas');
+                    pipCanvasElement.width = 320;
+                    pipCanvasElement.height = 160;
+                    pipCanvasCtx = pipCanvasElement.getContext('2d');
+                }
+                drawPipCanvas('0 B/s', '0 B/s', 0);
+
+                if (!pipVideoElement) {
+                    pipVideoElement = document.createElement('video');
+                    pipVideoElement.muted = true;
+                    pipVideoElement.autoplay = true;
+                    pipVideoElement.playsInline = true;
+                    pipVideoElement.style.position = 'fixed';
+                    pipVideoElement.style.top = '-9999px';
+                    pipVideoElement.style.left = '-9999px';
+                    pipVideoElement.style.width = '1px';
+                    pipVideoElement.style.height = '1px';
+                    pipVideoElement.style.opacity = '0';
+                    document.body.appendChild(pipVideoElement);
+                }
+
+                const stream = pipCanvasElement.captureStream ? pipCanvasElement.captureStream(10) : (pipCanvasElement.mozCaptureStream ? pipCanvasElement.mozCaptureStream(10) : null);
+                if (stream) {
+                    pipVideoElement.srcObject = stream;
+                    await pipVideoElement.play();
+                    await pipVideoElement.requestPictureInPicture();
+                    showToast(window.t('已开启画中画速率悬浮监控 (系统全局置顶)'));
+                    return;
+                }
+            } catch (err) {
+                console.debug('[Abit] Canvas Video PiP request failed, falling back to In-Page HUD:', err);
+            }
+        }
+
+        // 3. 兜底：页内迷你悬浮看板 (仅限页面内)
         inPageFloatingHudActive = !inPageFloatingHudActive;
         const hud = $('#mini-pip-floating-hud');
         if (inPageFloatingHudActive) {
@@ -3889,7 +3985,7 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
     }
 
     function updatePipMonitor(dlStr, upStr, activeCnt) {
-        // Update Document PiP window if open
+        // 1. 更新 Document PiP 窗口
         if (pipWindowInstance && !pipWindowInstance.closed) {
             try {
                 const pipDoc = pipWindowInstance.document;
@@ -3908,7 +4004,12 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             } catch(e) {}
         }
 
-        // Update In-Page Floating HUD
+        // 2. 更新 Video PiP 画布 (Safari/Firefox)
+        if (document.pictureInPictureElement) {
+            drawPipCanvas(dlStr, upStr, activeCnt);
+        }
+
+        // 3. 更新页内悬浮 HUD
         const hud = $('#mini-pip-floating-hud');
         if (hud.length > 0 && hud.is(':visible')) {
             if (dlStr) $('#mini-hud-dl').text(dlStr);
@@ -4116,6 +4217,11 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         $('#sum-pause, #cnt-pause').text(paused);
         $('#sum-active, #cnt-active').text(active);
         $('#sum-err, #cnt-err').text(err);
+        if (err > 0) {
+            $('#sum-err').css('color', 'var(--danger)');
+        } else {
+            $('#sum-err').css('color', 'var(--text-sec)');
+        }
         $('#cnt-queue').text(queued);
 
         // Update PWA App Badge (Dock / Taskbar dynamic icon number)
@@ -6523,17 +6629,21 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             requestScreenWakeLock();
         }
 
-        // 3. File Handling API (LaunchQueue for double-clicking .torrent files)
-        if ('launchQueue' in window && typeof window.LaunchParams !== 'undefined') {
+        // 3. File Handling API & LaunchParams TargetURL (Shortcuts & Double-clicking .torrent files)
+        if ('launchQueue' in window) {
             try {
                 window.launchQueue.setConsumer(async function(launchParams) {
-                    if (!launchParams.files || !launchParams.files.length) return;
-                    for (const fileHandle of launchParams.files) {
-                        const file = await fileHandle.getFile();
-                        if (file && (file.name.endsWith('.torrent') || file.type === 'application/x-bittorrent')) {
-                            if (typeof handleSelectedTorrentFile === 'function') {
-                                handleSelectedTorrentFile(file);
-                                break;
+                    if (launchParams.targetURL) {
+                        handlePwaLaunchParams(launchParams.targetURL);
+                    }
+                    if (launchParams.files && launchParams.files.length) {
+                        for (const fileHandle of launchParams.files) {
+                            const file = await fileHandle.getFile();
+                            if (file && (file.name.endsWith('.torrent') || file.type === 'application/x-bittorrent' || file.type === 'application/x-torrent')) {
+                                if (typeof handleSelectedTorrentFile === 'function') {
+                                    handleSelectedTorrentFile(file);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -6544,14 +6654,22 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         }
 
         // 4. Handle PWA Launch Query Parameters (Shortcuts, Magnet protocol & Share Target)
-        handlePwaLaunchParams();
+        handlePwaLaunchParams(window.location.href);
+
+        window.addEventListener('popstate', function() {
+            handlePwaLaunchParams(window.location.href);
+        });
     }
 
-    function handlePwaLaunchParams() {
+    function handlePwaLaunchParams(targetUrlStr) {
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const magnetParam = urlParams.get('magnet') || urlParams.get('url') || urlParams.get('text');
-            const actionParam = urlParams.get('action');
+            const urlObj = targetUrlStr ? new URL(targetUrlStr, window.location.href) : new URL(window.location.href);
+            const urlParams = urlObj.searchParams;
+            const hashStr = urlObj.hash ? urlObj.hash.substring(1) : '';
+            const hashParams = new URLSearchParams(hashStr);
+
+            const magnetParam = urlParams.get('magnet') || urlParams.get('url') || urlParams.get('text') || hashParams.get('magnet');
+            const actionParam = urlParams.get('action') || hashParams.get('action');
 
             if (magnetParam) {
                 let cleanUrl = decodeURIComponent(magnetParam).trim();
@@ -6561,32 +6679,32 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                         if (typeof openAddModal === 'function') {
                             openAddModal(cleanUrl);
                         }
-                    }, 400);
+                    }, 300);
                 }
             } else if (actionParam === 'add') {
                 setTimeout(function() {
                     if (typeof openAddModal === 'function') openAddModal();
-                }, 400);
+                }, 300);
             } else if (actionParam === 'search') {
                 setTimeout(function() {
                     if (typeof switchTab === 'function') {
                         switchTab('p-search', '搜索', $('.dock-btn:nth-child(3)'));
                     }
-                }, 400);
+                }, 300);
             } else if (actionParam === 'pause_all') {
                 setTimeout(function() {
                     $.post('/api/v2/torrents/pause', { hashes: 'all' }, function() {
                         if (typeof showToast === 'function') showToast(window.t('已暂停全部活动任务'));
                         if (typeof pollFastData === 'function') pollFastData();
                     });
-                }, 400);
+                }, 300);
             } else if (actionParam === 'resume_all') {
                 setTimeout(function() {
                     $.post('/api/v2/torrents/resume', { hashes: 'all' }, function() {
                         if (typeof showToast === 'function') showToast(window.t('已恢复全部任务'));
                         if (typeof pollFastData === 'function') pollFastData();
                     });
-                }, 400);
+                }, 300);
             }
 
             // Clean up query string from address bar without reloading

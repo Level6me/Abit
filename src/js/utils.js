@@ -378,11 +378,65 @@
         }
     }
 
-    // 7. Picture-in-Picture (PiP) Floating Speed Monitor with In-Page Fallback
+    // 7. Picture-in-Picture (PiP) Floating Speed Monitor with Document PiP & Canvas Video PiP
     let pipWindowInstance = null;
+    let pipVideoElement = null;
+    let pipCanvasElement = null;
+    let pipCanvasCtx = null;
     let inPageFloatingHudActive = false;
 
+    function drawPipCanvas(dlStr, upStr, activeCnt) {
+        if (!pipCanvasCtx || !pipCanvasElement) return;
+        const ctx = pipCanvasCtx;
+        const w = pipCanvasElement.width;
+        const h = pipCanvasElement.height;
+
+        // Background
+        ctx.fillStyle = '#1c1c1e';
+        ctx.fillRect(0, 0, w, h);
+
+        // Header
+        ctx.fillStyle = '#8e8e93';
+        ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillText('🍏 ABIT SPEED', 16, 26);
+
+        const countText = `${activeCnt !== undefined ? activeCnt : 0} 任务`;
+        const countWidth = ctx.measureText(countText).width;
+        ctx.fillText(countText, w - 16 - countWidth, 26);
+
+        // Separator line
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(16, 36);
+        ctx.lineTo(w - 16, 36);
+        ctx.stroke();
+
+        // Download Row
+        ctx.fillStyle = '#a1a1a6';
+        ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('↓ 下载速率', 16, 75);
+
+        ctx.fillStyle = '#30d158';
+        ctx.font = 'bold 22px ui-monospace, SFMono-Regular, Menlo, monospace';
+        const dlText = dlStr || '0 B/s';
+        const dlWidth = ctx.measureText(dlText).width;
+        ctx.fillText(dlText, w - 16 - dlWidth, 75);
+
+        // Upload Row
+        ctx.fillStyle = '#a1a1a6';
+        ctx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('↑ 上传速率', 16, 125);
+
+        ctx.fillStyle = '#0a84ff';
+        ctx.font = 'bold 22px ui-monospace, SFMono-Regular, Menlo, monospace';
+        const upText = upStr || '0 B/s';
+        const upWidth = ctx.measureText(upText).width;
+        ctx.fillText(upText, w - 16 - upWidth, 125);
+    }
+
     async function togglePictureInPictureMonitor() {
+        // 1. 首选：Chromium 专有 Document Picture-in-Picture (DOM 全局悬浮置顶)
         if ('documentPictureInPicture' in window) {
             if (pipWindowInstance && !pipWindowInstance.closed) {
                 pipWindowInstance.close();
@@ -426,14 +480,56 @@
                 pipWindowInstance.addEventListener('pagehide', function() {
                     pipWindowInstance = null;
                 });
-                showToast(window.t('已开启画中画速率悬浮监控'));
+                showToast(window.t('已开启画中画速率悬浮监控 (系统全局置顶)'));
                 return;
             } catch (e) {
-                console.debug('[Abit] Document PiP request failed, falling back to In-Page Floating HUD:', e);
+                console.debug('[Abit] Document PiP request failed:', e);
             }
         }
 
-        // In-Page Mini Floating HUD Fallback (Works on mobile and all non-HTTPS environments)
+        // 2. 次选：Safari macOS / Firefox 原生 Canvas 视频流画中画 (系统全局置顶悬浮)
+        if (document.pictureInPictureEnabled || (pipVideoElement && pipVideoElement.webkitSupportsPresentationMode && pipVideoElement.webkitSupportsPresentationMode('picture-in-picture'))) {
+            if (document.pictureInPictureElement) {
+                try { await document.exitPictureInPicture(); } catch(e) {}
+                return;
+            }
+            try {
+                if (!pipCanvasElement) {
+                    pipCanvasElement = document.createElement('canvas');
+                    pipCanvasElement.width = 320;
+                    pipCanvasElement.height = 160;
+                    pipCanvasCtx = pipCanvasElement.getContext('2d');
+                }
+                drawPipCanvas('0 B/s', '0 B/s', 0);
+
+                if (!pipVideoElement) {
+                    pipVideoElement = document.createElement('video');
+                    pipVideoElement.muted = true;
+                    pipVideoElement.autoplay = true;
+                    pipVideoElement.playsInline = true;
+                    pipVideoElement.style.position = 'fixed';
+                    pipVideoElement.style.top = '-9999px';
+                    pipVideoElement.style.left = '-9999px';
+                    pipVideoElement.style.width = '1px';
+                    pipVideoElement.style.height = '1px';
+                    pipVideoElement.style.opacity = '0';
+                    document.body.appendChild(pipVideoElement);
+                }
+
+                const stream = pipCanvasElement.captureStream ? pipCanvasElement.captureStream(10) : (pipCanvasElement.mozCaptureStream ? pipCanvasElement.mozCaptureStream(10) : null);
+                if (stream) {
+                    pipVideoElement.srcObject = stream;
+                    await pipVideoElement.play();
+                    await pipVideoElement.requestPictureInPicture();
+                    showToast(window.t('已开启画中画速率悬浮监控 (系统全局置顶)'));
+                    return;
+                }
+            } catch (err) {
+                console.debug('[Abit] Canvas Video PiP request failed, falling back to In-Page HUD:', err);
+            }
+        }
+
+        // 3. 兜底：页内迷你悬浮看板 (仅限页面内)
         inPageFloatingHudActive = !inPageFloatingHudActive;
         const hud = $('#mini-pip-floating-hud');
         if (inPageFloatingHudActive) {
@@ -446,7 +542,7 @@
     }
 
     function updatePipMonitor(dlStr, upStr, activeCnt) {
-        // Update Document PiP window if open
+        // 1. 更新 Document PiP 窗口
         if (pipWindowInstance && !pipWindowInstance.closed) {
             try {
                 const pipDoc = pipWindowInstance.document;
@@ -465,7 +561,12 @@
             } catch(e) {}
         }
 
-        // Update In-Page Floating HUD
+        // 2. 更新 Video PiP 画布 (Safari/Firefox)
+        if (document.pictureInPictureElement) {
+            drawPipCanvas(dlStr, upStr, activeCnt);
+        }
+
+        // 3. 更新页内悬浮 HUD
         const hud = $('#mini-pip-floating-hud');
         if (hud.length > 0 && hud.is(':visible')) {
             if (dlStr) $('#mini-hud-dl').text(dlStr);

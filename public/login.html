@@ -24,13 +24,13 @@
     <!-- Third-party libraries are bundled locally (no CDN dependency) -->
     <!-- Modular Stylesheet -->
     <!-- Modular Granular Stylesheets -->
-    <link rel="stylesheet" href="css/variables.css?v=1788398849097">
-    <link rel="stylesheet" href="css/base.css?v=1788398849097">
-    <link rel="stylesheet" href="css/layout.css?v=1788398849097">
-    <link rel="stylesheet" href="css/components.css?v=1788398849097">
-    <link rel="stylesheet" href="css/torrents.css?v=1788398849097">
-    <link rel="stylesheet" href="css/dock.css?v=1788398849097">
-    <link rel="stylesheet" href="css/modal.css?v=1788398849097">
+    <link rel="stylesheet" href="css/variables.css?v=1788432757686">
+    <link rel="stylesheet" href="css/base.css?v=1788432757686">
+    <link rel="stylesheet" href="css/layout.css?v=1788432757686">
+    <link rel="stylesheet" href="css/components.css?v=1788432757686">
+    <link rel="stylesheet" href="css/torrents.css?v=1788432757686">
+    <link rel="stylesheet" href="css/dock.css?v=1788432757686">
+    <link rel="stylesheet" href="css/modal.css?v=1788432757686">
 </head>
 <body>
 <!-- Global Toast Container -->
@@ -160,7 +160,7 @@
         <!-- Task Status Summary Card -->
         <div class="card">
             <div style="font-weight:700; font-size:15px; margin-bottom:12px;"><span data-i18n="📊 任务状态汇总">📊 任务状态汇总</span> <span class="val-sub" style="font-weight:normal; margin-left:4px;" data-i18n="(点击快速跳转筛选)">(点击快速跳转筛选)</span></div>
-            <div style="display:flex; justify-content:space-around; text-align:center; padding:4px 0; flex-wrap:wrap; gap:4px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(68px, 1fr)); text-align:center; padding:6px 0; gap:10px 6px;">
                 <div class="stat-interactive" onclick="jumpToTorrentFilter('all')" data-i18n-title="点击查看全部任务" title="点击查看全部任务">
                     <div class="val-big" id="sum-all" style="color:var(--accent);">0</div>
                     <div class="val-sub" data-i18n="全部任务">全部任务</div>
@@ -186,8 +186,8 @@
                     <div class="val-sub" data-i18n="活动中">活动中</div>
                 </div>
                 <div class="stat-interactive" onclick="jumpToTorrentFilter('error')" data-i18n-title="点击查看出错任务" title="点击查看出错任务">
-                    <div class="val-big" id="sum-err" style="color:var(--danger);">0</div>
-                    <div class="val-sub" data-i18n="⚠️ 错误">⚠️ 错误</div>
+                    <div class="val-big" id="sum-err" style="color:var(--text-sec);">0</div>
+                    <div class="val-sub" data-i18n="异常 / 出错">异常 / 出错</div>
                 </div>
             </div>
         </div>
@@ -1012,7 +1012,7 @@
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-0927</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.03-1852</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -1320,19 +1320,19 @@
 </div>
 
     <!-- Modular Application Scripts -->
-    <script src="js/vendor_jquery.min.js?v=1788398849097"></script>
-    <script src="js/vendor_chart.umd.min.js?v=1788398849097"></script>
-    <script src="js/i18n.js?v=1788398849097"></script>
-    <script src="js/constants.js?v=1788398849097"></script>
-    <script src="js/state.js?v=1788398849097"></script>
-    <script src="js/utils.js?v=1788398849097"></script>
-    <script src="js/api.js?v=1788398849097"></script>
-    <script src="js/chart.js?v=1788398849097"></script>
-    <script src="js/torrents.js?v=1788398849097"></script>
-    <script src="js/search.js?v=1788398849097"></script>
-    <script src="js/rss.js?v=1788398849097"></script>
-    <script src="js/system.js?v=1788398849097"></script>
-    <script src="js/ui.js?v=1788398849097"></script>
-    <script src="js/app.js?v=1788398849097"></script>
+    <script src="js/vendor_jquery.min.js?v=1788432757686"></script>
+    <script src="js/vendor_chart.umd.min.js?v=1788432757686"></script>
+    <script src="js/i18n.js?v=1788432757686"></script>
+    <script src="js/constants.js?v=1788432757686"></script>
+    <script src="js/state.js?v=1788432757686"></script>
+    <script src="js/utils.js?v=1788432757686"></script>
+    <script src="js/api.js?v=1788432757686"></script>
+    <script src="js/chart.js?v=1788432757686"></script>
+    <script src="js/torrents.js?v=1788432757686"></script>
+    <script src="js/search.js?v=1788432757686"></script>
+    <script src="js/rss.js?v=1788432757686"></script>
+    <script src="js/system.js?v=1788432757686"></script>
+    <script src="js/ui.js?v=1788432757686"></script>
+    <script src="js/app.js?v=1788432757686"></script>
 </body>
 </html>

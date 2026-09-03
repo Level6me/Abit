@@ -242,6 +242,6 @@
 }
 
 .bottom-spacer {
-    height: 80px;
+    height: calc(100px + env(safe-area-inset-bottom, 20px));
     width: 100%;
 }
