@@ -32,9 +32,9 @@
         $('#sum-seed, #cnt-seed, #v-up-count-num').text(seed);
         $('#sum-completed, #cnt-completed').text(completed);
         $('#sum-pause, #cnt-pause').text(paused);
-        $('#cnt-active').text(active);
+        $('#sum-active, #cnt-active').text(active);
+        $('#sum-err, #cnt-err').text(err);
         $('#cnt-queue').text(queued);
-        $('#cnt-err').text(err);
 
         // Update PWA App Badge (Dock / Taskbar dynamic icon number)
         updateAppBadge(dl);
@@ -212,7 +212,7 @@
                         <button class="icon-btn" title="${window.t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                         </button>
-                        <button class="icon-btn accent" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
+                        <button class="icon-btn" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')">
                             <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
                         </button>
                         <button class="icon-btn" title="${status.isPaused ? window.t('恢复') : window.t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')">
@@ -275,7 +275,7 @@
                 <td style="text-align:right;">
                     <div style="display:inline-flex; gap:4px;">
                         <button class="icon-btn" title="${window.t('详情')}" onclick="event.stopPropagation(); openTorrentDetail('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></button>
-                        <button class="icon-btn accent" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
+                        <button class="icon-btn" title="${window.t('重新下载')}" onclick="event.stopPropagation(); redownloadTorrent('${hash}')"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
                         <button class="icon-btn" title="${status.isPaused ? window.t('恢复') : window.t('暂停')}" onclick="event.stopPropagation(); torrentAction('${status.isPaused ? 'resume' : 'pause'}', '${hash}')"><svg viewBox="0 0 24 24"><path d="${status.isPaused ? 'M8 5v14l11-7z' : 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'}"/></svg></button>
                         <button class="icon-btn danger" title="${window.t('删除')}" onclick="event.stopPropagation(); confirmSingleDelete('${hash}', '${escapeHtml(t.name)}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                     </div>
@@ -336,25 +336,25 @@
 
     let pendingRedownloadHashes = [];
 
-    // 单个任务重新校验（不删本地文件）
+    // 单个任务重新校验（不删本地文件，保留原有暂停/活动状态）
     function recheckTorrent(hash) {
         $.post('/api/v2/torrents/recheck', { hashes: hash }, function() {
-            $.post('/api/v2/torrents/resume', { hashes: hash });
-            showToast(window.t('已发起重新校验并启动检查'));
+            showToast(window.t('已发起重新校验，请稍后在任务列表查看进度'));
             pollFastData();
         });
     }
 
-    // 批量强制重新校验
+    // 批量强制重新校验（保留各任务原有暂停/活动状态）
     function batchForceRecheck() {
         if (selectedTorrents.size === 0) return;
         const hashesStr = Array.from(selectedTorrents).join('|');
         const count = selectedTorrents.size;
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
-            $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             clearTorrentSelection();
-            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验')}`);
+            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验，请稍后查看进度')}`);
             pollFastData();
+        }).fail(function() {
+            showToast(window.t('批量校验请求失败，请检查连接'), false);
         });
     }
 
@@ -375,18 +375,19 @@
         openModal('redownload-confirm-modal');
     }
 
-    // 仅执行强制重新校验（不删本地文件）
+    // 仅执行强制重新校验（不删本地文件，保留原有暂停/活动状态）
     function executeForceRecheckOnly() {
         if (pendingRedownloadHashes.length === 0) return;
         const hashesStr = pendingRedownloadHashes.join('|');
         const count = pendingRedownloadHashes.length;
         $.post('/api/v2/torrents/recheck', { hashes: hashesStr }, function() {
-            $.post('/api/v2/torrents/resume', { hashes: hashesStr });
             closeModal('redownload-confirm-modal');
-            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验')}`);
+            showToast(`${window.t('已对 ')}${count}${window.t(' 个任务发起强制重新校验，请稍后查看进度')}`);
             pendingRedownloadHashes = [];
             clearTorrentSelection();
             pollFastData();
+        }).fail(function() {
+            showToast(window.t('重新校验请求失败，请检查连接'), false);
         });
     }
 
@@ -399,6 +400,8 @@
         const targets = pendingRedownloadHashes.slice();
         pendingRedownloadHashes = [];
         let successCount = 0;
+        let failCount = 0;
+        let fallbackCount = 0;
 
         for (const hash of targets) {
             const t = allTorrents.find(item => item.hash === hash);
@@ -413,6 +416,7 @@
                 const res = await fetch(`/api/v2/torrents/export?hash=${hash}`);
                 if (res.ok) {
                     torrentBlob = await res.blob();
+                    if (torrentBlob && torrentBlob.size === 0) torrentBlob = null;
                 }
             } catch (e) {
                 console.warn(`[Redownload] Failed to export torrent ${hash}:`, e);
@@ -420,9 +424,13 @@
 
             // 2. 检查是否有种子 Blob 或磁力链接
             if (!torrentBlob && !magnetUri) {
-                // 如果导出和磁链皆不可用，降级为强制校验
-                await $.post('/api/v2/torrents/recheck', { hashes: hash });
-                await $.post('/api/v2/torrents/resume', { hashes: hash });
+                // 导出和磁链皆不可用，降级为强制校验并明确提示
+                try {
+                    await $.post('/api/v2/torrents/recheck', { hashes: hash });
+                    fallbackCount++;
+                } catch(e) {
+                    failCount++;
+                }
                 continue;
             }
 
@@ -438,29 +446,51 @@
             if (tags) formData.append('tags', tags);
             formData.append('paused', 'false');
 
-            // 4. 删除原有任务及已下载本地文件
+            // 4. 先尝试重新添加（不删除），验证 API 可达性
+            let addSuccess = false;
             try {
+                // 4a. 删除原有任务及已下载本地文件
                 await $.post('/api/v2/torrents/delete', { hashes: hash, deleteFiles: 'true' });
-                // 延时等待 qBittorrent 释放文件占用
-                await new Promise(resolve => setTimeout(resolve, 350));
-                // 5. 重新添加任务从 0% 开始下载
-                await $.ajax({
+                // 延时等待 qBittorrent 释放文件占用（动态等待，最长 1.5s）
+                await new Promise(resolve => setTimeout(resolve, 600));
+                // 4b. 重新添加任务从 0% 开始下载
+                const addRes = await $.ajax({
                     url: '/api/v2/torrents/add',
                     type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false
                 });
-                successCount++;
+                // qBittorrent 成功返回 "Ok." 字符串
+                if (String(addRes || '').trim().startsWith('Ok')) {
+                    addSuccess = true;
+                    successCount++;
+                } else {
+                    failCount++;
+                    console.error(`[Redownload] Add returned unexpected response for ${hash}:`, addRes);
+                }
             } catch (err) {
+                failCount++;
                 console.error(`[Redownload] Failed to recreate torrent ${hash}:`, err);
             }
         }
 
         clearTorrentSelection();
-        showToast(`${window.t('✅ 已成功重置并从头重新下载 ')}${successCount}${window.t(' 个任务！')}`);
+
+        // 根据实际结果给出明确反馈，不再静默显示"成功"
+        if (failCount > 0 && successCount === 0 && fallbackCount === 0) {
+            showToast(`${window.t('❌ 重新下载失败，共 ')}${failCount}${window.t(' 个任务未能完成，请检查网络连接')}`, false);
+        } else if (fallbackCount > 0 && successCount === 0) {
+            showToast(`${window.t('⚠️ ')}${fallbackCount}${window.t(' 个任务无法导出，已降级执行重新校验（未删除本地文件）')}`, false);
+        } else {
+            let msg = `${window.t('✅ 已成功重置并从头重新下载 ')}${successCount}${window.t(' 个任务！')}`;
+            if (fallbackCount > 0) msg += ` ${window.t('(另有 ')}${fallbackCount}${window.t(' 个降级为校验)')}`;
+            if (failCount > 0) msg += ` ${window.t('(另有 ')}${failCount}${window.t(' 个失败)')}`;
+            showToast(msg, failCount === 0);
+        }
         pollFastData();
     }
+
 
     function batchTorrentAction(action) {
         if (selectedTorrents.size === 0) return;
@@ -469,6 +499,8 @@
             clearTorrentSelection();
             pollFastData();
             showToast(window.t('批量操作已完成'));
+        }).fail(function(xhr) {
+            showToast(window.t('批量操作失败，请检查网络连接或重新登录') + (xhr.status ? ` (${xhr.status})` : ''), false);
         });
     }
 
@@ -517,6 +549,8 @@
             clearTorrentSelection();
             showToast(window.t('已更新所选任务分类'));
             pollFastData();
+        }).fail(function(xhr) {
+            showToast(window.t('分类更新失败，请检查网络连接') + (xhr.status ? ` (${xhr.status})` : ''), false);
         });
     }
 
@@ -628,13 +662,31 @@
 
                 trackers.forEach(t => {
                     if (!t.url) return;
+                    // status: 0=禁用, 1=未联系, 2=工作中, 3=更新中, 4=错误
+                    let trackerBadgeClass, trackerBadgeText;
+                    if (t.status === 2) {
+                        trackerBadgeClass = 'downloading';
+                        trackerBadgeText = window.t('工作正常');
+                    } else if (t.status === 4) {
+                        trackerBadgeClass = 'error';
+                        trackerBadgeText = window.t('连接错误');
+                    } else if (t.status === 3) {
+                        trackerBadgeClass = 'queued';
+                        trackerBadgeText = window.t('更新中');
+                    } else if (t.status === 1) {
+                        trackerBadgeClass = 'queued';
+                        trackerBadgeText = window.t('未联系');
+                    } else {
+                        trackerBadgeClass = 'paused';
+                        trackerBadgeText = window.t('已禁用');
+                    }
                     html += `
                     <div class="list-row">
                         <div style="flex:1; overflow:hidden; margin-right:8px;">
                             <div style="font-weight:600; font-size:12px; font-family:monospace; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;" title="${escapeHtml(t.url)}">${escapeHtml(t.url)}</div>
                             <div style="font-size:11px; color:var(--text-sec); margin-top:2px;">${window.t('状态: ')}${escapeHtml(t.msg || window.t('运行中'))} · ${window.t('做种: ')}${t.num_seeds || 0} · ${window.t('节点: ')}${t.num_peers || 0}</div>
                         </div>
-                        <span class="badge ${t.status === 2 ? 'downloading' : (t.status === 0 ? 'paused' : 'error')}">${t.status === 2 ? window.t('工作正常') : window.t('已就绪')}</span>
+                        <span class="badge ${trackerBadgeClass}">${trackerBadgeText}</span>
                     </div>`;
                 });
                 $('#dt-trackers').html(html);
