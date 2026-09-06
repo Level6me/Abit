@@ -254,15 +254,18 @@ function build() {
     const publicIndexPath = path.join(PUBLIC_DIR, 'index.html');
     const publicLoginPath = path.join(PUBLIC_DIR, 'login.html');
     fs.writeFileSync(publicIndexPath, publicHtml);
-    fs.writeFileSync(publicLoginPath, publicHtml);
+
+    const publicLoginHtml = publicHtml.replace('id="login-modal"', 'id="login-modal" class="modal-overlay active forced-login"');
+    fs.writeFileSync(publicLoginPath, publicLoginHtml);
 
     // Sync Standalone Output to Root index.html & login.html and dist/login.html
     const rootIndexPath = path.join(ROOT_DIR, 'index.html');
     const rootLoginPath = path.join(ROOT_DIR, 'login.html');
     const distLoginPath = path.join(DIST_DIR, 'login.html');
+    const standaloneLoginHtml = standaloneHtml.replace('id="login-modal"', 'id="login-modal" class="modal-overlay active forced-login"');
     fs.writeFileSync(rootIndexPath, standaloneHtml);
-    fs.writeFileSync(rootLoginPath, standaloneHtml);
-    fs.writeFileSync(distLoginPath, standaloneHtml);
+    fs.writeFileSync(rootLoginPath, standaloneLoginHtml);
+    fs.writeFileSync(distLoginPath, standaloneLoginHtml);
 
     console.log(`   ├─ public/index.html & login.html (${formatKB(Buffer.byteLength(publicHtml))})`);
     console.log(`   ├─ public/css/ (${publicCssCount} Granular CSS Files)`);

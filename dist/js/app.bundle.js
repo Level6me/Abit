@@ -732,8 +732,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.06-1746';
-const APP_BUILD_TIME = '2026-09-06 17:46:16';
+const APP_VERSION = 'v2026.09.06-1751';
+const APP_BUILD_TIME = '2026-09-06 17:51:34';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3635,7 +3635,18 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         $('.sys-sub-content').hide();
         $(`#${tabId}`).show();
         $('#p-system .tab-item').removeClass('active');
-        $(btn).addClass('active');
+        if (btn) {
+            $(btn).addClass('active');
+            if (btn.scrollIntoView) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        } else {
+            const targetBtn = $(`#p-system .tab-item[onclick*="${tabId}"]`);
+            targetBtn.addClass('active');
+            if (targetBtn[0] && targetBtn[0].scrollIntoView) {
+                targetBtn[0].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
         } else if (tabId === 'sys-sub-pwa') {
@@ -4117,6 +4128,21 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                         if (typeof showToast === 'function') showToast(window.t('已恢复全部任务'));
                         if (typeof pollFastData === 'function') pollFastData();
                     });
+                }, 300);
+            } else if (actionParam === 'about' || urlParams.get('tab') === 'about' || hashStr === 'about') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
+                    }
+                    if (typeof switchSysSubTab === 'function') {
+                        switchSysSubTab('sys-sub-about');
+                    }
+                }, 300);
+            } else if (actionParam === 'system' || urlParams.get('tab') === 'system' || hashStr === 'system') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
+                    }
                 }, 300);
             }
 

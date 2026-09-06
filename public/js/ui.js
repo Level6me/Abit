@@ -102,7 +102,18 @@
         $('.sys-sub-content').hide();
         $(`#${tabId}`).show();
         $('#p-system .tab-item').removeClass('active');
-        $(btn).addClass('active');
+        if (btn) {
+            $(btn).addClass('active');
+            if (btn.scrollIntoView) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        } else {
+            const targetBtn = $(`#p-system .tab-item[onclick*="${tabId}"]`);
+            targetBtn.addClass('active');
+            if (targetBtn[0] && targetBtn[0].scrollIntoView) {
+                targetBtn[0].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
         } else if (tabId === 'sys-sub-pwa') {

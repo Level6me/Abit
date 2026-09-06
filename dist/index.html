@@ -2453,12 +2453,12 @@ body.mini-mode #mini-standalone-hud {
                 </div>
             </div>
 
-            <!-- Environment Specs Card (Moved from Security tab) -->
+            <!-- Environment Specs Card -->
             <div class="card">
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.06-1746</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.06-1751</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -2472,9 +2472,23 @@ body.mini-mode #mini-standalone-hud {
                     <span class="val-sub" data-i18n="内核版本">内核版本</span>
                     <span style="font-weight:600;" id="sys-qbt-version-text">qBittorrent --</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="WebAPI 版本">WebAPI 版本</span>
                     <span style="font-weight:600;" id="sys-webapi-version-text">v2.x</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+                    <span class="val-sub" data-i18n="渲染引擎与平台">渲染引擎与平台</span>
+                    <span style="font-weight:600; font-size:12px; color:var(--text-sec);" id="sys-platform-text">Web Standards (Vanilla JS + Glassmorphism)</span>
+                </div>
+            </div>
+
+            <!-- Maintenance & Quick Actions -->
+            <div class="card">
+                <div style="font-weight:700; font-size:15px; margin-bottom:8px;" data-i18n="🛠️ 维护与故障排查">🛠️ 维护与故障排查</div>
+                <div class="val-sub" style="margin-bottom:12px;" data-i18n="若界面出现显示异常、缓存冲突或资源加载迟滞，可执行一键重置与强制刷新：">若界面出现显示异常、缓存冲突或资源加载迟滞，可执行一键重置与强制刷新：</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn secondary" onclick="if(typeof purgePwaCachesAndReload==='function') purgePwaCachesAndReload(); else location.reload(true);" style="flex:1; min-width:180px; padding:10px 14px;" data-i18n="🧹 清除缓存并重载">🧹 清除缓存并重载</button>
+                    <button class="btn" onclick="checkAuthStatus(); showToast(window.t('已刷新状态并重新连接'));" style="flex:1; min-width:180px; padding:10px 14px;" data-i18n="🔄 重新检测连接">🔄 重新检测连接</button>
                 </div>
             </div>
         </div>
@@ -3501,8 +3515,8 @@ body.mini-mode #mini-standalone-hud {
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.06-1746';
-const APP_BUILD_TIME = '2026-09-06 17:46:16';
+const APP_VERSION = 'v2026.09.06-1751';
+const APP_BUILD_TIME = '2026-09-06 17:51:34';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -6404,7 +6418,18 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
         $('.sys-sub-content').hide();
         $(`#${tabId}`).show();
         $('#p-system .tab-item').removeClass('active');
-        $(btn).addClass('active');
+        if (btn) {
+            $(btn).addClass('active');
+            if (btn.scrollIntoView) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        } else {
+            const targetBtn = $(`#p-system .tab-item[onclick*="${tabId}"]`);
+            targetBtn.addClass('active');
+            if (targetBtn[0] && targetBtn[0].scrollIntoView) {
+                targetBtn[0].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
         if (tabId === 'sys-sub-logs') {
             fetchSystemLogs();
         } else if (tabId === 'sys-sub-pwa') {
@@ -6886,6 +6911,21 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
                         if (typeof showToast === 'function') showToast(window.t('已恢复全部任务'));
                         if (typeof pollFastData === 'function') pollFastData();
                     });
+                }, 300);
+            } else if (actionParam === 'about' || urlParams.get('tab') === 'about' || hashStr === 'about') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
+                    }
+                    if (typeof switchSysSubTab === 'function') {
+                        switchSysSubTab('sys-sub-about');
+                    }
+                }, 300);
+            } else if (actionParam === 'system' || urlParams.get('tab') === 'system' || hashStr === 'system') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
+                    }
                 }, 300);
             }
 

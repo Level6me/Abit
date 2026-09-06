@@ -316,6 +316,21 @@
                         if (typeof pollFastData === 'function') pollFastData();
                     });
                 }, 300);
+            } else if (actionParam === 'about' || urlParams.get('tab') === 'about' || hashStr === 'about') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
+                    }
+                    if (typeof switchSysSubTab === 'function') {
+                        switchSysSubTab('sys-sub-about');
+                    }
+                }, 300);
+            } else if (actionParam === 'system' || urlParams.get('tab') === 'system' || hashStr === 'system') {
+                setTimeout(function() {
+                    if (typeof switchTab === 'function') {
+                        switchTab('p-system', '系统', $('.dock-btn:nth-child(5)'));
+                    }
+                }, 300);
             }
 
             // Clean up query string from address bar without reloading
