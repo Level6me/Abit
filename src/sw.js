@@ -3,7 +3,7 @@
  * Provides instant shell caching, Stale-While-Revalidate loading and enables PWA installation.
  */
 
-const CACHE_NAME = 'abit-pwa-v2026.09.03-1928';
+const CACHE_NAME = 'abit-pwa-v2026.09.06-1723';
 const STATIC_ASSETS = [
     './',
     './index.html',
