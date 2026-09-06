@@ -732,8 +732,8 @@
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.06-1724';
-const APP_BUILD_TIME = '2026-09-06 17:24:28';
+const APP_VERSION = 'v2026.09.06-1731';
+const APP_BUILD_TIME = '2026-09-06 17:31:20';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -3709,10 +3709,17 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
-                if (xhr.status === 403 || xhr.status === 401) {
-                    showToast(window.t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
+                if (xhr.status === 403) {
+                    const resp = String(xhr.responseText || '');
+                    if (resp.toLowerCase().includes('banned') || resp.toLowerCase().includes('locked')) {
+                        showToast(window.t('❌ 当前 IP 尝试过多已被临时锁定，请稍后重试'), false);
+                    } else {
+                        showToast(window.t('❌ 用户名或密码错误，请核对后重试'), false);
+                    }
+                } else if (xhr.status === 401) {
+                    showToast(window.t('❌ 用户名或密码错误，请核对后重试'), false);
                 } else {
-            showToast(window.t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
+                    showToast(window.t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
                 }
                 $('#login-pass').val('').focus();
             }

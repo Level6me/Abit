@@ -2458,7 +2458,7 @@ body.mini-mode #mini-standalone-hud {
                 <div style="font-weight:700; font-size:15px; margin-bottom:12px;" data-i18n="ℹ️ 版本与运行环境">ℹ️ 版本与运行环境</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目版本">项目版本</span>
-                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.06-1724</span>
+                    <span style="font-weight:600; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent);" id="sys-abit-version-text">v2026.09.06-1731</span>
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-subtle);">
                     <span class="val-sub" data-i18n="项目地址">项目地址</span>
@@ -3501,8 +3501,8 @@ body.mini-mode #mini-standalone-hud {
  */
 
 // Application Metadata (Automatically updated during build)
-const APP_VERSION = 'v2026.09.06-1724';
-const APP_BUILD_TIME = '2026-09-06 17:24:28';
+const APP_VERSION = 'v2026.09.06-1731';
+const APP_BUILD_TIME = '2026-09-06 17:31:20';
 const APP_REPO_URL = 'https://github.com/Level6me/Abit';
 
 // Popular Preset Search Plugins Repository (100% Verified Working URLs)
@@ -6478,10 +6478,17 @@ const APP_REPO_URL = 'https://github.com/Level6me/Abit';
             },
             error: function(xhr) {
                 loginBtn.prop('disabled', false).text(origText);
-                if (xhr.status === 403 || xhr.status === 401) {
-                    showToast(window.t('❌ 登录失败：用户名或密码错误 / 尝试过多被临时锁定'), false);
+                if (xhr.status === 403) {
+                    const resp = String(xhr.responseText || '');
+                    if (resp.toLowerCase().includes('banned') || resp.toLowerCase().includes('locked')) {
+                        showToast(window.t('❌ 当前 IP 尝试过多已被临时锁定，请稍后重试'), false);
+                    } else {
+                        showToast(window.t('❌ 用户名或密码错误，请核对后重试'), false);
+                    }
+                } else if (xhr.status === 401) {
+                    showToast(window.t('❌ 用户名或密码错误，请核对后重试'), false);
                 } else {
-            showToast(window.t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
+                    showToast(window.t('❌ 连接 qBittorrent 登录接口失败 (') + xhr.status + ')', false);
                 }
                 $('#login-pass').val('').focus();
             }
